@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DVLD.DataService.Repositories.Interfaces;
 
-internal interface IPersonRepository : IGenericRepository<Person>
+public interface IPersonRepository : IGenericRepository<Person>
 {
 
 }

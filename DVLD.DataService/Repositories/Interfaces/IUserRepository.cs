@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 
 namespace DVLD.DataService.Repositories.Interfaces;
 
-internal interface IUserRepository : IGenericRepository<User>
+public interface IUserRepository : IGenericRepository<User>
 {
-
+    public Task<bool> Login(User entity);
+    public Task<bool> UpdatePassword(User entity);
+    public Task<bool> DeActivateUser(int id);
 }

@@ -12,5 +12,5 @@ public class Driver
     public DateTime CreatedAt { get; set; }
     public User? User { get; set;}
     public License License { get; set; }
-    public InternationalDrivingLicense InternationalDrivingLicense { get; set; }
+    public InternationalDrivingLicense? InternationalDrivingLicense { get; set; }
 }

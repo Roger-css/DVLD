@@ -21,6 +21,6 @@ public class License
     public string IssueReason { get; set; }
     public int CreatedByUserId { get; set; }
     public User User { get; set; }
-    public DetainedLicense? DetainedLicense { get; set; }
+    public ICollection<DetainedLicense>? DetainedLicense { get; set; }
     public InternationalDrivingLicense? InternationalDLALicense { get; set; }
 }

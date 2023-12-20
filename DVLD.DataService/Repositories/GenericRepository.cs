@@ -10,37 +10,29 @@ internal class GenericRepository<T> : IGenericRepository<T> where T : class
 {
     public readonly ILogger Logger;
     protected DvldContext _context;
-    protected DbSet<T> _values;
+    protected DbSet<T> _dbSet;
 
     public GenericRepository(ILogger logger, DvldContext context)
     {
         Logger = logger;
         _context = context;
-        _values = context.Set<T>();
+        _dbSet = context.Set<T>();
     }
 
     public virtual async Task<bool> Add(T entity)
     {
-        throw new NotImplementedException();
+        await _dbSet.AddAsync(entity);
+        return true;
     }
 
-    public virtual async Task<bool> Delete(int id)
+    public virtual async Task<IEnumerable<T?>> GetAll()
     {
-        throw new NotSupportedException();
+        return await _dbSet.AsNoTracking().ToListAsync();
     }
 
-    public virtual async Task<IEnumerable<T>> GetAll()
+    public virtual async Task<T?> GetById(int id)
     {
-        throw new NotImplementedException();
+        return await _dbSet.FindAsync(id);
     }
 
-    public virtual async Task<T> GetById(int id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public virtual async Task<bool> Update(T entity)
-    {
-        throw new NotImplementedException();
-    }
 }

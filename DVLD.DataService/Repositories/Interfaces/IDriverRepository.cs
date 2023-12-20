@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DVLD.DataService.Repositories.Interfaces;
 
-internal interface IDriverRepository : IGenericRepository<Driver>
+public interface IDriverRepository : IGenericRepository<Driver>
 {
 
 }

@@ -35,8 +35,4 @@
     <ProjectReference Include="..\DVLD.DataService\DVLD.DataService.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>

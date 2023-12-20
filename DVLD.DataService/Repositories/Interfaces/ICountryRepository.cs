@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DVLD.DataService.Repositories.Interfaces;
 
-internal interface ICountryRepository
+public interface ICountryRepository
 {
     Task<IEnumerable<Country>> GetAll();
 }

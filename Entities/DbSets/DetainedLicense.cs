@@ -16,5 +16,5 @@ public class DetainedLicense
     public int ReleasedByUserId { get; set; }
     public User ReleaseUser { get; set; }
     public int ReleaseApplicationId { get; set; } 
-    public Application Application { get; set; }
+    public Application? Application { get; set; }
 }
