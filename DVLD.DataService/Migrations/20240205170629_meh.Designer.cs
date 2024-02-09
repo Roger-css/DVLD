@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DVLD.DataService.Migrations
 {
     [DbContext(typeof(DvldContext))]
-    [Migration("20231219223142_betterRelations")]
-    partial class betterRelations
+    [Migration("20240205170629_meh")]
+    partial class meh
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1312,7 +1312,6 @@ namespace DVLD.DataService.Migrations
                         .HasColumnName("DateOfBirth");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
@@ -1323,7 +1322,7 @@ namespace DVLD.DataService.Migrations
                         .HasColumnType("tinyint");
 
                     b.Property<byte[]>("Image")
-                        .HasColumnType("varbinary");
+                        .HasColumnType("varbinary(MAX)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -1350,10 +1349,41 @@ namespace DVLD.DataService.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NationalityCountryId")
-                        .IsUnique();
+                    b.HasIndex("NationalityCountryId");
 
                     b.ToTable("People");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Address = "Ash-shatrah city",
+                            BirthDate = new DateTime(2003, 9, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "mustafahaider351@gmail.com",
+                            FirstName = "mustafa",
+                            Gender = (byte)1,
+                            LastName = "jodah",
+                            NationalNo = "N100",
+                            NationalityCountryId = 83,
+                            Phone = "07813789596",
+                            SecondName = "haider",
+                            ThirdName = "hassan"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Address = "alkhubar",
+                            BirthDate = new DateTime(2004, 8, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "maysamalsh-18@outlook.sa",
+                            FirstName = "maysam",
+                            Gender = (byte)2,
+                            LastName = "abd-alrahman",
+                            NationalNo = "N101",
+                            NationalityCountryId = 122,
+                            Phone = "0538500087",
+                            SecondName = "burayk",
+                            ThirdName = "ammar"
+                        });
                 });
 
             modelBuilder.Entity("DVLD.Entities.DbSets.Test", b =>
@@ -1485,6 +1515,16 @@ namespace DVLD.DataService.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IsActive = true,
+                            Password = "mhhg1234",
+                            PersonId = 1,
+                            UserName = "alone wolf"
+                        });
                 });
 
             modelBuilder.Entity("DVLD.Entities.DbSets.Application", b =>
@@ -1660,8 +1700,8 @@ namespace DVLD.DataService.Migrations
             modelBuilder.Entity("DVLD.Entities.DbSets.Person", b =>
                 {
                     b.HasOne("DVLD.Entities.DbSets.Country", "Country")
-                        .WithOne("Person")
-                        .HasForeignKey("DVLD.Entities.DbSets.Person", "NationalityCountryId")
+                        .WithMany("Person")
+                        .HasForeignKey("NationalityCountryId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 

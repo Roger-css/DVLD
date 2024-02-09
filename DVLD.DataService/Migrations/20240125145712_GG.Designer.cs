@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DVLD.DataService.Migrations
 {
     [DbContext(typeof(DvldContext))]
-    [Migration("20231217120915_initial")]
-    partial class initial
+    [Migration("20240125145712_GG")]
+    partial class GG
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1105,11 +1105,9 @@ namespace DVLD.DataService.Migrations
 
                     b.HasIndex("CreatedByUserId");
 
-                    b.HasIndex("LicenseId")
-                        .IsUnique();
+                    b.HasIndex("LicenseId");
 
-                    b.HasIndex("ReleaseApplicationId")
-                        .IsUnique();
+                    b.HasIndex("ReleaseApplicationId");
 
                     b.HasIndex("ReleasedByUserId");
 
@@ -1314,7 +1312,6 @@ namespace DVLD.DataService.Migrations
                         .HasColumnName("DateOfBirth");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
@@ -1325,7 +1322,7 @@ namespace DVLD.DataService.Migrations
                         .HasColumnType("tinyint");
 
                     b.Property<byte[]>("Image")
-                        .HasColumnType("varbinary");
+                        .HasColumnType("varbinary(MAX)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -1356,6 +1353,38 @@ namespace DVLD.DataService.Migrations
                         .IsUnique();
 
                     b.ToTable("People");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Address = "Ash-shatrah city",
+                            BirthDate = new DateTime(2003, 9, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "mustafahaider351@gmail.com",
+                            FirstName = "mustafa",
+                            Gender = (byte)1,
+                            LastName = "jodah",
+                            NationalNo = "N100",
+                            NationalityCountryId = 83,
+                            Phone = "07813789596",
+                            SecondName = "haider",
+                            ThirdName = "hassan"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Address = "alkhubar",
+                            BirthDate = new DateTime(2004, 8, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "maysamalsh-18@outlook.sa",
+                            FirstName = "maysam",
+                            Gender = (byte)2,
+                            LastName = "abd-alrahman",
+                            NationalNo = "N101",
+                            NationalityCountryId = 122,
+                            Phone = "0538500087",
+                            SecondName = "burayk",
+                            ThirdName = "ammar"
+                        });
                 });
 
             modelBuilder.Entity("DVLD.Entities.DbSets.Test", b =>
@@ -1487,6 +1516,16 @@ namespace DVLD.DataService.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IsActive = true,
+                            Password = "mhhg1234",
+                            PersonId = 1,
+                            UserName = "alone wolf"
+                        });
                 });
 
             modelBuilder.Entity("DVLD.Entities.DbSets.Application", b =>
@@ -1525,14 +1564,14 @@ namespace DVLD.DataService.Migrations
                         .IsRequired();
 
                     b.HasOne("DVLD.Entities.DbSets.License", "License")
-                        .WithOne("DetainedLicense")
-                        .HasForeignKey("DVLD.Entities.DbSets.DetainedLicense", "LicenseId")
+                        .WithMany("DetainedLicense")
+                        .HasForeignKey("LicenseId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("DVLD.Entities.DbSets.Application", "Application")
-                        .WithOne("DetainedLicense")
-                        .HasForeignKey("DVLD.Entities.DbSets.DetainedLicense", "ReleaseApplicationId")
+                        .WithMany("DetainedLicense")
+                        .HasForeignKey("ReleaseApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1754,8 +1793,7 @@ namespace DVLD.DataService.Migrations
 
             modelBuilder.Entity("DVLD.Entities.DbSets.Driver", b =>
                 {
-                    b.Navigation("InternationalDrivingLicense")
-                        .IsRequired();
+                    b.Navigation("InternationalDrivingLicense");
 
                     b.Navigation("License")
                         .IsRequired();

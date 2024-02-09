@@ -14,5 +14,13 @@ internal class UserConfig : IEntityTypeConfiguration<User>
         builder.HasOne(x => x.Person)
             .WithOne(x => x.User)
             .HasForeignKey<User>(x=> x.PersonId).OnDelete(DeleteBehavior.NoAction);
+        builder.HasData(new User
+        {
+            Id = 1,
+            PersonId = 1,
+            UserName = "alone wolf",
+            Password = "mhhg1234",
+            IsActive = true,
+        });
     }
 }

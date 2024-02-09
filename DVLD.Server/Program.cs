@@ -21,13 +21,13 @@ namespace DVLD.Server
             builder.Services.AddSwaggerGen();
             builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            builder.Services.AddMediatR(x => x.RegisterServicesFromAssemblies(typeof(Program).Assembly));
             builder.Services.AddCors(opt => opt.AddPolicy("LocalHost", policy =>
             policy.WithOrigins("https://localhost:5173").AllowAnyHeader().AllowCredentials().AllowAnyMethod()));
             var app = builder.Build();
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
-
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Dtos\Response\" />
     <Folder Include="Views\" />
   </ItemGroup>
 

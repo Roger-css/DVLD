@@ -3,7 +3,7 @@ namespace DVLD.Entities.Enums;
 
 public enum EnGender
 {
-    Male,
+    Male = 1,
     Female,
     unknown
 }

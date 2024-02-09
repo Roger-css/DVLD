@@ -10,6 +10,7 @@ internal class CountryConfig : IEntityTypeConfiguration<Country>
     public void Configure(EntityTypeBuilder<Country> builder)
     {
         builder.HasKey(x => x.Id);
+        builder.Ignore(x => x.Person);
         builder.HasData(AddCountries());
     }
 

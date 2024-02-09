@@ -16,9 +16,9 @@ public class Person
     public EnGender Gender { get; set; }
     public string Address { get; set; }
     public string Phone {  get; set; }
-    public string Email { get; set; }
+    public string? Email { get; set; }
     public int NationalityCountryId { get; set; }
-    public Country Country { get; set; }
+    public Country? Country { get; set; }
     public byte[]? Image { get; set; }
     public User? User { get; set; }
     public Driver? Driver { get; set; }

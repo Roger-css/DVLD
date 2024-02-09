@@ -14,27 +14,50 @@ import {
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "../../Api/Axios";
+import "./style.css";
+import { useNavigate } from "react-router-dom";
+import useLocalStorage from "../../hooks/useLocalStorage";
 function SignIn() {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
-
+  const [rememberMe, setRememberMe] = useState(false);
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-
   const handleClickShowPassword = () => setShowPassword((show) => !show);
-
+  const { setItem, getItem, DeleteItem } = useLocalStorage("user");
+  useEffect(() => {
+    const UserInfo = getItem();
+    if (UserInfo) {
+      setUserName(UserInfo.UserName);
+      setPassword(UserInfo.Password);
+      setRememberMe(true);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const SendData = async (): Promise<void> => {
+    if (rememberMe) {
+      setItem({
+        UserName: userName,
+        Password: password,
+      });
+    } else {
+      DeleteItem();
+    }
     try {
       const response = await axios.post("/User/Login", {
         UserName: userName,
         Password: password,
       });
-      console.log(response);
+      if (response.status >= 200) {
+        navigate("home");
+      }
     } catch (error) {
       console.log(error);
     }
   };
+  const rememberMeHandler = (): void => setRememberMe((prev) => !prev);
+
   return (
     <Box
       sx={{
@@ -57,12 +80,13 @@ function SignIn() {
           px: "15px",
           pt: "15px",
           borderRadius: "16px",
+          boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.75)",
         }}
       >
         <Typography variant="h6" mt={"20px"} textAlign={"center"}>
           LOGIN
         </Typography>
-        <Typography variant="h5" textAlign={"center"}>
+        <Typography variant="h5" fontWeight={"700"} textAlign={"center"}>
           YOUR ACCOUNT
         </Typography>
         <Box sx={{ mt: "60px" }}>
@@ -97,7 +121,7 @@ function SignIn() {
                   aria-label="toggle password visibility"
                   onClick={handleClickShowPassword}
                 >
-                  {password ? <VisibilityOff /> : <Visibility />}
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
             }
@@ -106,6 +130,8 @@ function SignIn() {
             control={<Checkbox />}
             label={"Remember me"}
             sx={{ color: "black", mt: "10px", ml: "5px" }}
+            checked={rememberMe}
+            onChange={rememberMeHandler}
           />
 
           <Stack display={"flex"} flexDirection={"row-reverse"}>

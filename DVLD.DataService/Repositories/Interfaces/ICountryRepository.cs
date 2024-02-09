@@ -9,5 +9,5 @@ namespace DVLD.DataService.Repositories.Interfaces;
 
 public interface ICountryRepository
 {
-    Task<IEnumerable<Country>> GetAll();
+    Task<IEnumerable<Country>?> GetAll();
 }

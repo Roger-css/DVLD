@@ -22,6 +22,8 @@ public class UnitOfWork : IUnitOfWork
         _context = context;
         var logger = loggerFactory.CreateLogger<UnitOfWork>();
         UserRepository = new UserRepository(logger, context);
+        CountryRepository = new CountryRepository(logger, context);
+        PersonRepository = new PersonRepository(logger, context);
     }
 
     public async Task CompleteAsync()

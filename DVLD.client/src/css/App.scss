@@ -1,5 +1,13 @@
-@use "../Pages/Sign/style";
-
+@use "../components/UI/UI";
+@use "./scss/global";
+@use "../Pages/People/people";
+@use "../components/Components";
 * {
   font-family: "Lato", sans-serif !important;
+}
+html,
+body,
+.root,
+.App {
+  height: 100%;
 }

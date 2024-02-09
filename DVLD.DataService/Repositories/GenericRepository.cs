@@ -25,7 +25,7 @@ internal class GenericRepository<T> : IGenericRepository<T> where T : class
         return true;
     }
 
-    public virtual async Task<IEnumerable<T?>> GetAll()
+    public virtual async Task<IEnumerable<T>?> GetAll()
     {
         return await _dbSet.AsNoTracking().ToListAsync();
     }
