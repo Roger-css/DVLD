@@ -1,13 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import Auth from "./Slices/Auth";
 import Countries from "./Slices/Countries";
-import People from "./Slices/People";
+import Applications from "./Slices/Applications";
 
 const store = configureStore({
   reducer: {
     auth: Auth,
     countries: Countries,
-    people: People,
+    applications: Applications,
   },
   middleware: (def) => def(),
   devTools: true,

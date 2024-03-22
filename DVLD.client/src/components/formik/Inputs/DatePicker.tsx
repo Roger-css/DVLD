@@ -10,10 +10,11 @@ type TyProps = {
   name: string;
   sx?: SxProps;
   label: string;
+  readonly?: boolean;
 };
 
 const DateInput = (props: TyProps) => {
-  const { name, label, ...rest } = props;
+  const { name, label, readonly, ...rest } = props;
   const minDate = new Date();
   minDate.setFullYear(minDate.getFullYear() - 18);
   return (
@@ -33,10 +34,7 @@ const DateInput = (props: TyProps) => {
                   }}
                   label={label}
                   value={field.value}
-                  onError={(e) => {
-                    console.log(e);
-                    form.setFieldError(name, e?.toString());
-                  }}
+                  disabled={readonly}
                 />
               </LocalizationProvider>
               <ErrorMessage component={TextError} name={name} />

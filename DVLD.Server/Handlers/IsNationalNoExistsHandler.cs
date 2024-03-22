@@ -5,9 +5,9 @@ using MediatR;
 
 namespace DVLD.Server.Handlers
 {
-    public class IsNationalNoExistsHandler : BaseHandler, IRequestHandler<IsNationalNoExistsQuery, bool>
+    public class IsNationalNoExistsHandler : BaseHandler<IsNationalNoExistsHandler>, IRequestHandler<IsNationalNoExistsQuery, bool>
     {
-        public IsNationalNoExistsHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        public IsNationalNoExistsHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<IsNationalNoExistsHandler> logger) : base(unitOfWork, mapper, logger)
         {
         }
 

@@ -1,25 +1,38 @@
-import { useEffect, useRef } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 type props = {
   title: string;
-  SubList: { title: string; link: string }[] | null;
+  SubList: { title: string | ReactNode; link?: string }[] | null;
   focused: boolean;
-  handleClick: (title: string) => void;
+  handleClick: () => void;
+  className?: string;
+  focusedClassName?: string;
+  activeLi: string | undefined;
 };
 
-function HeaderCell({ title, SubList, focused, handleClick }: props) {
+const HeaderCell = ({
+  title,
+  SubList,
+  focused,
+  className,
+  handleClick,
+  focusedClassName,
+  activeLi,
+}: props) => {
   const CellRef = useRef<HTMLLIElement>(null);
   const SubListRef = useRef<HTMLUListElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
-
   useEffect(() => {
-    if (location.pathname.endsWith("people") && title === "People") {
-      handleClick(title);
+    if (
+      (location.pathname.endsWith("people") && title === "People") ||
+      (location.pathname.endsWith("drivers") && title === "Drivers") ||
+      (location.pathname.endsWith("users") && title === "Users")
+    ) {
+      handleClick();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   return (
     <li
       ref={CellRef}
@@ -27,31 +40,35 @@ function HeaderCell({ title, SubList, focused, handleClick }: props) {
         if (title === "People") {
           navigate("people");
         }
-        handleClick(title);
+        if (title === "Drivers") {
+          navigate("drivers");
+        }
+        if (title === "Users") {
+          navigate("users");
+        }
+        if (activeLi !== "Application") {
+          handleClick();
+        }
       }}
-      className={`relative h-8 px-5 pt-1 ml-8 text-white transition-colors cursor-pointer select-none headerCell rounded-3xl ${
+      className={`relative h-8 px-5 pt-1 text-white transition-colors cursor-pointer select-none headerCell rounded-3xl ${
         focused ? "headerCellClicked" : null
       }`}
     >
       {title}
       {SubList && (
         <ul
-          className={`w-10 -mt-2 bg-white pointer-events-none HeaderCellUl ${
-            focused ? "ShowingHeaderCellUl" : null
+          className={`-mt-2 bg-white HeaderCellUl ${className} ${
+            focused ? "ShowingHeaderCellUl " + focusedClassName : null
           }`}
           ref={SubListRef}
         >
           {SubList.map((v, i) => {
-            return (
-              <li key={i} className="">
-                {v.title}
-              </li>
-            );
+            return <li key={i}>{v.title}</li>;
           })}
         </ul>
       )}
     </li>
   );
-}
+};
 
 export default HeaderCell;

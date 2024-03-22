@@ -16,6 +16,8 @@ public class UnitOfWork : IUnitOfWork
     public IUserRepository UserRepository { get; set; }
     public IDriverRepository DriverRepository { get; set; }
     public ICountryRepository CountryRepository { get ; set; }
+    public IRefreshTokenRepository RefreshTokenRepository { get; set; }
+    public IApplicationTypesRepository ApplicationTypesRepository { get; set; }
 
     public UnitOfWork(DvldContext context, ILoggerFactory loggerFactory)
     {
@@ -24,6 +26,8 @@ public class UnitOfWork : IUnitOfWork
         UserRepository = new UserRepository(logger, context);
         CountryRepository = new CountryRepository(logger, context);
         PersonRepository = new PersonRepository(logger, context);
+        RefreshTokenRepository = new RefreshTokenRepository(logger, context);
+        ApplicationTypesRepository = new ApplicationTypesRepository(logger, context);
     }
 
     public async Task CompleteAsync()

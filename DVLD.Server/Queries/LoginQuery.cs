@@ -1,9 +1,10 @@
-﻿using DVLD.Entities.Dtos.Request;
+﻿using DVLD.Entities.DbSets;
+using DVLD.Entities.Dtos.Request;
 using MediatR;
 
 namespace DVLD.Server.Queries;
 
-public class LoginQuery: IRequest<bool>
+public class LoginQuery: IRequest<User?>
 {
     public LoginQuery(UserLoginRequest user)
     {

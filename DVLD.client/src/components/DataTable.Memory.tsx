@@ -13,29 +13,18 @@ import {
 import { styled } from "@mui/material/styles";
 import {
   ColumnDef,
+  SortingState,
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React, { ReactNode } from "react";
-type FilterOptions = {
-  gender: number;
-  page: number;
-  pageSize: number;
-  orderBy: string;
-};
-type tyPages = {
-  totalCount: number;
-  hasPrev: boolean;
-  hasNext: boolean;
-};
+import React, { ReactNode, useState } from "react";
 type Props<TColumn, TData> = {
   column: ColumnDef<TData, TColumn>[];
   Data: TData[];
   children?: ReactNode;
-  filteringOptions: FilterOptions;
-  handleFiltersChange: React.Dispatch<React.SetStateAction<FilterOptions>>;
-  pages: tyPages;
 };
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -43,7 +32,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     color: theme.palette.common.white,
   },
   [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
+    fontSize: 16,
   },
 }));
 
@@ -56,21 +45,23 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
-const DataTable = <TColumn, TData>({
+const DataTableMemory = <TColumn, TData>({
   Data,
   column,
   children,
-  handleFiltersChange,
-  pages,
-}: // filteringOptions,
-// handleFiltersChange,
-Props<TColumn, TData>) => {
+}: Props<TColumn, TData>) => {
+  const [sorting, setSorting] = useState<SortingState>([]);
   const table = useReactTable({
     columns: column,
     data: Data || [],
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+    state: {
+      sorting: sorting,
+    },
   });
-
   return (
     <div>
       <div className="flex">{children}</div>
@@ -90,7 +81,7 @@ Props<TColumn, TData>) => {
                             : "normal"
                         }
                         key={header.id}
-                        sx={{ textAlign: "center" }}
+                        sx={{ textAlign: "center", fontSize: "16px" }}
                       >
                         {flexRender(
                           header.column.columnDef.header,
@@ -110,7 +101,10 @@ Props<TColumn, TData>) => {
                   <StyledTableRow key={row.id}>
                     {row.getVisibleCells().map((cell) => {
                       return (
-                        <StyledTableCell key={cell.id}>
+                        <StyledTableCell
+                          key={cell.id}
+                          sx={{ textAlign: "center" }}
+                        >
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()
@@ -124,23 +118,20 @@ Props<TColumn, TData>) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <div className="mt-5">
+      <div className="h-12 mt-5">
         <Pagination
           showFirstButton
           showLastButton
-          onChange={(_e, value) => {
-            console.log(value);
-
-            handleFiltersChange((p) => ({ ...p, page: value }));
-          }}
-          count={pages.totalCount}
+          count={Math.ceil(Data.length / 10)}
           color="primary"
-          hideNextButton={!pages.hasNext}
-          hidePrevButton={!pages.hasPrev}
+          hideNextButton={!table.getCanNextPage()}
+          hidePrevButton={!table.getCanPreviousPage()}
+          onChange={(_, n) => table.setPageIndex(n - 1)}
+          variant="outlined"
         />
       </div>
     </div>
   );
 };
-const memoized = React.memo(DataTable);
+const memoized = React.memo(DataTableMemory);
 export default memoized;

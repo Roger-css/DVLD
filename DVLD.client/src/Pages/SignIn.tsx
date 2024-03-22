@@ -15,10 +15,9 @@ import {
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useEffect, useState } from "react";
-import axios from "../../Api/Axios";
-import "./style.css";
+import axios from "../Api/Axios";
 import { useNavigate } from "react-router-dom";
-import useLocalStorage from "../../hooks/useLocalStorage";
+import useLocalStorage from "../hooks/useLocalStorage";
 function SignIn() {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
@@ -26,7 +25,8 @@ function SignIn() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const { setItem, getItem, DeleteItem } = useLocalStorage("user");
+  const { getItem, setItem, deleteItem } = useLocalStorage("user");
+  const { setItem: SetAccessToken } = useLocalStorage("token");
   useEffect(() => {
     const UserInfo = getItem();
     if (UserInfo) {
@@ -42,14 +42,15 @@ function SignIn() {
         Password: password,
       });
     } else {
-      DeleteItem();
+      deleteItem();
     }
     try {
       const response = await axios.post("/User/Login", {
         UserName: userName,
         Password: password,
       });
-      if (response.status >= 200) {
+      if (response.data.result) {
+        SetAccessToken(response.data.token);
         navigate("home");
       }
     } catch (error) {

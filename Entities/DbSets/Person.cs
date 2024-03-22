@@ -1,7 +1,7 @@
 ﻿#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 using DVLD.Entities.Enums;
-using System.Drawing;
+using System.Text.Json.Serialization;
 
 namespace DVLD.Entities.DbSets;
 public class Person
@@ -22,7 +22,7 @@ public class Person
     public byte[]? Image { get; set; }
     public User? User { get; set; }
     public Driver? Driver { get; set; }
+    [JsonIgnore]
     public ICollection<Application>? Applications { get; set; }
 }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-

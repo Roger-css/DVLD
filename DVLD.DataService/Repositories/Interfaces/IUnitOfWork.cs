@@ -6,5 +6,7 @@ public interface IUnitOfWork
     IUserRepository UserRepository { get; set; }
     IDriverRepository DriverRepository { get; set; }
     ICountryRepository CountryRepository { get; set; }
+    IRefreshTokenRepository RefreshTokenRepository { get; set; }
+    IApplicationTypesRepository ApplicationTypesRepository { get; set; }
     Task CompleteAsync();
 }

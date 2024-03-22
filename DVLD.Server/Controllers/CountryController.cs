@@ -5,11 +5,10 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DVLD.Server.Controllers;
-
-public class CountryController : BaseController
+public class CountryController : BaseController<CountryController>
 {
-    public CountryController(IUnitOfWork unitOfWork, IMapper mapper, IMediator mediator) : base(unitOfWork, mapper, mediator)
-    {
+    public CountryController(IUnitOfWork unitOfWork, IMediator mediator, ILogger<CountryController> logger) : base(unitOfWork, mediator, logger)
+    {   
     }
     [HttpGet]
     [Route("")]
@@ -18,5 +17,5 @@ public class CountryController : BaseController
         var query = new GetAllCountriesQuery();
         var countries = await _mediator.Send(query);
         return Ok(countries);
-    } 
+    }
 }

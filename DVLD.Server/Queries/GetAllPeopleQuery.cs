@@ -7,10 +7,10 @@ namespace DVLD.Server.Queries;
 
 public class GetAllPeopleQuery: IRequest<PaginatedPeople>
 {
-    public GetAllPeopleQuery(GetAllPeople @params)
+    public GetAllPeopleQuery(GetAllPeopleRequest @params)
     {
         Params = @params;
     }
 
-    public GetAllPeople Params { get; set; }
+    public GetAllPeopleRequest Params { get; set; }
 }

@@ -7,26 +7,27 @@ using MediatR;
 
 namespace DVLD.Server.Handlers
 {
-    public class LoginHandler : BaseHandler, IRequestHandler<LoginQuery,bool>
+    public class LoginHandler : BaseHandler<LoginHandler>, IRequestHandler<LoginQuery, User?>
     {
-        public LoginHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        public LoginHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<LoginHandler> logger) : base(unitOfWork, mapper, logger)
         {
         }
 
-        public async Task<bool> Handle(LoginQuery request, CancellationToken cancellationToken)
+        public async Task<User?> Handle(LoginQuery request, CancellationToken cancellationToken)
         {
 
             try
             {
                 var MappedUser = _mapper.Map<User>(request.user);
                 var login = await _unitOfWork.UserRepository.Login(MappedUser);
-                if (login)
-                    return true;
+                if (login == null)
+                    return null;
+                return login;
             }
             catch (Exception)
             {
+                throw new Exception("login failed");
             }
-            return false;
         }
     }
 }

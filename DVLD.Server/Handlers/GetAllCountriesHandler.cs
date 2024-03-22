@@ -7,9 +7,9 @@ using MediatR;
 
 namespace DVLD.Server.Handlers;
 
-public class GetAllCountriesHandler : BaseHandler, IRequestHandler<GetAllCountriesQuery, IEnumerable<AllCountriesResponse>?>
+public class GetAllCountriesHandler : BaseHandler<GetAllCountriesHandler>, IRequestHandler<GetAllCountriesQuery, IEnumerable<AllCountriesResponse>?>
 {
-    public GetAllCountriesHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+    public GetAllCountriesHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<GetAllCountriesHandler> logger) : base(unitOfWork, mapper, logger)
     {
     }
 

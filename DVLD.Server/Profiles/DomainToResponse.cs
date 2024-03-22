@@ -13,5 +13,8 @@ public class DomainToResponse: Profile
             .ForMember(e => e.Name, opt => opt.MapFrom(e => $"{e.FirstName} {e.SecondName} {e.ThirdName} {e.LastName}"))
             .ForMember(e => e.Gender, opt => opt.MapFrom(e => e.Gender.ToString()))
             .ForMember(e => e.NationalityCountry, opt => opt.MapFrom(e => e.Country!.CountryName));
+        CreateMap<User, LessUserInfoResponse>()
+            .ForMember(e => e.fullName, opt => opt.MapFrom(e => $"{e.Person!.FirstName} {e.Person.SecondName} " +
+            $"{e.Person.ThirdName} {e.Person.LastName}"));
     }
 }

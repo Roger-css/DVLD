@@ -1,17 +1,18 @@
-import { Avatar, Button, Paper, TextField } from "@mui/material";
+import { Avatar, Button, Paper, SxProps, TextField } from "@mui/material";
 import { Form, Formik, FormikValues } from "formik";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import * as yup from "yup";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import FormikControl from "./formik/FormikControl";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { useSelector } from "react-redux";
-import axios from "../Api/Axios";
+import usePrivate from "../hooks/usePrivate";
 import { getAllCountries } from "../redux/Slices/Countries";
-import { AxiosError } from "axios";
 import useDebounce from "../hooks/useDebounce";
 import TextError from "./formik/TextError";
 import isObjectEmpty from "../Helpers/IsObjEmpty";
+import ConvertBinaryToImage from "../Helpers/ConvertBinaryToImage";
+import { personInfo } from "../Types/Person";
 
 type TyInitialValues = {
   id: number | null;
@@ -28,6 +29,13 @@ type TyInitialValues = {
 };
 type TyProps = {
   userId: number | null;
+  readOnly?: boolean;
+  handleClose?: React.Dispatch<React.SetStateAction<boolean>>;
+  modal?: boolean;
+  title: string;
+  details?: personInfo | null;
+  sx?: SxProps;
+  children?: ReactNode;
 };
 type TyOption = { value: string | number; text: string };
 
@@ -49,14 +57,26 @@ const gender: TyOption[] = [
   { text: "Female", value: 2 },
   { text: "Other", value: 3 },
 ];
-const PersonDetails = ({ userId }: TyProps) => {
+
+const PersonDetails = ({
+  userId,
+  readOnly,
+  handleClose,
+  modal = true,
+  title,
+  details,
+  sx,
+  children,
+}: TyProps) => {
   const Countries = useSelector(getAllCountries);
-  const [personalImage, setPersonalImage] = useState<File | null>();
+  const [personalImage, setPersonalImage] = useState<File | null>(null);
   const [imageReview, setImageReview] = useState("");
   const [nationalNo, setNationalNo] = useState("");
+  const [updateNo, setUpdateNo] = useState("");
   const [exists, setExists] = useState(false);
   const [touched, setTouched] = useState(false);
-  const debounced = useDebounce(nationalNo);
+  const debounced = useDebounce(nationalNo, 100);
+  const axios = usePrivate();
   const [initialValues, setInitialValues] = useState<TyInitialValues>({
     id: 0,
     firstName: "",
@@ -73,6 +93,50 @@ const PersonDetails = ({ userId }: TyProps) => {
   const isNationalNoValid = () => {
     return !(nationalNo === "") && !exists;
   };
+  const refactor = () => {
+    setInitialValues({
+      id: null,
+      firstName: "",
+      lastName: "",
+      address: "",
+      country: 83,
+      dateOfBirth: null,
+      gender: 1,
+      phone: "",
+      secondName: "",
+      thirdName: "",
+      email: "",
+    });
+    setNationalNo("");
+    setUpdateNo("");
+    setImageReview("");
+    setTouched(false);
+    setExists(false);
+  };
+  const setFormikInitialValues = (data: personInfo, withImage = false) => {
+    setInitialValues({
+      id: data.id,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      address: data.address,
+      country: data.nationalityCountryId,
+      dateOfBirth: dayjs(data.birthDate),
+      gender: data.gender,
+      phone: data.phone,
+      secondName: data.secondName,
+      thirdName: data.thirdName,
+      email: data.email ?? "",
+    });
+    setNationalNo(data.nationalNo);
+    setUpdateNo(data.nationalNo);
+    if (withImage && data.image) {
+      const url = ConvertBinaryToImage(data.image);
+      setImageReview(url);
+      return url;
+    }
+    setImageReview("");
+    return "";
+  };
   const onSubmitting = async (values: FormikValues) => {
     const Data: { [key: string]: unknown } = {
       ...values,
@@ -85,26 +149,27 @@ const PersonDetails = ({ userId }: TyProps) => {
     }
     formData.append("nationalNo", nationalNo);
     try {
-      const data = await axios.post("Person", formData);
-      console.log(data);
+      if (userId !== null) {
+        await axios.put("Person/Update", formData);
+      } else {
+        formData.delete("id");
+        await axios.post("Person/Add", formData);
+      }
     } catch (error) {
       console.log(error);
     }
+    if (handleClose != undefined) handleClose(false);
   };
-
   const uploadImage = (event: React.FormEvent<HTMLInputElement>) => {
     event.preventDefault();
     const file = event.currentTarget.files;
     if (file == null) return;
     setPersonalImage(file[0]);
   };
-
   useEffect(() => {
     if (personalImage == null) return;
     const Urls = URL.createObjectURL(personalImage);
     setImageReview(Urls);
-    console.log(Urls);
-
     return () => {
       URL.revokeObjectURL(Urls);
     };
@@ -114,52 +179,91 @@ const PersonDetails = ({ userId }: TyProps) => {
     const validateNationalNo = async () => {
       if (debounced === "") return;
       try {
-        await axios.get(`/Person/${debounced}`);
-      } catch (error) {
-        const myError = error as AxiosError;
-        if (myError.response?.status === 404) {
-          setExists(true);
+        const response = await axios.get(`/Person/nationalNo/${debounced}`);
+        if (response) {
+          throw new Error();
         }
+      } catch {
+        setExists(true);
       }
     };
-    validateNationalNo();
-  }, [debounced]);
+    updateNo !== debounced ? validateNationalNo() : setExists(false);
+  }, [debounced, updateNo, axios]);
+
+  useEffect(() => {
+    let url = "";
+    const FetchData = async () => {
+      try {
+        const body = {
+          SearchTermKey: "Id",
+          SearchTermValue: userId?.toString(),
+        };
+        const { data } = await axios.post(`/Person/Get`, body);
+        setFormikInitialValues(data);
+        if (data.image) url = ConvertBinaryToImage(data.image);
+        setImageReview(url);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    userId ? FetchData() : false;
+    if (details) {
+      url = setFormikInitialValues(details, true);
+    }
+    if (!details && !userId) {
+      refactor();
+    }
+    return () => {
+      if (url !== "") return URL.revokeObjectURL(url);
+    };
+  }, [details, userId, axios]);
 
   return (
-    <main className="ModalBox">
-      <h1 className="text-2xl text-center">Add new person</h1>
+    <main className={modal ? "ModalBox" : ""}>
       <Formik
         initialValues={initialValues}
         validationSchema={ValidationSchema}
         onSubmit={onSubmitting}
+        validateOnChange={userId ? false : true}
+        enableReinitialize
       >
         {(formik) => {
           return (
             <Form>
-              <div className="text-xl uppercase pl-14">
-                id: {formik.values.id || "??"}
-              </div>
-              <Paper className="px-5 pb-5">
+              <Paper
+                sx={sx}
+                variant="outlined"
+                elevation={0}
+                className="px-5 pb-5"
+              >
+                <h1 className="text-2xl text-center">{title}</h1>
+                <div className="text-xl uppercase pl-14">
+                  id: {formik.values.id || "??"}
+                </div>
                 <div className="flex justify-between mt-5">
                   <FormikControl
                     control="input"
                     name="firstName"
                     label="firstName"
+                    readonly={readOnly}
                   />
                   <FormikControl
                     control="input"
                     name="secondName"
                     label="secondName"
+                    readonly={readOnly}
                   />
                   <FormikControl
                     control="input"
                     name="thirdName"
                     label="thirdName"
+                    readonly={readOnly}
                   />
                   <FormikControl
                     control="input"
                     name="lastName"
                     label="lastName"
+                    readonly={readOnly}
                   />
                 </div>
                 <div className="flex justify-between mt-5">
@@ -172,17 +276,16 @@ const PersonDetails = ({ userId }: TyProps) => {
                           variant="outlined"
                           sx={{ width: "320px" }}
                           value={nationalNo}
-                          error={exists || (touched && nationalNo === "")}
+                          error={touched && (exists || nationalNo === "")}
                           onBlur={() => setTouched(true)}
                           onChange={(e) => {
                             setExists(false);
-                            if (e.target.value !== "") {
-                              setTouched(false);
-                            }
+                            setTouched(true);
                             setNationalNo(e.currentTarget.value);
                           }}
+                          disabled={readOnly}
                         />
-                        {exists && (
+                        {touched && exists && (
                           <TextError>National Number Already in use</TextError>
                         )}
                         {touched && nationalNo === "" && (
@@ -193,6 +296,7 @@ const PersonDetails = ({ userId }: TyProps) => {
                         control="date"
                         name="dateOfBirth"
                         label="Date of Birth"
+                        readonly={readOnly}
                       />
                     </div>
                     <div className="flex items-end justify-between mt-4">
@@ -201,11 +305,13 @@ const PersonDetails = ({ userId }: TyProps) => {
                         label="gender"
                         name="gender"
                         options={gender}
+                        readonly={readOnly}
                       />
                       <FormikControl
                         control="input"
                         label="phone"
                         name="phone"
+                        readonly={readOnly}
                       />
                     </div>
                     <div className="flex items-center justify-between mt-4">
@@ -214,6 +320,7 @@ const PersonDetails = ({ userId }: TyProps) => {
                         label="Email"
                         name="email"
                         sx={{ width: "250px" }}
+                        readonly={readOnly}
                       />
                       <FormikControl
                         control="select"
@@ -224,13 +331,15 @@ const PersonDetails = ({ userId }: TyProps) => {
                           text: country.countryName,
                         }))}
                         sx={{ width: "320px" }}
+                        readonly={readOnly}
                       />
                     </div>
                     <FormikControl
                       control="textarea"
+                      className="mt-4"
                       label="Address"
                       name="address"
-                      className="mt-4"
+                      readonly={readOnly}
                     />
                   </div>
                   <div className="flex flex-col items-center justify-start px-10 form-Component picture-container">
@@ -245,6 +354,7 @@ const PersonDetails = ({ userId }: TyProps) => {
                     <Button
                       variant="contained"
                       sx={{ ml: "20px", mt: "10px", width: "80px" }}
+                      disabled={readOnly}
                     >
                       <div className="flex w-full h-full cursor-pointer">
                         <input
@@ -268,19 +378,22 @@ const PersonDetails = ({ userId }: TyProps) => {
                         </label>
                       </div>
                     </Button>
-                    <Button
-                      color={
-                        isObjectEmpty(formik.errors) && isNationalNoValid()
-                          ? "success"
-                          : "error"
-                      }
-                      size="large"
-                      sx={{ ml: "20px", mt: "90px" }}
-                      variant="contained"
-                      type="submit"
-                    >
-                      Submit
-                    </Button>
+                    {!readOnly && (
+                      <Button
+                        color={
+                          isObjectEmpty(formik.errors) && isNationalNoValid()
+                            ? "success"
+                            : "error"
+                        }
+                        size="large"
+                        sx={{ ml: "20px", mt: "90px" }}
+                        variant="contained"
+                        type="submit"
+                      >
+                        Submit
+                      </Button>
+                    )}
+                    {children}
                   </div>
                 </div>
               </Paper>

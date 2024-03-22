@@ -19,6 +19,7 @@ public partial class DvldContext : DbContext
     public DbSet<Test> Tests { get; set; }
     public DbSet<TestType> TestTypes { get; set; }
     public DbSet<TestAppointment> TestAppointments { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DvldContext(DbContextOptions<DvldContext> options)
         : base(options)
     {

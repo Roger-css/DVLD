@@ -5,8 +5,8 @@ namespace DVLD.Server.Queries;
 
 public class AddNewPersonQuery : IRequest<bool>
 {
-    public AddNewPersonRequest Person { get; set; }
-    public AddNewPersonQuery(AddNewPersonRequest person)
+    public PersonRequest Person { get; set; }
+    public AddNewPersonQuery(PersonRequest person)
     {
         Person = person;
     }

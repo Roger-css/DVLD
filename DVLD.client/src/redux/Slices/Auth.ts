@@ -1,16 +1,26 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { RootState } from "../Store";
+import { userInfo as user } from "../../Types/User";
 
 type initialStateTy = {
-  jwt: null | string;
+  userInfo: user | null;
 };
 
 const initialState: initialStateTy = {
-  jwt: null,
+  userInfo: null,
 };
 
 const Auth = createSlice({
   initialState,
   name: "auth",
-  reducers: {},
+  reducers: {
+    setUserInfo: (state, { payload }) => {
+      state.userInfo = payload;
+    },
+  },
 });
+export const getCurrentUserInfo = (state: RootState) => state.auth.userInfo;
+export const getCurrentUserImage = (state: RootState) =>
+  state.auth.userInfo?.person?.image;
+export const { setUserInfo } = Auth.actions;
 export default Auth.reducer;

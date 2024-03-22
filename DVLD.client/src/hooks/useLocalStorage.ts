@@ -16,14 +16,14 @@ function useLocalStorage(key: string) {
       console.log(error);
     }
   };
-  const DeleteItem = () => {
+  const deleteItem = () => {
     try {
       localStorage.removeItem(key);
     } catch (error) {
       console.log(error);
     }
   };
-  return { getItem, setItem, DeleteItem };
+  return { getItem, setItem, deleteItem };
 }
 
 export default useLocalStorage;

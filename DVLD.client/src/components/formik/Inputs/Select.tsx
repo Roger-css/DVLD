@@ -14,12 +14,13 @@ type TyProps = {
   name: string;
   options: TyOption[];
   sx?: SxProps;
+  readonly?: boolean;
 };
 function FirstWord(value: string): string {
   return value.split(" ")[0];
 }
 const MySelect = (props: TyProps) => {
-  const { label, name, options, ...rest } = props;
+  const { label, name, options, readonly, ...rest } = props;
   return (
     <div className="form-control">
       <Field name={name}>
@@ -37,6 +38,7 @@ const MySelect = (props: TyProps) => {
                   label={label}
                   labelId={`select-${FirstWord(label)}`}
                   error={!!(form.errors[name] && form.touched[name])}
+                  disabled={readonly}
                 >
                   {options.map((option) => {
                     return (

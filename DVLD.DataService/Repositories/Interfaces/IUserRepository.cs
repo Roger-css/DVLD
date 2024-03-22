@@ -1,15 +1,13 @@
 ﻿using DVLD.Entities.DbSets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using DVLD.Entities.Dtos.Request;
 namespace DVLD.DataService.Repositories.Interfaces;
 
 public interface IUserRepository : IGenericRepository<User>
 {
-    public Task<bool> Login(User entity);
-    public Task<bool> UpdatePassword(User entity);
-    public Task<bool> DeActivateUser(int id);
+    public Task<User?> Login(User entity);
+    public Task<bool> UpdateUser(CreateUserRequest @params);
+    public Task<bool> DeleteUser(int id);
+    public Task<User?> GetUserInfo(string st, string sv);
+    public Task<IEnumerable<User>?> GetFilteredUsers(SearchRequest @params);
+    public Task<bool> CheckPassword(string password, int Id);
 }

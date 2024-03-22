@@ -8,13 +8,13 @@ namespace DVLD.DataService.Repositories;
 
 internal class GenericRepository<T> : IGenericRepository<T> where T : class
 {
-    public readonly ILogger Logger;
-    protected DvldContext _context;
-    protected DbSet<T> _dbSet;
+    protected readonly ILogger _logger;
+    protected readonly DvldContext _context;
+    protected readonly DbSet<T> _dbSet;
 
     public GenericRepository(ILogger logger, DvldContext context)
     {
-        Logger = logger;
+        _logger = logger;
         _context = context;
         _dbSet = context.Set<T>();
     }

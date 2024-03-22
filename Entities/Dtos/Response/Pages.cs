@@ -13,7 +13,7 @@ public class Pages
     public bool HasNext { get; set; }
     public Pages(int @totalCount, int Page, int PageSize)
     {
-        var num = @totalCount / PageSize;
+        int num = @totalCount / PageSize;
         TotalCount = num * PageSize >= totalCount ? num : num + 1;
         HasPrev = Page > 1;
         HasNext = Page < TotalCount;

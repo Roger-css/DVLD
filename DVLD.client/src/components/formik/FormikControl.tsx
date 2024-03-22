@@ -4,8 +4,8 @@ import Input from "./Inputs/Input";
 import RadioButtons from "./Inputs/RadioButtons";
 import Select from "./Inputs/Select";
 import Textarea from "./Inputs/TextArea";
-
 type TyOption = { value: string | number; text: string };
+
 type TyProps = {
   control: "input" | "radio" | "textarea" | "select" | "date" | "checkbox";
   label: string;
@@ -16,6 +16,9 @@ type TyProps = {
   size?: "medium" | "large";
   className?: string;
   handleChange?: (event: string) => void;
+  type?: "text" | "password" | "number" | "email";
+  readonly?: boolean;
+  autoComplete?: string;
 };
 
 const FormikControl = (props: TyProps) => {
@@ -29,12 +32,8 @@ const FormikControl = (props: TyProps) => {
       return <Select options={rest.options || []} {...rest} />;
     case "radio":
       return <RadioButtons options={rest.options || []} {...rest} />;
-    // case "checkbox":
-    //   return <CheckboxGroup {...rest} />;
     case "date":
       return <DatePicker {...rest} />;
-    // case "chakraInput":
-    //   return <ChakraInput {...rest} />;
     default:
       return null;
   }

@@ -22,6 +22,11 @@ internal class PersonConfig : IEntityTypeConfiguration<Person>
         builder.Property(x=> x.Gender).HasColumnType("tinyint")
             .HasConversion(x => (short)x,
             x=> (EnGender) Enum.Parse(typeof(EnGender),x.ToString()));
+        builder
+            .Property(e => e.Email)
+            .HasConversion(
+                v => v != null ? v.ToString() : string.Empty,
+                v => v);
         builder.HasData(new Person
         {
             Id = 1,

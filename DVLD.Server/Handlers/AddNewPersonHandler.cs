@@ -3,13 +3,12 @@ using DVLD.DataService.Repositories.Interfaces;
 using DVLD.Entities.DbSets;
 using DVLD.Server.Queries;
 using MediatR;
-using System.Globalization;
 
 namespace DVLD.Server.Handlers;
 
-public class AddNewPersonHandler : BaseHandler, IRequestHandler<AddNewPersonQuery, bool>
+public class AddNewPersonHandler : BaseHandler<AddNewPersonHandler>, IRequestHandler<AddNewPersonQuery, bool>
 {
-    public AddNewPersonHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+    public AddNewPersonHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<AddNewPersonHandler> logger) : base(unitOfWork, mapper, logger)
     {
     }
 

@@ -1,5 +1,10 @@
 import {
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   List,
   ListItem,
   ListItemButton,
@@ -15,33 +20,16 @@ import {
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { useEffect, useMemo, useState } from "react";
 import PersonDetails from "../../components/PersonDetails";
-import DataTable from "../../components/DataTable";
+import DataTable from "../../components/DataTable.Server";
 import useDebounce from "../../hooks/useDebounce";
-import axios from "../../Api/Axios";
+import usePrivate from "../../hooks/usePrivate";
 import { ColumnDef } from "@tanstack/react-table";
 import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import PsychologyAltIcon from "@mui/icons-material/PsychologyAlt";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import DisplaySettingsIcon from "@mui/icons-material/DisplaySettings";
-type person = {
-  id: number;
-  nationalNo: string;
-  name: string;
-  birthDate: Date;
-  gender: string;
-  phone: string;
-  email: string;
-  nationalityCountry: number;
-};
-interface Filters {
-  [key: string]: string;
-  none: "None";
-  id: "Id";
-  nationalNo: string;
-  name: string;
-  phone: string;
-  email: string;
-}
+import { person, personFilters as Filters } from "../../Types/Person";
+import allFilters from "../../Helpers/allFilters";
 const FilterMode: Filters = {
   none: "None",
   id: "Id",
@@ -50,13 +38,7 @@ const FilterMode: Filters = {
   phone: "Phone",
   email: "Email",
 };
-const allFilters = () => {
-  const arrOfFilters = [];
-  for (const key in FilterMode) {
-    arrOfFilters.push(FilterMode[key]);
-  }
-  return arrOfFilters;
-};
+
 const People = () => {
   const [filter, setFilter] = useState<keyof Filters>(FilterMode.none);
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -69,39 +51,54 @@ const People = () => {
     pageSize: 10,
     orderBy: "asc",
   });
+  const [readOnly, setReadOnly] = useState<boolean>(false);
+  const [modalTitle, setModalTitle] = useState<string>("");
   const [DataSet, setDataSet] = useState<person[]>([]);
   const [pages, setPages] = useState({
     totalCount: 0,
     hasPrev: false,
     hasNext: false,
   });
+  const axios = usePrivate();
+  const DeletePerson = async (id: number) => {
+    if (!(id > 0)) return;
+    try {
+      await axios.delete(`person/${id}`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
-    const abort = new AbortController();
+    const controller = new AbortController();
     const FetchingData = async () => {
       try {
         const FilterString = Object.keys(FilterMode).find(
           (k) => FilterMode[k] === filter
         );
-        const Data = await axios.get(
-          `Person?${
-            filterText
-              ? `searchTermKey=${FilterString}&searchTermValue=${filterText}`
-              : ""
-          }&page=${filterOptions.page}&pageSize=${filterOptions.pageSize}${
-            filterOptions.gender != 0 ? `&gender=${filterOptions.gender}` : ""
-          }&orderBy=${filterOptions.orderBy}`,
-          { signal: abort.signal }
-        );
-        setDataSet(Data.data.allPeople);
-        setPages(Data.data.page);
+        const gender = filterOptions.gender != 0 ? filterOptions.gender : null;
+        const body = {
+          SearchTermKey: filterText ? FilterString : "",
+          SearchTermValue: filterText,
+          page: filterOptions.page,
+          pageSize: filterOptions.pageSize,
+          gender,
+          orderBy: filterOptions.orderBy,
+        };
+        const response = await axios.post("Person", body, {
+          signal: controller.signal,
+        });
+        if (response) {
+          setDataSet(response.data.allPeople);
+          setPages(response.data.page);
+        }
       } catch (error) {
         console.log(error);
       }
     };
-    FetchingData();
-    return () => abort.abort();
+    if (!openModal) FetchingData();
+    return () => controller.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterOptions, Debounced]);
+  }, [filterOptions, Debounced, openModal]);
   const COLUMNS = useMemo(
     (): ColumnDef<person, unknown>[] => [
       {
@@ -152,7 +149,8 @@ const People = () => {
       {
         accessorKey: "birthDate",
         header: "Date Of Birth",
-        cell: ({ getValue }) => getValue(),
+        cell: ({ getValue }) =>
+          new Date(getValue() as string).toLocaleDateString(),
       },
       {
         accessorKey: "phone",
@@ -182,11 +180,19 @@ const People = () => {
           const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(
             null
           );
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          const [openDialog, setOpenDialog] = useState(false);
           const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
             setAnchorEl(event.currentTarget);
           };
           const handleClose = () => {
             setAnchorEl(null);
+          };
+          const handleCloseDialog = () => {
+            setOpenDialog(false);
+          };
+          const handleOpenDialog = () => {
+            setOpenDialog(true);
           };
           const open = Boolean(anchorEl);
           const id = row.original.id;
@@ -204,28 +210,50 @@ const People = () => {
                 onClose={handleClose}
                 anchorOrigin={{
                   vertical: "bottom",
-                  horizontal: "left",
+                  horizontal: "right",
                 }}
               >
                 <List>
                   <ListItem disablePadding>
-                    <ListItemButton onClick={() => setModalData(id)}>
-                      <ListItemText primary="Show Details" />
+                    <ListItemButton
+                      onClick={() => {
+                        setModalData(id);
+                        setReadOnly(true);
+                        setOpenModal(true);
+                        setModalTitle("Person Details");
+                        setAnchorEl(null);
+                      }}
+                    >
                       <ListItemIcon>
                         <PsychologyAltIcon />
                       </ListItemIcon>
+                      <ListItemText primary="Show details" />
                     </ListItemButton>
                   </ListItem>
                   <ListItem disablePadding>
-                    <ListItemIcon>
-                      <DisplaySettingsIcon />
-                    </ListItemIcon>
-                    <ListItemButton>
+                    <ListItemButton
+                      onClick={() => {
+                        setModalData(id);
+                        setReadOnly(false);
+                        setModalTitle("Update person details");
+                        setOpenModal(true);
+                        setAnchorEl(null);
+                      }}
+                    >
+                      <ListItemIcon>
+                        <DisplaySettingsIcon />
+                      </ListItemIcon>
                       <ListItemText primary="Update" />
                     </ListItemButton>
                   </ListItem>
                   <ListItem disablePadding>
-                    <ListItemButton>
+                    <ListItemButton
+                      onClick={() => {
+                        handleOpenDialog();
+                        setFilterOptions((p) => ({ ...p }));
+                        setAnchorEl(null);
+                      }}
+                    >
                       <ListItemIcon>
                         <PersonRemoveIcon />
                       </ListItemIcon>
@@ -234,11 +262,36 @@ const People = () => {
                   </ListItem>
                 </List>
               </Popover>
+              <Dialog open={openDialog}>
+                <DialogTitle id="alert-dialog-title">Are you sure?</DialogTitle>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-description">
+                    Are you sure you want to delete the user with ID {id}?
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleCloseDialog} variant="outlined">
+                    Close
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      DeletePerson(id);
+                      handleCloseDialog();
+                    }}
+                    autoFocus
+                    variant="outlined"
+                    color="error"
+                  >
+                    Delete
+                  </Button>
+                </DialogActions>
+              </Dialog>
             </div>
           );
         },
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [filterOptions.orderBy]
   );
   return (
@@ -267,14 +320,14 @@ const People = () => {
             </Select>
             <div className="flex ml-3">
               <select
-                className="h-10 mx-3 text-center text-white rounded-lg outline-none mainColorBg"
+                className="h-10 mx-3 text-center text-white rounded-lg outline-none people mainColorBg"
                 value={filter}
                 onChange={(e) => {
                   setFilterText("");
                   setFilter(e.target.value);
                 }}
               >
-                {allFilters().map((f, i) => {
+                {allFilters(FilterMode).map((f, i) => {
                   return (
                     <option className="text-white" key={i} value={f}>
                       {f}
@@ -287,6 +340,7 @@ const People = () => {
                   size="small"
                   placeholder={`Search by ${filter}`}
                   value={filterText}
+                  type={filter == FilterMode.id ? "number" : "text"}
                   sx={{ width: "250px" }}
                   onChange={(e) => setFilterText(e.target.value)}
                 />
@@ -297,16 +351,27 @@ const People = () => {
         <Button
           variant="contained"
           className="mainColorBg"
-          onClick={() => setOpenModal(true)}
+          onClick={() => {
+            setModalData(null);
+            setModalTitle("Add new person");
+            setOpenModal(true);
+          }}
         >
           <PersonAddIcon />
         </Button>
       </section>
-      <Modal open={openModal} onClose={() => setOpenModal(false)}>
-        <div>
-          <PersonDetails userId={modalData} />
-        </div>
-      </Modal>
+      {openModal && (
+        <Modal open={true} onClose={() => setOpenModal(false)}>
+          <div>
+            <PersonDetails
+              title={modalTitle}
+              handleClose={setOpenModal}
+              readOnly={readOnly}
+              userId={modalData}
+            />
+          </div>
+        </Modal>
+      )}
       <div>
         <DataTable
           // @ts-expect-error react.Memo problem

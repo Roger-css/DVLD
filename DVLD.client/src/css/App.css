@@ -9,20 +9,40 @@
 }
 
 .HeaderCellUl {
+  pointer-events: none;
   position: absolute;
-  bottom: -40px;
   left: 5px;
   opacity: 0;
-  transition: 0.2s ease-out;
+  transition: 0.2s ease-in;
   border: 1px solid rgb(233, 233, 233);
+  width: 150px;
+  z-index: 1;
+}
+
+.AccSettings {
+  top: -50px;
+}
+
+.Applications {
+  top: -50px;
+  width: 220px;
 }
 
 .ShowingHeaderCellUl {
+  pointer-events: all;
   opacity: 1;
-  bottom: -50px;
   min-height: 40px;
-  min-width: 150px;
+  height: -moz-fit-content;
+  height: fit-content;
   border-radius: 10px;
+}
+
+.ShowingHeaderCellUlAccSettings {
+  top: 50px;
+}
+
+.ShowingHeaderCellUlApplications {
+  top: 50px;
 }
 
 .mainColorBg {
@@ -30,31 +50,19 @@
 }
 
 .mainColorText {
-  color: 59 130 246;
+  color: rgb(59, 130, 246);
 }
 
-option {
+.errorColorBg {
+  background-color: #b71c1c;
+}
+
+.errorColorText {
+  color: #8f1616;
+}
+
+select option {
   background-color: #1d4e89;
-}
-
-.Resizer {
-  position: absolute;
-  width: 5px;
-  height: 100%;
-  right: 0px;
-  top: 0;
-  background-color: #27bbff;
-  opacity: 0;
-  pointer-events: none;
-  border-radius: 8px;
-}
-
-.Resizer.isResizing {
-  background-color: #2eff31;
-}
-
-*:hover > .Resizer {
-  opacity: 1;
 }
 
 .ModalBox {
@@ -79,6 +87,10 @@ option {
 
 .picture-container {
   min-width: 13.5rem;
+}
+
+.LoginUserInfoControl {
+  margin: 10px 0;
 }
 
 * {

@@ -7,10 +7,11 @@ type TyProps = {
   name: string;
   className?: string;
   sx?: SxProps;
+  readonly?: boolean;
 };
 
 const MyTextarea = (props: TyProps) => {
-  const { label, name, ...rest } = props;
+  const { label, name, readonly, ...rest } = props;
   return (
     <div className="form-control max-h-44">
       <FastField id={name} name={name}>
@@ -21,7 +22,7 @@ const MyTextarea = (props: TyProps) => {
                 {...field}
                 {...rest}
                 color="neutral"
-                disabled={false}
+                disabled={readonly}
                 minRows={2}
                 placeholder={label}
                 error={Boolean(form.errors[name] && form.touched[name])}

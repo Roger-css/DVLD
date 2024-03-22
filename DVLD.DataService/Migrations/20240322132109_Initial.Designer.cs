@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DVLD.DataService.Migrations
 {
     [DbContext(typeof(DvldContext))]
-    [Migration("20240205170629_meh")]
-    partial class meh
+    [Migration("20240322132109_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -68,10 +68,7 @@ namespace DVLD.DataService.Migrations
             modelBuilder.Entity("DVLD.Entities.DbSets.ApplicationType", b =>
                 {
                     b.Property<int>("ApplicationTypeId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ApplicationTypeId"));
 
                     b.Property<float>("ApplicationTypeFees")
                         .HasColumnType("real");
@@ -83,6 +80,50 @@ namespace DVLD.DataService.Migrations
                     b.HasKey("ApplicationTypeId");
 
                     b.ToTable("ApplicationTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            ApplicationTypeId = 1,
+                            ApplicationTypeFees = 15f,
+                            ApplicationTypeTitle = "New Local Driving License Service"
+                        },
+                        new
+                        {
+                            ApplicationTypeId = 2,
+                            ApplicationTypeFees = 7f,
+                            ApplicationTypeTitle = "Renew Driving License Service"
+                        },
+                        new
+                        {
+                            ApplicationTypeId = 3,
+                            ApplicationTypeFees = 10f,
+                            ApplicationTypeTitle = "Replacement for a Lost Driving License"
+                        },
+                        new
+                        {
+                            ApplicationTypeId = 4,
+                            ApplicationTypeFees = 5f,
+                            ApplicationTypeTitle = "Replacement for a Damaged Driving License"
+                        },
+                        new
+                        {
+                            ApplicationTypeId = 5,
+                            ApplicationTypeFees = 15f,
+                            ApplicationTypeTitle = "Release Detained Driving License"
+                        },
+                        new
+                        {
+                            ApplicationTypeId = 6,
+                            ApplicationTypeFees = 51f,
+                            ApplicationTypeTitle = "New International License"
+                        },
+                        new
+                        {
+                            ApplicationTypeId = 7,
+                            ApplicationTypeFees = 5f,
+                            ApplicationTypeTitle = "Retake Test"
+                        });
                 });
 
             modelBuilder.Entity("DVLD.Entities.DbSets.Country", b =>
@@ -1386,6 +1427,44 @@ namespace DVLD.DataService.Migrations
                         });
                 });
 
+            modelBuilder.Entity("DVLD.Entities.DbSets.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AddedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("JwtId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("DVLD.Entities.DbSets.Test", b =>
                 {
                     b.Property<int>("Id")
@@ -1708,6 +1787,17 @@ namespace DVLD.DataService.Migrations
                     b.Navigation("Country");
                 });
 
+            modelBuilder.Entity("DVLD.Entities.DbSets.RefreshToken", b =>
+                {
+                    b.HasOne("DVLD.Entities.DbSets.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("DVLD.Entities.DbSets.Test", b =>
                 {
                     b.HasOne("DVLD.Entities.DbSets.User", "User")
@@ -1794,8 +1884,7 @@ namespace DVLD.DataService.Migrations
                 {
                     b.Navigation("InternationalDrivingLicense");
 
-                    b.Navigation("License")
-                        .IsRequired();
+                    b.Navigation("License");
                 });
 
             modelBuilder.Entity("DVLD.Entities.DbSets.License", b =>
@@ -1852,6 +1941,8 @@ namespace DVLD.DataService.Migrations
                     b.Navigation("InternationalDLAsCreated");
 
                     b.Navigation("LicensesCreated");
+
+                    b.Navigation("RefreshTokens");
 
                     b.Navigation("TestAppointmentsCreated");
 

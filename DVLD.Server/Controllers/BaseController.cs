@@ -6,16 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVLD.Server.Controllers;
 [ApiController()]
 [Route("api/[Controller]")]
-public class BaseController : ControllerBase
+public class BaseController<T> : ControllerBase
 {
     protected readonly IUnitOfWork _unitOfWork;
-    protected readonly IMapper _mapper;
     protected readonly IMediator _mediator;
+    protected readonly ILogger<T> _logger;
 
-    public BaseController(IUnitOfWork unitOfWork, IMapper mapper, IMediator mediator)
+    public BaseController(IUnitOfWork unitOfWork, IMediator mediator, ILogger<T> logger)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _mediator = mediator;
+        _logger = logger;
     }
 }

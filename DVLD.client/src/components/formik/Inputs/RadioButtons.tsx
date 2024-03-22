@@ -14,21 +14,22 @@ type TyProps = {
   name: string;
   options: TyOption[];
   flex?: boolean;
+  readonly?: boolean;
 };
 function FirstWord(value: string): string {
   return value.split(" ")[0];
 }
 
 const RadioButtons = (props: TyProps) => {
-  const { label, name, options, flex = true, ...rest } = props;
+  const { label, name, options, flex = true, readonly, ...rest } = props;
   return (
     <div className="form-control">
       <Field name={name}>
         {({ field }: FieldProps) => {
           return (
             <>
-              <FormControl>
-                <FormLabel id={`select-${FirstWord(label)}`}>gender</FormLabel>
+              <FormControl disabled={readonly}>
+                <FormLabel id={`select-${FirstWord(label)}`}>{label}</FormLabel>
                 <RadioGroup
                   row={flex}
                   aria-labelledby={`select-${FirstWord(label)}`}

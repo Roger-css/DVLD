@@ -1,21 +1,3 @@
-option {
+select option {
   background-color: #1d4e89;
-}
-.Resizer {
-  position: absolute;
-  width: 5px;
-  height: 100%;
-  right: 0px;
-  top: 0;
-  background-color: #27bbff;
-  opacity: 0;
-  user-select: none;
-  border-radius: 6px;
-  touch-action: none;
-}
-.Resizer.isResizing {
-  background-color: #2eff31;
-}
-*:hover > .Resizer {
-  opacity: 1;
 }
