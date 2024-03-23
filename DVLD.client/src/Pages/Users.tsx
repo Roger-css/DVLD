@@ -127,9 +127,6 @@ const Index = () => {
               ) : (
                 <ExpandMore />
               )}
-              {
-                //need some adjustments
-              }
             </Button>
           );
         },

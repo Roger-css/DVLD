@@ -150,14 +150,12 @@ const UserDetails = ({
     }
     return () => {
       controller.abort();
-      if (RefCopy) {
-        RefCopy.removeEventListener("keypress", ListenToEnterKey);
-      }
+      RefCopy?.removeEventListener("keypress", ListenToEnterKey);
     };
   }, [axios, userId, refCopy]);
 
   return (
-    <div className=" ModalBox">
+    <div className="ModalBox">
       <h1 className="text-2xl text-center">{title}</h1>
       <div></div>
       <TabContext value={tab}>

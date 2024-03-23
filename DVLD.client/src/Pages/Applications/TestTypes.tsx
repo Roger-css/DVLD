@@ -21,7 +21,7 @@ import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { FaEdit } from "react-icons/fa";
 import ApplicationTypeDetails from "../../components/ApplicationTypeDetails";
 import usePrivate from "../../hooks/usePrivate";
-const ApplicationTypes = () => {
+const TestTypes = () => {
   const axios = usePrivate();
   const dispatch = useDispatch();
   const applicationTypesArr = useSelector(getApplicationTypes) ?? [];
@@ -150,5 +150,4 @@ const ApplicationTypes = () => {
     </div>
   );
 };
-
-export default ApplicationTypes;
+export default TestTypes;

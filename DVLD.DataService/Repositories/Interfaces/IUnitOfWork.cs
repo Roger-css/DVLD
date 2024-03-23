@@ -7,6 +7,6 @@ public interface IUnitOfWork
     IDriverRepository DriverRepository { get; set; }
     ICountryRepository CountryRepository { get; set; }
     IRefreshTokenRepository RefreshTokenRepository { get; set; }
-    IApplicationTypesRepository ApplicationTypesRepository { get; set; }
+    IApplicationRepository ApplicationRepository { get; set; }
     Task CompleteAsync();
 }

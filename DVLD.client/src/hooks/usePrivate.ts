@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import useLocalStorage from "./useLocalStorage";
 import axios from "../Api/Axios";
+import ax from "axios";
 import useRefresh from "./useRefresh";
 
 const usePrivate = () => {
@@ -10,6 +11,9 @@ const usePrivate = () => {
     const responseInterceptor = axios.interceptors.response.use(
       (ful) => ful,
       async (err) => {
+        if (ax.isCancel(err)) {
+          return;
+        }
         const pastReq = err?.config;
         if (err?.response?.status == 401 && !pastReq?.sent) {
           const token = await refresh();

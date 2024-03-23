@@ -9,10 +9,6 @@ import Loading from "../components/UI/Loading";
 import { jwtDecode } from "jwt-decode";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { getCurrentUserInfo, setUserInfo } from "../redux/Slices/Auth";
-import {
-  getApplicationTypes,
-  setApplicationTypes,
-} from "../redux/Slices/Applications";
 
 const InitialData = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -20,7 +16,6 @@ const InitialData = () => {
   const dispatch = useDispatch();
   const countries = useSelector(getAllCountries);
   const userInfo = useSelector(getCurrentUserInfo);
-  const applicationTypes = useSelector(getApplicationTypes);
   const navigate = useNavigate();
   const axios = usePrivate();
   useEffect(() => {
@@ -41,23 +36,6 @@ const InitialData = () => {
     countries ? setIsLoading(false) : fetchData();
     return () => countryController.abort();
   }, [axios, countries, dispatch, navigate]);
-  useEffect(() => {
-    const appTypesController = new AbortController();
-    const fetchAppTypes = async () => {
-      try {
-        const appTypes = await axios.get("Applications/types", {
-          signal: appTypesController.signal,
-        });
-        dispatch(setApplicationTypes(appTypes?.data));
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    applicationTypes ? setIsLoading(false) : fetchAppTypes();
-    return () => appTypesController.abort();
-  }, [dispatch, navigate, axios, applicationTypes]);
   useEffect(() => {
     const userController = new AbortController();
     const fetchUserInfo = async () => {
