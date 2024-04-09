@@ -18,6 +18,7 @@ public class UnitOfWork : IUnitOfWork
     public ICountryRepository CountryRepository { get ; set; }
     public IRefreshTokenRepository RefreshTokenRepository { get; set; }
     public IApplicationRepository ApplicationRepository { get; set; }
+    public ITestRepository TestRepository { get; set; }
 
     public UnitOfWork(DvldContext context, ILoggerFactory loggerFactory)
     {
@@ -28,6 +29,7 @@ public class UnitOfWork : IUnitOfWork
         PersonRepository = new PersonRepository(logger, context);
         RefreshTokenRepository = new RefreshTokenRepository(logger, context);
         ApplicationRepository = new ApplicationRepository(logger, context);
+        TestRepository = new TestRepository(logger, context);
     }
 
     public async Task CompleteAsync()

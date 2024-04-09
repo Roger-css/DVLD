@@ -1,12 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import DataTable from "../../components/DataTable.Memory";
 import { ColumnDef } from "@tanstack/react-table";
-import { applicationTypes } from "../../Types/Applications";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getApplicationTypes,
-  setApplicationTypes,
-} from "../../redux/Slices/Applications";
 import {
   Button,
   List,
@@ -19,27 +14,30 @@ import {
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { FaEdit } from "react-icons/fa";
-import ApplicationTypeDetails from "../../components/ApplicationTypeDetails";
 import usePrivate from "../../hooks/usePrivate";
+import { testType } from "../../Types/Test";
+import TestTypeDetails from "../../components/Modals/TestTypeDetails";
+import { getTestTypes, setTestTypes } from "../../redux/Slices/Tests";
 const TestTypes = () => {
   const axios = usePrivate();
   const dispatch = useDispatch();
-  const applicationTypesArr = useSelector(getApplicationTypes) ?? [];
+  const testTypesArr = useSelector(getTestTypes) ?? [];
   const [modal, setModal] = useState<boolean>(false);
-  const [modalData, setModalData] = useState<applicationTypes | null>(null);
+  const [modalData, setModalData] = useState<testType | null>(null);
   useEffect(() => {
     const fetching = async () => {
-      const data = await axios.get("Applications/types");
+      const data = await axios.get("Tests/Types");
       if (data) {
-        dispatch(setApplicationTypes(data.data));
+        dispatch(setTestTypes(data.data));
       }
     };
-    fetching();
+    testTypesArr ? fetching() : false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [axios, dispatch, modal]);
   const COLUMNS = useMemo(
-    (): ColumnDef<applicationTypes, unknown>[] => [
+    (): ColumnDef<testType, unknown>[] => [
       {
-        accessorKey: "applicationTypeId",
+        accessorKey: "id",
         header: ({ header }) => (
           <Button
             onClick={() =>
@@ -59,16 +57,21 @@ const TestTypes = () => {
         size: 50,
       },
       {
-        accessorKey: "applicationTypeTitle",
+        accessorKey: "testTypeTitle",
         header: "Title",
         cell: ({ getValue }) => getValue(),
       },
       {
-        accessorKey: "applicationTypeFees",
+        accessorKey: "testTypeDescription",
+        header: "Description",
+        cell: ({ getValue }) => getValue(),
+      },
+      {
+        accessorKey: "testTypeFees",
         header: "Fees",
         cell: ({ getValue }) => {
           const numberOfDigits = (getValue() as number).toString().length;
-          return (getValue() as number).toPrecision(numberOfDigits + 2);
+          return (getValue() as number).toPrecision(numberOfDigits + 4);
         },
       },
       {
@@ -131,19 +134,17 @@ const TestTypes = () => {
   );
   return (
     <div className="w-10/12 mx-auto">
-      <h1 className="my-6 text-3xl font-bold text-center">
-        Manage Application Types
-      </h1>
+      <h1 className="my-6 text-3xl font-bold text-center">Manage Test Types</h1>
       <Modal open={modal} onClose={() => setModal(false)}>
         <div>
-          <ApplicationTypeDetails
+          <TestTypeDetails
             handleClose={() => setModal(false)}
             initialValues={modalData}
           />
         </div>
       </Modal>
       <DataTable
-        Data={applicationTypesArr}
+        Data={testTypesArr}
         // @ts-expect-error react.Memo problem
         column={COLUMNS}
       />

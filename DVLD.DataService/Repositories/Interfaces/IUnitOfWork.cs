@@ -8,5 +8,6 @@ public interface IUnitOfWork
     ICountryRepository CountryRepository { get; set; }
     IRefreshTokenRepository RefreshTokenRepository { get; set; }
     IApplicationRepository ApplicationRepository { get; set; }
+    ITestRepository TestRepository { get; set; }
     Task CompleteAsync();
 }

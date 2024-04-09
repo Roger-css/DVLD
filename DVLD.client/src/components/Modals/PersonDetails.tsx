@@ -3,16 +3,16 @@ import { Form, Formik, FormikValues } from "formik";
 import { ReactNode, useEffect, useState } from "react";
 import * as yup from "yup";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
-import FormikControl from "./formik/FormikControl";
+import FormikControl from "../formik/FormikControl";
 import dayjs, { Dayjs } from "dayjs";
 import { useSelector } from "react-redux";
-import usePrivate from "../hooks/usePrivate";
-import { getAllCountries } from "../redux/Slices/Countries";
-import useDebounce from "../hooks/useDebounce";
-import TextError from "./formik/TextError";
-import isObjectEmpty from "../Helpers/IsObjEmpty";
-import ConvertBinaryToImage from "../Helpers/ConvertBinaryToImage";
-import { personInfo } from "../Types/Person";
+import usePrivate from "../../hooks/usePrivate";
+import { getAllCountries } from "../../redux/Slices/Countries";
+import useDebounce from "../../hooks/useDebounce";
+import TextError from "../formik/TextError";
+import isObjectEmpty from "../../Helpers/IsObjEmpty";
+import ConvertBinaryToImage from "../../Helpers/ConvertBinaryToImage";
+import { personInfo } from "../../Types/Person";
 
 type TyInitialValues = {
   id: number | null;
@@ -240,7 +240,7 @@ const PersonDetails = ({
                 <div className="text-xl uppercase pl-14">
                   id: {formik.values.id || "??"}
                 </div>
-                <div className="flex justify-between mt-5">
+                <div className="flex justify-between gap-2 mt-5">
                   <FormikControl
                     control="input"
                     name="firstName"

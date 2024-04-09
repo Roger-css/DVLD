@@ -4,7 +4,7 @@ import { Avatar, Button, Modal } from "@mui/material";
 import { useSelector } from "react-redux";
 import { getCurrentUserImage } from "../redux/Slices/Auth";
 import ConvertBinaryToImage from "../Helpers/ConvertBinaryToImage";
-import UserDetails from "../components/UserDetails";
+import UserDetails from "../components/Modals/UserDetails";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate, useLocation } from "react-router-dom";
 import useLocalStorage from "../hooks/useLocalStorage";
@@ -122,7 +122,7 @@ const Header = () => {
               fullWidth
               onClick={() => {
                 handleClick("");
-                navigate("");
+                navigate("TestTypes");
               }}
               sx={{
                 fontSize: "12px",

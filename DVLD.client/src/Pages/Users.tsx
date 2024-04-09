@@ -30,7 +30,7 @@ import usePrivate from "../hooks/usePrivate";
 import DataTable from "../components/DataTable.Memory";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import WbSunnyIcon from "@mui/icons-material/WbSunny";
-import UserDetails from "../components/UserDetails";
+import UserDetails from "../components/Modals/UserDetails";
 interface Filters {
   [key: string]: string;
   none: string;

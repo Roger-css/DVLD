@@ -17,4 +17,15 @@ internal class TestRepository : GenericRepository<TestAppointment>, ITestReposit
     {
         return await _context.TestTypes.ToListAsync();
     }
+
+    public async Task<bool> UpdateTestType(TestType test)
+    {
+        var entity = await _context.TestTypes.FirstOrDefaultAsync(e => e.Id == test.Id);
+        if (entity == null)
+            return false;
+        entity.TestTypeTitle = test.TestTypeTitle;
+        entity.TestTypeDescription = test.TestTypeDescription;
+        entity.TestTypeFees = test.TestTypeFees;
+        return true;
+    }
 }

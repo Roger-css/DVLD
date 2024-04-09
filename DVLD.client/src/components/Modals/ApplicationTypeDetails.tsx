@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import * as yup from "yup";
-import { applicationTypes } from "../Types/Applications";
+import { applicationTypes } from "../../Types/Applications";
 import { Paper, Button, Typography } from "@mui/material";
 import { Formik, Form, FormikValues } from "formik";
-import isObjectEmpty from "../Helpers/IsObjEmpty";
-import FormikControl from "./formik/FormikControl";
-import usePrivate from "../hooks/usePrivate";
+import isObjectEmpty from "../../Helpers/IsObjEmpty";
+import FormikControl from "../formik/FormikControl";
+import usePrivate from "../../hooks/usePrivate";
 
 type TyProps = {
   initialValues: applicationTypes | null;

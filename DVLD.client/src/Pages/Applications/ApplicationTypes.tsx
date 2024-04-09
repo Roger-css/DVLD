@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { FaEdit } from "react-icons/fa";
-import ApplicationTypeDetails from "../../components/ApplicationTypeDetails";
+import ApplicationTypeDetails from "../../components/Modals/ApplicationTypeDetails";
 import usePrivate from "../../hooks/usePrivate";
 const ApplicationTypes = () => {
   const axios = usePrivate();
@@ -34,7 +34,8 @@ const ApplicationTypes = () => {
         dispatch(setApplicationTypes(data.data));
       }
     };
-    fetching();
+    applicationTypesArr ? fetching() : false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [axios, dispatch, modal]);
   const COLUMNS = useMemo(
     (): ColumnDef<applicationTypes, unknown>[] => [

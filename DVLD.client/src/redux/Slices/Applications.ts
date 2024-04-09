@@ -4,12 +4,10 @@ import { applicationTypes } from "../../Types/Applications";
 
 type initialStateTy = {
   applicationTypes: applicationTypes[] | null;
-  testTypes: testTypes[] | null;
 };
 
 const initialState: initialStateTy = {
   applicationTypes: null,
-  testTypes: null,
 };
 
 const Applications = createSlice({
