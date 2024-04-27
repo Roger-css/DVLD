@@ -13,5 +13,6 @@
         public User User { get; set; }
         public bool IsLocked { get; set; }
         public Test Test { get; set; }
+        public int RetakeTestApplicationId { get; set; }
     }
 }

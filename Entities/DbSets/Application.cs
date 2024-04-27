@@ -11,7 +11,7 @@ public class Application
     public DateTime CreatedAt { set; get; }
     public int ApplicationTypeId { get; set; }
     public ApplicationType ApplicationType { get; set; }
-    public EnStatus ApplicationStatus { get; set; }
+    public EnApplicationStatus ApplicationStatus { get; set; }
     public DateTime LastStatusDate { set; get; }
     public float PaidFees { set; get; }
     public int CreatedByUserId { set; get; }

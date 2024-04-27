@@ -33,7 +33,6 @@ type Props<TColumn, TData> = {
   column: ColumnDef<TData, TColumn>[];
   Data: TData[];
   children?: ReactNode;
-  filteringOptions: FilterOptions;
   handleFiltersChange: React.Dispatch<React.SetStateAction<FilterOptions>>;
   pages: tyPages;
 };

@@ -7,10 +7,14 @@ import TabList from "@mui/lab/TabList";
 import usePrivate from "../../hooks/usePrivate";
 import { LoginInfo } from "../../Types/User";
 import { personFilters as Filters, personInfo } from "../../Types/Person";
-import allFilters from "../../Helpers/allFilters";
+import allFilters from "../../Utils/allFilters";
 import LoginUserInfo from "./loginUserInfo";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import CloseIcon from "@mui/icons-material/Close";
+/**
+ * need to be updated but I am too lazy to do this
+ * the update is using the new DoublyTabs component
+ */
 type TyProps = {
   userId: number | null;
   readOnly?: boolean;
@@ -224,7 +228,7 @@ const UserDetails = ({
           </div>
           <PersonDetails
             title=""
-            userId={null}
+            personId={null}
             readOnly
             modal={false}
             details={dataSet}

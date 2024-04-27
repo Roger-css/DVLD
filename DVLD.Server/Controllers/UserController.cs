@@ -244,7 +244,7 @@ public class UserController : BaseController<UserController>
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new(JwtRegisteredClaimNames.Iat, DateTime.Now.ToUniversalTime().ToString()),
             }),
-            Expires = DateTime.Now.AddDays(10), //FOR dev only
+            Expires = DateTime.Now.AddHours(1), //FOR dev only
             TokenType = JwtConstants.TokenType,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(SecurityKey),
             SecurityAlgorithms.HmacSha256)

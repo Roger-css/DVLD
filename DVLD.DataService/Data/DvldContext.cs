@@ -1,4 +1,5 @@
 ﻿using DVLD.Entities.DbSets;
+using DVLD.Entities.Views;
 using Microsoft.EntityFrameworkCore;
 
 namespace DVLD.DataService.Data;
@@ -20,6 +21,7 @@ public partial class DvldContext : DbContext
     public DbSet<TestType> TestTypes { get; set; }
     public DbSet<TestAppointment> TestAppointments { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<LDLAView> LDLAView { get; set; }
     public DvldContext(DbContextOptions<DvldContext> options)
         : base(options)
     {

@@ -9,6 +9,7 @@ import Loading from "../components/UI/Loading";
 import { jwtDecode } from "jwt-decode";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { getCurrentUserInfo, setUserInfo } from "../redux/Slices/Auth";
+import { getLicenseClasses, setLicenseClasses } from "../redux/Slices/License";
 
 const InitialData = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -16,6 +17,7 @@ const InitialData = () => {
   const dispatch = useDispatch();
   const countries = useSelector(getAllCountries);
   const userInfo = useSelector(getCurrentUserInfo);
+  const appClasses = useSelector(getLicenseClasses);
   const navigate = useNavigate();
   const axios = usePrivate();
   useEffect(() => {
@@ -59,6 +61,24 @@ const InitialData = () => {
     userInfo ? setIsLoading(false) : fetchUserInfo();
     return () => userController.abort();
   }, [dispatch, navigate, axios, userInfo, getItem]);
+  useEffect(() => {
+    const userController = new AbortController();
+    const fetchUserInfo = async () => {
+      try {
+        // Getting Application classes
+        const AppClasses = await axios.get("License/classes", {
+          signal: userController.signal,
+        });
+        dispatch(setLicenseClasses(AppClasses?.data));
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    appClasses ? setIsLoading(false) : fetchUserInfo();
+    return () => userController.abort();
+  }, [dispatch, axios, appClasses]);
   return (
     <React.Fragment>
       <Header />

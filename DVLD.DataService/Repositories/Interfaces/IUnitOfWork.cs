@@ -9,5 +9,6 @@ public interface IUnitOfWork
     IRefreshTokenRepository RefreshTokenRepository { get; set; }
     IApplicationRepository ApplicationRepository { get; set; }
     ITestRepository TestRepository { get; set; }
+    ILicenseRepository LicenseRepository { get; set; }
     Task CompleteAsync();
 }

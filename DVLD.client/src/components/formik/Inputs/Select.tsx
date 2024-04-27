@@ -15,6 +15,7 @@ type TyProps = {
   options: TyOption[];
   sx?: SxProps;
   readonly?: boolean;
+  className?: string;
 };
 function FirstWord(value: string): string {
   return value.split(" ")[0];
@@ -22,7 +23,7 @@ function FirstWord(value: string): string {
 const MySelect = (props: TyProps) => {
   const { label, name, options, readonly, ...rest } = props;
   return (
-    <div className="form-control">
+    <div className={"form-control " + props.className}>
       <Field name={name}>
         {({ field, form }: FieldProps) => {
           return (

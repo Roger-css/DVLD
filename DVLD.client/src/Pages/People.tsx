@@ -19,17 +19,17 @@ import {
 } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { useEffect, useMemo, useState } from "react";
-import PersonDetails from "../../components/Modals/PersonDetails";
-import DataTable from "../../components/DataTable.Server";
-import useDebounce from "../../hooks/useDebounce";
-import usePrivate from "../../hooks/usePrivate";
+import PersonDetails from "../components/Modals/PersonDetails";
+import DataTable from "../components/DataTable.Server";
+import useDebounce from "../hooks/useDebounce";
+import usePrivate from "../hooks/usePrivate";
 import { ColumnDef } from "@tanstack/react-table";
 import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import PsychologyAltIcon from "@mui/icons-material/PsychologyAlt";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import DisplaySettingsIcon from "@mui/icons-material/DisplaySettings";
-import { person, personFilters as Filters } from "../../Types/Person";
-import allFilters from "../../Helpers/allFilters";
+import { person, personFilters as Filters } from "../Types/Person";
+import allFilters from "../Utils/allFilters";
 const FilterMode: Filters = {
   none: "None",
   id: "Id",
@@ -87,10 +87,8 @@ const People = () => {
         const response = await axios.post("Person", body, {
           signal: controller.signal,
         });
-        if (response) {
-          setDataSet(response.data.allPeople);
-          setPages(response.data.page);
-        }
+        setDataSet(response.data.allPeople);
+        setPages(response.data.page);
       } catch (error) {
         console.log(error);
       }
@@ -367,7 +365,7 @@ const People = () => {
               title={modalTitle}
               handleClose={setOpenModal}
               readOnly={readOnly}
-              userId={modalData}
+              personId={modalData}
             />
           </div>
         </Modal>

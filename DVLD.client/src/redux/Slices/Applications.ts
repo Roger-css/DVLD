@@ -10,9 +10,9 @@ const initialState: initialStateTy = {
   applicationTypes: null,
 };
 
-const Applications = createSlice({
+const applications = createSlice({
   initialState,
-  name: "auth",
+  name: "application",
   reducers: {
     setApplicationTypes: (state, { payload }) => {
       state.applicationTypes = payload;
@@ -22,5 +22,5 @@ const Applications = createSlice({
 
 export const getApplicationTypes = (state: RootState) =>
   state.applications.applicationTypes;
-export const { setApplicationTypes } = Applications.actions;
-export default Applications.reducer;
+export const { setApplicationTypes } = applications.actions;
+export default applications.reducer;

@@ -10,8 +10,8 @@ import usePrivate from "../../hooks/usePrivate";
 import { getAllCountries } from "../../redux/Slices/Countries";
 import useDebounce from "../../hooks/useDebounce";
 import TextError from "../formik/TextError";
-import isObjectEmpty from "../../Helpers/IsObjEmpty";
-import ConvertBinaryToImage from "../../Helpers/ConvertBinaryToImage";
+import isObjectEmpty from "../../Utils/IsObjEmpty";
+import ConvertBinaryToImage from "../../Utils/ConvertBinaryToImage";
 import { personInfo } from "../../Types/Person";
 
 type TyInitialValues = {
@@ -28,7 +28,7 @@ type TyInitialValues = {
   address: string;
 };
 type TyProps = {
-  userId: number | null;
+  personId?: number | null;
   readOnly?: boolean;
   handleClose?: React.Dispatch<React.SetStateAction<boolean>>;
   modal?: boolean;
@@ -59,7 +59,7 @@ const gender: TyOption[] = [
 ];
 
 const PersonDetails = ({
-  userId,
+  personId,
   readOnly,
   handleClose,
   modal = true,
@@ -149,7 +149,7 @@ const PersonDetails = ({
     }
     formData.append("nationalNo", nationalNo);
     try {
-      if (userId !== null) {
+      if (personId !== null) {
         await axios.put("Person/Update", formData);
       } else {
         formData.delete("id");
@@ -196,7 +196,7 @@ const PersonDetails = ({
       try {
         const body = {
           SearchTermKey: "Id",
-          SearchTermValue: userId?.toString(),
+          SearchTermValue: personId?.toString(),
         };
         const { data } = await axios.post(`/Person/Get`, body);
         setFormikInitialValues(data);
@@ -206,17 +206,17 @@ const PersonDetails = ({
         console.log(error);
       }
     };
-    userId ? FetchData() : false;
+    personId ? FetchData() : false;
     if (details) {
       url = setFormikInitialValues(details, true);
     }
-    if (!details && !userId) {
+    if (!details && !personId) {
       refactor();
     }
     return () => {
       if (url !== "") return URL.revokeObjectURL(url);
     };
-  }, [details, userId, axios]);
+  }, [details, personId, axios]);
 
   return (
     <main className={modal ? "ModalBox" : ""}>
@@ -224,7 +224,7 @@ const PersonDetails = ({
         initialValues={initialValues}
         validationSchema={ValidationSchema}
         onSubmit={onSubmitting}
-        validateOnChange={userId ? false : true}
+        validateOnChange={personId ? false : true}
         enableReinitialize
       >
         {(formik) => {

@@ -15,7 +15,7 @@ namespace DVLD.Server.Handlers
 
         public async Task<IEnumerable<ApplicationType>?> Handle(GetApplicationTypesQuery request, CancellationToken cancellationToken)
         {
-            return await _unitOfWork.ApplicationRepository.GetAll();
+            return await _unitOfWork.ApplicationRepository.GetAllTypes();
         }
     }
 }

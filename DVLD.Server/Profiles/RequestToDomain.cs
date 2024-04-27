@@ -12,6 +12,7 @@ public class RequestToDomain : Profile
     public RequestToDomain()
     {
         CreateMap<UserLoginRequest, User>();
+        CreateMap<CreateLDLARequest, ApplicationRequest>();
         CreateMap<PersonRequest, Person>()
             .ForMember(dest => dest.Id, (opt) => opt.MapFrom(src => src.id))
             .ForMember(dest => dest.FirstName, (opt) => opt.MapFrom(src => src.firstName))

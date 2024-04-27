@@ -23,7 +23,7 @@ internal class ApplicationConfig : IEntityTypeConfiguration<Application>
 
         builder.Property(x => x.ApplicationStatus).HasConversion(
             x => (short)x,
-            x => (EnStatus)Enum.Parse(typeof(EnStatus), x.ToString()));
+            x => (EnApplicationStatus)Enum.Parse(typeof(EnApplicationStatus), x.ToString()));
         builder.Property(x => x.PaidFees).HasColumnType("smallmoney");
     }
 }

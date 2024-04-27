@@ -3,7 +3,7 @@ import HeaderCell from "../components/UI/HeaderCell";
 import { Avatar, Button, Modal } from "@mui/material";
 import { useSelector } from "react-redux";
 import { getCurrentUserImage } from "../redux/Slices/Auth";
-import ConvertBinaryToImage from "../Helpers/ConvertBinaryToImage";
+import ConvertBinaryToImage from "../Utils/ConvertBinaryToImage";
 import UserDetails from "../components/Modals/UserDetails";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -13,9 +13,10 @@ import DisplaySettingsIcon from "@mui/icons-material/DisplaySettings";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { FaRegNewspaper } from "react-icons/fa";
-import { PiNewspaperClippingDuotone } from "react-icons/pi";
-import { TbLicenseOff, TbLicense } from "react-icons/tb";
+import { TbLicenseOff } from "react-icons/tb";
 import { GiPapers } from "react-icons/gi";
+import Dls from "./ApplicationsList/DLS";
+import ManageApplications from "./ApplicationsList/ManageApplications";
 const Header = () => {
   const Image = useSelector(getCurrentUserImage);
   const { getItem, deleteItem } = useLocalStorage("token");
@@ -31,30 +32,21 @@ const Header = () => {
       Title: "Application",
       SubList: [
         {
+          title: <Dls handleClick={() => handleClick("")} />,
+        },
+        {
           title: (
-            <Button
-              endIcon={<TbLicense />}
-              fullWidth
-              onClick={() => {
+            <ManageApplications
+              handleClick={() => {
                 handleClick("");
-                navigate("");
               }}
-              sx={{
-                fontSize: "12px",
-                fontWeight: "bold",
-                color: "rgba(0, 0, 0, 0.54)",
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              Driving license service
-            </Button>
+            />
           ),
         },
         {
           title: (
             <Button
-              endIcon={<PiNewspaperClippingDuotone />}
+              startIcon={<TbLicenseOff />}
               fullWidth
               onClick={() => {
                 handleClick("");
@@ -66,27 +58,7 @@ const Header = () => {
                 color: "rgba(0, 0, 0, 0.54)",
                 display: "flex",
                 justifyContent: "space-between",
-              }}
-            >
-              Manage Applications
-            </Button>
-          ),
-        },
-        {
-          title: (
-            <Button
-              endIcon={<TbLicenseOff />}
-              fullWidth
-              onClick={() => {
-                handleClick("");
-                navigate("");
-              }}
-              sx={{
-                fontSize: "12px",
-                fontWeight: "bold",
-                color: "rgba(0, 0, 0, 0.54)",
-                display: "flex",
-                justifyContent: "space-between",
+                pr: "50px",
               }}
             >
               Detain Licenses
@@ -96,7 +68,7 @@ const Header = () => {
         {
           title: (
             <Button
-              endIcon={<FaRegNewspaper />}
+              startIcon={<FaRegNewspaper />}
               fullWidth
               onClick={() => {
                 handleClick("");
@@ -108,7 +80,7 @@ const Header = () => {
                 color: "rgba(0, 0, 0, 0.54)",
                 display: "flex",
                 justifyContent: "space-between",
-                textAlign: "start",
+                textAlign: "center",
               }}
             >
               Manage Application Types
@@ -118,7 +90,7 @@ const Header = () => {
         {
           title: (
             <Button
-              endIcon={<GiPapers />}
+              startIcon={<GiPapers />}
               fullWidth
               onClick={() => {
                 handleClick("");
@@ -130,6 +102,7 @@ const Header = () => {
                 color: "rgba(0, 0, 0, 0.54)",
                 display: "flex",
                 justifyContent: "space-between",
+                pr: "30px",
               }}
             >
               Manage Test Types
@@ -250,7 +223,7 @@ const Header = () => {
       console.log(error);
     }
   };
-  const handleClick = (title: string) => {
+  function handleClick(title: string) {
     setLiComps((prev) =>
       prev.map((item) => {
         if (item.Title === title) {
@@ -261,7 +234,7 @@ const Header = () => {
         return item;
       })
     );
-  };
+  }
   const activeList = () => LiComps.find((e) => e.focused)?.Title;
   useEffect(() => {
     document.getElementById("mainBody")?.addEventListener("click", () => {

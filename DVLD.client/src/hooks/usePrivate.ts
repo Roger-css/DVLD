@@ -21,7 +21,7 @@ const usePrivate = () => {
           pastReq.sent = true;
           return axios(pastReq);
         }
-        Promise.reject(err);
+        return Promise.reject(err);
       }
     );
     const requestInterceptor = axios.interceptors.request.use(

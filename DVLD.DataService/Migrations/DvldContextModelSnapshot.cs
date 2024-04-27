@@ -1301,12 +1301,77 @@ namespace DVLD.DataService.Migrations
                     b.Property<int>("DefaultValidityLength")
                         .HasColumnType("int");
 
-                    b.Property<byte>("MinimumAllowedAge")
-                        .HasColumnType("tinyint");
+                    b.Property<int>("MinimumAllowedAge")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.ToTable("LicenseClasses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ClassDescription = "It allows the driver to drive small motorcycles. It is suitable for motorcycles with small capacity and limited power.",
+                            ClassFees = 15m,
+                            ClassName = "Class 1 - Small Motorcycle",
+                            DefaultValidityLength = 5,
+                            MinimumAllowedAge = 18
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ClassDescription = "Heavy Motorcycle License (Large Motorcycle License)",
+                            ClassFees = 30m,
+                            ClassName = "Class 2 - Heavy Motorcycle License",
+                            DefaultValidityLength = 5,
+                            MinimumAllowedAge = 21
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ClassDescription = "Ordinary driving license (car licence)",
+                            ClassFees = 20m,
+                            ClassName = "Class 3 - Ordinary driving license",
+                            DefaultValidityLength = 10,
+                            MinimumAllowedAge = 18
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ClassDescription = "Commercial driving license (taxi/limousine)",
+                            ClassFees = 200m,
+                            ClassName = "Class 4 - Commercial",
+                            DefaultValidityLength = 10,
+                            MinimumAllowedAge = 21
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ClassDescription = "Agricultural and work vehicles used in farming or construction (tractors / tillage machinery)",
+                            ClassFees = 50m,
+                            ClassName = "Class 5 - Agricultural",
+                            DefaultValidityLength = 10,
+                            MinimumAllowedAge = 21
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ClassDescription = "Small and medium bus license",
+                            ClassFees = 250m,
+                            ClassName = "Class 6 - Small and medium bus",
+                            DefaultValidityLength = 10,
+                            MinimumAllowedAge = 21
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ClassDescription = "Truck and heavy vehicle license",
+                            ClassFees = 300m,
+                            ClassName = "Class 7 - Truck and heavy vehicle",
+                            DefaultValidityLength = 10,
+                            MinimumAllowedAge = 21
+                        });
                 });
 
             modelBuilder.Entity("DVLD.Entities.DbSets.LocalDrivingLicenseApplication", b =>
@@ -1521,6 +1586,9 @@ namespace DVLD.DataService.Migrations
                     b.Property<decimal>("PaidFees")
                         .HasColumnType("smallmoney");
 
+                    b.Property<int>("RetakeTestApplicationId")
+                        .HasColumnType("int");
+
                     b.Property<int>("TestTypeId")
                         .HasColumnType("int");
 
@@ -1624,6 +1692,37 @@ namespace DVLD.DataService.Migrations
                             PersonId = 1,
                             UserName = "alone wolf"
                         });
+                });
+
+            modelBuilder.Entity("DVLD.Entities.Views.LDLAView", b =>
+                {
+                    b.Property<DateTime>("ApplicationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DrivingClass")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NationalNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PassedTests")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("LocalDrivingLicenseApplications_view", (string)null);
                 });
 
             modelBuilder.Entity("DVLD.Entities.DbSets.Application", b =>

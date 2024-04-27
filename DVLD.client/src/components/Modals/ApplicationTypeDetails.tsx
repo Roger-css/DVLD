@@ -3,7 +3,7 @@ import * as yup from "yup";
 import { applicationTypes } from "../../Types/Applications";
 import { Paper, Button, Typography } from "@mui/material";
 import { Formik, Form, FormikValues } from "formik";
-import isObjectEmpty from "../../Helpers/IsObjEmpty";
+import isObjectEmpty from "../../Utils/IsObjEmpty";
 import FormikControl from "../formik/FormikControl";
 import usePrivate from "../../hooks/usePrivate";
 

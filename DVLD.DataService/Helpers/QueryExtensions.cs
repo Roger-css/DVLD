@@ -1,5 +1,6 @@
 ﻿
 using DVLD.Entities.DbSets;
+using DVLD.Entities.Views;
 
 namespace DVLD.DataService.Helpers;
 
@@ -49,6 +50,21 @@ public static class QueryExtensions
                 return query.Where(e => e.Person.NationalNo.Contains(value));
             case "email":
                 return query.Where(e => e.Person.Email.Contains(value));
+            default: return query;
+        }
+    }
+    public static IQueryable<LDLAView> HandleLDLASearch(this IQueryable<LDLAView> query, string key, string value)
+    {
+        switch (key.ToLower())
+        {
+            case "id":
+                return query.Where(e => e.Id == Convert.ToInt32(value));
+            case "status":
+                return query.Where(e => e.Status.Contains(value));
+            case "nationalno":
+                return query.Where(e => e.NationalNo.Contains(value));
+            case "fullname":
+                return query.Where(e => e.FullName.Contains(value));
             default: return query;
         }
     }

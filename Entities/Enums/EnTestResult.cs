@@ -2,6 +2,6 @@
 
 public enum EnTestResult
 {
-    Pass,
-    Fail
+    Fail,
+    Pass
 }

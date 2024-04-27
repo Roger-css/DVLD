@@ -14,11 +14,19 @@ type TyProps = {
 };
 
 const Input = (props: TyProps) => {
-  const { label, name, handleChange, readonly, autoComplete, ...rest } = props;
+  const {
+    label,
+    name,
+    handleChange,
+    readonly,
+    autoComplete,
+    className,
+    ...rest
+  } = props;
   const autoCompleteType =
     rest.type === "password" ? "new-password" : autoComplete;
   return (
-    <div className={"form-control " + rest.className}>
+    <div className={"form-control " + className}>
       <Field id={name} name={name} validate={handleChange}>
         {({ field, form }: FieldProps) => {
           const { value: fieldValue, ...restOfField } = field;

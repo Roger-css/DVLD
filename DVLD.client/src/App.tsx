@@ -7,6 +7,7 @@ import InitialData from "./layout/InitialData";
 import Users from "./Pages/Users";
 import ApplicationTypes from "./Pages/Applications/ApplicationTypes";
 import TestTypes from "./Pages/Tests/TestTypes";
+import LocalDrivingLicenseApplication from "./Pages/Applications/LocalDrivingLicenseApplication";
 function App() {
   return (
     <div className="App">
@@ -18,6 +19,10 @@ function App() {
           <Route path="users" element={<Users />} />
           <Route path="AppTypes" element={<ApplicationTypes />} />
           <Route path="TestTypes" element={<TestTypes />} />
+          <Route
+            path="LocalDrivingLicenseApplications"
+            element={<LocalDrivingLicenseApplication />}
+          />
         </Route>
       </Routes>
     </div>
