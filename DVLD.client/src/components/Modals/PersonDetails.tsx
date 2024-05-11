@@ -180,11 +180,9 @@ const PersonDetails = ({
       if (debounced === "") return;
       try {
         const response = await axios.get(`/Person/nationalNo/${debounced}`);
-        if (response) {
-          throw new Error();
-        }
+        if (response.status == 200) setExists(true);
       } catch {
-        setExists(true);
+        setExists(false);
       }
     };
     updateNo !== debounced ? validateNationalNo() : setExists(false);

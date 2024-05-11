@@ -25,7 +25,7 @@
 
 .Applications {
   top: -50px;
-  width: 220px;
+  width: 230px;
 }
 
 .ShowingHeaderCellUl {
@@ -61,30 +61,6 @@
   color: #8f1616;
 }
 
-.ModalBox {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 900px;
-  background-color: #fff;
-  border: 2px solid #000;
-  box-shadow: 24px;
-  padding: 4px;
-}
-
-.ModalBox-small {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 500px;
-  background-color: #fff;
-  border: 2px solid #000;
-  box-shadow: 24px;
-  padding: 4px;
-}
-
 .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input {
   padding: 10px 14px !important;
 }
@@ -99,6 +75,45 @@
 
 .LoginUserInfoControl {
   margin: 10px 0;
+}
+
+.ModalBox {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 900px;
+  background-color: #fff;
+  border: 2px solid #000;
+  box-shadow: 24px;
+  padding: 4px;
+  overflow: auto;
+}
+
+.ModalBox-small {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  background-color: #fff;
+  border: 2px solid #000;
+  box-shadow: 24px;
+  padding: 4px;
+}
+
+.testFieldset {
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: 12px;
+}
+
+.TestAppointment {
+  max-height: 95vh;
+  overflow: auto;
+}
+
+.disabled {
+  color: rgba(0, 0, 0, 0.3);
 }
 
 * {

@@ -87,6 +87,7 @@ const LdlaWithPersonDetails = ({
             handleClose={handleClose}
             dataSet={dataSet as localDrivingLA}
             personId={id}
+            readonly={readonly}
           />
         </TabPanel>
       </TabContext>

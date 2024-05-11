@@ -21,4 +21,22 @@ type localDrivingLA_view = {
   passedTests: number;
   status: string;
 };
-export type { applicationTypes, localDrivingLA, localDrivingLA_view };
+type BasicApplicationInfo = {
+  id: number;
+  licenseClass: string;
+  passedTests: number;
+  applicationId: number;
+  date: string;
+  status: string;
+  statusDate: string;
+  paidFees: number;
+  createdBy: string;
+  applicationType: string;
+  name: string;
+};
+export type {
+  applicationTypes,
+  localDrivingLA,
+  localDrivingLA_view,
+  BasicApplicationInfo,
+};

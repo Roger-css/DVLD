@@ -14,9 +14,10 @@ internal class TestAppointmentsConfig : IEntityTypeConfiguration<TestAppointment
         builder.HasOne(x => x.TestType).WithMany(x => x.TestAppointments)
             .HasForeignKey(x => x.TestTypeId).OnDelete(DeleteBehavior.NoAction);
         builder.HasOne(x => x.User).WithMany(x => x.TestAppointmentsCreated)
+            .HasForeignKey(e => e.CreatedByUserId)
             .OnDelete(DeleteBehavior.NoAction);
-        builder.HasOne(x => x.LocalDrivingLicenseApplication).WithOne(x => x.TestAppointment)
-            .HasForeignKey<TestAppointment>(x => x.LocalDrivingLicenseApplicationId)
+        builder.HasOne(x => x.LocalDrivingLicenseApplication).WithMany(x => x.Appointments)
+            .HasForeignKey(x => x.LocalDrivingLicenseApplicationId)
             .OnDelete(DeleteBehavior.NoAction);
         builder.Property(x => x.PaidFees).HasColumnType("smallmoney");
     }

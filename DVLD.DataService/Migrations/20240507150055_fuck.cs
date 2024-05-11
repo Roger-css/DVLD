@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DVLD.DataService.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class fuck : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -47,7 +47,7 @@ namespace DVLD.DataService.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ClassName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ClassDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MinimumAllowedAge = table.Column<byte>(type: "tinyint", nullable: false),
+                    MinimumAllowedAge = table.Column<int>(type: "int", nullable: false),
                     DefaultValidityLength = table.Column<int>(type: "int", nullable: false),
                     ClassFees = table.Column<decimal>(type: "smallmoney", nullable: false)
                 },
@@ -283,8 +283,8 @@ namespace DVLD.DataService.Migrations
                     AppointmentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PaidFees = table.Column<decimal>(type: "smallmoney", nullable: false),
                     CreatedByUserId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    IsLocked = table.Column<bool>(type: "bit", nullable: false)
+                    IsLocked = table.Column<bool>(type: "bit", nullable: false),
+                    RetakeTestApplicationId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -300,8 +300,8 @@ namespace DVLD.DataService.Migrations
                         principalTable: "TestTypes",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_TestAppointments_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_TestAppointments_Users_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
@@ -633,6 +633,30 @@ namespace DVLD.DataService.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "LicenseClasses",
+                columns: new[] { "Id", "ClassDescription", "ClassFees", "ClassName", "DefaultValidityLength", "MinimumAllowedAge" },
+                values: new object[,]
+                {
+                    { 1, "It allows the driver to drive small motorcycles. It is suitable for motorcycles with small capacity and limited power.", 15m, "Class 1 - Small Motorcycle", 5, 18 },
+                    { 2, "Heavy Motorcycle License (Large Motorcycle License)", 30m, "Class 2 - Heavy Motorcycle License", 5, 21 },
+                    { 3, "Ordinary driving license (car licence)", 20m, "Class 3 - Ordinary driving license", 10, 18 },
+                    { 4, "Commercial driving license (taxi/limousine)", 200m, "Class 4 - Commercial", 10, 21 },
+                    { 5, "Agricultural and work vehicles used in farming or construction (tractors / tillage machinery)", 50m, "Class 5 - Agricultural", 10, 21 },
+                    { 6, "Small and medium bus license", 250m, "Class 6 - Small and medium bus", 10, 21 },
+                    { 7, "Truck and heavy vehicle license", 300m, "Class 7 - Truck and heavy vehicle", 10, 21 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "TestTypes",
+                columns: new[] { "Id", "TestTypeDescription", "TestTypeFees", "TestTypeTitle" },
+                values: new object[,]
+                {
+                    { 1, "This assesses the applicant's visual acuity to ensure they have sufficient vision to drive safely.", 10m, "Vision Test" },
+                    { 2, "This test assesses the applicant's knowledge of traffic rules, road signs, and driving regulations. It typically consists of multiple-choice questions, and the applicant must select the correct answer(s). The written test aims to ensure that the applicant understands the rules of the road and can apply them in various driving scenarios.", 20m, "Written (Theory) Test" },
+                    { 3, "This test evaluates the applicant's driving skills and ability to operate a motor vehicle safely on public roads. A licensed examiner accompanies the applicant in the vehicle and observes their driving performance.", 35m, "Practical (Street) Test" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "People",
                 columns: new[] { "Id", "Address", "DateOfBirth", "Email", "FirstName", "Gender", "Image", "LastName", "NationalNo", "NationalityCountryId", "Phone", "SecondName", "ThirdName" },
                 values: new object[,]
@@ -759,20 +783,19 @@ namespace DVLD.DataService.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TestAppointments_CreatedByUserId",
+                table: "TestAppointments",
+                column: "CreatedByUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TestAppointments_LocalDrivingLicenseApplicationId",
                 table: "TestAppointments",
-                column: "LocalDrivingLicenseApplicationId",
-                unique: true);
+                column: "LocalDrivingLicenseApplicationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TestAppointments_TestTypeId",
                 table: "TestAppointments",
                 column: "TestTypeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TestAppointments_UserId",
-                table: "TestAppointments",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tests_CreatedByUserId",

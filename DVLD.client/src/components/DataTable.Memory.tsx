@@ -25,10 +25,12 @@ type Props<TColumn, TData> = {
   column: ColumnDef<TData, TColumn>[];
   Data: TData[];
   children?: ReactNode;
+  pageSize?: number;
+  color?: string;
 };
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
+const StyledTableCell = styled(TableCell)(({ theme, color }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.primary.dark,
+    backgroundColor: color ? color : theme.palette.primary.dark,
     color: theme.palette.common.white,
   },
   [`&.${tableCellClasses.body}`]: {
@@ -49,6 +51,8 @@ const DataTableMemory = <TColumn, TData>({
   Data,
   column,
   children,
+  pageSize,
+  color = "#1976d2",
 }: Props<TColumn, TData>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const table = useReactTable({
@@ -60,6 +64,10 @@ const DataTableMemory = <TColumn, TData>({
     onSortingChange: setSorting,
     state: {
       sorting: sorting,
+      pagination: {
+        pageSize: pageSize ? pageSize : 10,
+        pageIndex: 0,
+      },
     },
   });
   return (
@@ -75,6 +83,7 @@ const DataTableMemory = <TColumn, TData>({
                   {headerGroup.headers.map((header) => {
                     return (
                       <StyledTableCell
+                        color={color}
                         padding={
                           typeof header.column.columnDef.header != "string"
                             ? `checkbox`

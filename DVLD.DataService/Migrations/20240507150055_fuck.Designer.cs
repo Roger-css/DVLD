@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DVLD.DataService.Migrations
 {
     [DbContext(typeof(DvldContext))]
-    [Migration("20240419224450_added LocalDrivingLicenseApplications_view")]
-    partial class addedLocalDrivingLicenseApplications_view
+    [Migration("20240507150055_fuck")]
+    partial class fuck
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1589,23 +1589,19 @@ namespace DVLD.DataService.Migrations
                     b.Property<decimal>("PaidFees")
                         .HasColumnType("smallmoney");
 
-                    b.Property<int>("RetakeTestApplicationId")
+                    b.Property<int?>("RetakeTestApplicationId")
                         .HasColumnType("int");
 
                     b.Property<int>("TestTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("LocalDrivingLicenseApplicationId")
-                        .IsUnique();
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LocalDrivingLicenseApplicationId");
 
                     b.HasIndex("TestTypeId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("TestAppointments");
                 });
@@ -1702,8 +1698,9 @@ namespace DVLD.DataService.Migrations
                     b.Property<DateTime>("ApplicationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DrivingClass")
-                        .HasColumnType("int");
+                    b.Property<string>("DrivingClass")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -1945,21 +1942,21 @@ namespace DVLD.DataService.Migrations
 
             modelBuilder.Entity("DVLD.Entities.DbSets.TestAppointment", b =>
                 {
+                    b.HasOne("DVLD.Entities.DbSets.User", "User")
+                        .WithMany("TestAppointmentsCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("DVLD.Entities.DbSets.LocalDrivingLicenseApplication", "LocalDrivingLicenseApplication")
-                        .WithOne("TestAppointment")
-                        .HasForeignKey("DVLD.Entities.DbSets.TestAppointment", "LocalDrivingLicenseApplicationId")
+                        .WithMany("Appointments")
+                        .HasForeignKey("LocalDrivingLicenseApplicationId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("DVLD.Entities.DbSets.TestType", "TestType")
                         .WithMany("TestAppointments")
                         .HasForeignKey("TestTypeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("DVLD.Entities.DbSets.User", "User")
-                        .WithMany("TestAppointmentsCreated")
-                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -2025,7 +2022,7 @@ namespace DVLD.DataService.Migrations
 
             modelBuilder.Entity("DVLD.Entities.DbSets.LocalDrivingLicenseApplication", b =>
                 {
-                    b.Navigation("TestAppointment");
+                    b.Navigation("Appointments");
                 });
 
             modelBuilder.Entity("DVLD.Entities.DbSets.Person", b =>

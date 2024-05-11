@@ -46,7 +46,7 @@ internal class ApplicationRepository : GenericRepository<Application>, IApplicat
         return true;
 	}
 
-    public async Task<Application> CreateApplication(ApplicationRequest Param)
+    public async Task<Application> CreateLdlApplication(ApplicationRequest Param)
     {
         var Application = new Application()
         {
@@ -132,5 +132,10 @@ internal class ApplicationRepository : GenericRepository<Application>, IApplicat
         if (result == null)
             return null;
         return result;
+    }
+
+    public async Task CreateApplication(Application application)
+    {
+        await _dbSet.AddAsync(application);
     }
 }

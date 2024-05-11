@@ -1,12 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import DataTable from "../../components/DataTable.Memory";
 import { ColumnDef } from "@tanstack/react-table";
 import { applicationTypes } from "../../Types/Applications";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  getApplicationTypes,
-  setApplicationTypes,
-} from "../../redux/Slices/Applications";
+import { useSelector } from "react-redux";
+import { getApplicationTypes } from "../../redux/Slices/Applications";
 import {
   Button,
   List,
@@ -20,23 +17,11 @@ import {
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { FaEdit } from "react-icons/fa";
 import ApplicationTypeDetails from "../../components/Modals/ApplicationTypeDetails";
-import usePrivate from "../../hooks/usePrivate";
 const ApplicationTypes = () => {
-  const axios = usePrivate();
-  const dispatch = useDispatch();
   const applicationTypesArr = useSelector(getApplicationTypes) ?? [];
+
   const [modal, setModal] = useState<boolean>(false);
   const [modalData, setModalData] = useState<applicationTypes | null>(null);
-  useEffect(() => {
-    const fetching = async () => {
-      const data = await axios.get("Applications/types");
-      if (data) {
-        dispatch(setApplicationTypes(data.data));
-      }
-    };
-    applicationTypesArr ? fetching() : false;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [axios, dispatch, modal]);
   const COLUMNS = useMemo(
     (): ColumnDef<applicationTypes, unknown>[] => [
       {

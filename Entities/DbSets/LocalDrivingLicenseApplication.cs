@@ -10,5 +10,5 @@ public class LocalDrivingLicenseApplication
     public Application Application { get; set; }
     public int LicenseClassId { get; set; }
     public LicenseClass LicenseClass { get; set; }
-    public TestAppointment? TestAppointment { get; set; }
+    public ICollection<TestAppointment>? Appointments { get; set; }
 }

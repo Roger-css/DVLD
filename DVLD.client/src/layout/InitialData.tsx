@@ -10,6 +10,11 @@ import { jwtDecode } from "jwt-decode";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { getCurrentUserInfo, setUserInfo } from "../redux/Slices/Auth";
 import { getLicenseClasses, setLicenseClasses } from "../redux/Slices/License";
+import { getTestTypes, setTestTypes } from "../redux/Slices/Tests";
+import {
+  getApplicationTypes,
+  setApplicationTypes,
+} from "../redux/Slices/Applications";
 
 const InitialData = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -18,6 +23,9 @@ const InitialData = () => {
   const countries = useSelector(getAllCountries);
   const userInfo = useSelector(getCurrentUserInfo);
   const appClasses = useSelector(getLicenseClasses);
+  const testTypesArr = useSelector(getTestTypes);
+  const applicationTypesArr = useSelector(getApplicationTypes);
+
   const navigate = useNavigate();
   const axios = usePrivate();
   useEffect(() => {
@@ -79,6 +87,35 @@ const InitialData = () => {
     appClasses ? setIsLoading(false) : fetchUserInfo();
     return () => userController.abort();
   }, [dispatch, axios, appClasses]);
+  useEffect(() => {
+    const fetching = async () => {
+      try {
+        const data = await axios.get("Tests/Types");
+        dispatch(setTestTypes(data.data));
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    testTypesArr ? setIsLoading(false) : fetching();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [axios, dispatch, testTypesArr]);
+  useEffect(() => {
+    const fetching = async () => {
+      try {
+        const data = await axios.get("Applications/types");
+
+        dispatch(setApplicationTypes(data.data));
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    applicationTypesArr ? setIsLoading(false) : fetching();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [axios, dispatch, applicationTypesArr]);
   return (
     <React.Fragment>
       <Header />

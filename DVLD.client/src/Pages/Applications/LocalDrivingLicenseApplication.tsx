@@ -28,6 +28,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
+import TestAppointment from "../../components/Modals/TestAppointment";
 interface Filters {
   [key: string]: string;
   none: string;
@@ -53,7 +54,13 @@ const allFilters = () => {
 const LocalDrivingLicenseApplication = () => {
   const [filter, setFilter] = useState<keyof Filters>(FilterMode.none);
   const [openModal, setOpenModal] = useState<boolean>(false);
+  const [openTestsModal, setOpenTestsModal] = useState<boolean>(false);
   const [modalData, setModalData] = useState<number | null>(null);
+  const [testsModalData, setTestsModalData] = useState<{
+    passedTests: number;
+    id: number;
+    testTypeId: number;
+  } | null>(null);
   const [filterText, setFilterText] = useState("");
   const Debounced = useDebounce(filterText);
   const [readOnly, setReadOnly] = useState<boolean>(false);
@@ -103,14 +110,13 @@ const LocalDrivingLicenseApplication = () => {
       } catch (error) {
         console.log(error);
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     };
     RequestingData();
     return () => {
       controller.abort();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [Debounced, axios, openModal, refreshData]); // refreshData
+  }, [Debounced, axios, openModal, refreshData, filterOptions, openTestsModal]);
   const COLUMNS = useMemo(
     (): ColumnDef<localDrivingLA_view, unknown>[] => [
       {
@@ -127,7 +133,7 @@ const LocalDrivingLicenseApplication = () => {
               sx={{ color: "white", minWidth: "auto" }}
             >
               Id{" "}
-              {filterOptions.orderBy == "desc" ? (
+              {filterOptions.orderBy === "desc" ? (
                 <ExpandLess />
               ) : (
                 <ExpandMore />
@@ -240,6 +246,7 @@ const LocalDrivingLicenseApplication = () => {
                         setOpenModal(true);
                         setAnchorEl(null);
                       }}
+                      disabled={row.original.status != "NEW"}
                     >
                       <ListItemIcon>
                         <SettingsIcon />
@@ -284,6 +291,10 @@ const LocalDrivingLicenseApplication = () => {
                           e.currentTarget as unknown as HTMLButtonElement
                         );
                       }}
+                      disabled={
+                        row.original.passedTests == 3 ||
+                        row.original.status != "NEW"
+                      }
                     >
                       <ListItemIcon>
                         <PendingActionsIcon />
@@ -296,7 +307,7 @@ const LocalDrivingLicenseApplication = () => {
                       onClick={() => {
                         setAnchorEl(null);
                       }}
-                      disabled
+                      disabled={row.original.passedTests != 3}
                     >
                       <ListItemIcon>
                         <img
@@ -357,9 +368,17 @@ const LocalDrivingLicenseApplication = () => {
                   <List>
                     <ListItem disablePadding>
                       <ListItemButton
-                        onClick={() => {}}
+                        onClick={() => {
+                          setOpenTestsModal(true);
+                          setTestsModalData({
+                            passedTests: row.original.passedTests,
+                            id: row.original.id,
+                            testTypeId: 1,
+                          });
+                          setModalTitle("Vision Test");
+                        }}
                         sx={{ display: "flex", justifyContent: "flex-end" }}
-                        disabled={row.original.passedTests > 0}
+                        disabled={row.original.passedTests != 0}
                       >
                         <ListItemIcon>
                           <img
@@ -373,7 +392,15 @@ const LocalDrivingLicenseApplication = () => {
                     </ListItem>
                     <ListItem disablePadding>
                       <ListItemButton
-                        onClick={() => {}}
+                        onClick={() => {
+                          setOpenTestsModal(true);
+                          setTestsModalData({
+                            passedTests: row.original.passedTests,
+                            id: row.original.id,
+                            testTypeId: 2,
+                          });
+                          setModalTitle("Theory Test");
+                        }}
                         disabled={row.original.passedTests != 1}
                       >
                         <ListItemIcon>
@@ -383,12 +410,20 @@ const LocalDrivingLicenseApplication = () => {
                             width={"30px"}
                           />
                         </ListItemIcon>
-                        <ListItemText primary="International Driving License" />
+                        <ListItemText primary="Theory Test" />
                       </ListItemButton>
                     </ListItem>
                     <ListItem disablePadding>
                       <ListItemButton
-                        onClick={() => {}}
+                        onClick={() => {
+                          setOpenTestsModal(true);
+                          setTestsModalData({
+                            passedTests: row.original.passedTests,
+                            id: row.original.id,
+                            testTypeId: 3,
+                          });
+                          setModalTitle("Practical Test");
+                        }}
                         disabled={row.original.passedTests != 2}
                       >
                         <ListItemIcon>
@@ -438,7 +473,7 @@ const LocalDrivingLicenseApplication = () => {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [filterOptions.orderBy]
   );
   return (
     <div className="w-10/12 mx-auto">
@@ -484,7 +519,7 @@ const LocalDrivingLicenseApplication = () => {
           onClick={() => {
             setModalData(null);
             setReadOnly(false);
-            setModalTitle("Add new user");
+            setModalTitle("Add New Local driving license Application");
             setOpenModal(true);
           }}
         >
@@ -498,6 +533,16 @@ const LocalDrivingLicenseApplication = () => {
             title={modalTitle}
             handleClose={() => setOpenModal(false)}
             readonly={readOnly}
+          />
+        </div>
+      </Modal>
+      <Modal open={openTestsModal} onClose={() => setOpenTestsModal(false)}>
+        <div>
+          <TestAppointment
+            id={testsModalData?.id as number}
+            title={modalTitle}
+            passedTests={testsModalData?.passedTests as number}
+            testTypeId={testsModalData?.testTypeId as number}
           />
         </div>
       </Modal>

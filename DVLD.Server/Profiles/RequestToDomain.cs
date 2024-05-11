@@ -13,6 +13,8 @@ public class RequestToDomain : Profile
     {
         CreateMap<UserLoginRequest, User>();
         CreateMap<CreateLDLARequest, ApplicationRequest>();
+        CreateMap<CreateAppointmentRequest, TestAppointment>();
+        CreateMap<CreateTestRequest, Test>();
         CreateMap<PersonRequest, Person>()
             .ForMember(dest => dest.Id, (opt) => opt.MapFrom(src => src.id))
             .ForMember(dest => dest.FirstName, (opt) => opt.MapFrom(src => src.firstName))

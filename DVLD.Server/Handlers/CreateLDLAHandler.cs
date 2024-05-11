@@ -21,7 +21,7 @@ namespace DVLD.Server.Handlers
                                 request.Param.classId))
                 {
                     var Params = _mapper.Map<ApplicationRequest>(request.Param);
-                    var Application = await _unitOfWork.ApplicationRepository.CreateApplication(Params);
+                    var Application = await _unitOfWork.ApplicationRepository.CreateLdlApplication(Params);
                     await _unitOfWork.CompleteAsync();
                     var Ldla = await _unitOfWork.ApplicationRepository.CreateLDLA(Application.Id, request.Param.classId);
                     await _unitOfWork.CompleteAsync();

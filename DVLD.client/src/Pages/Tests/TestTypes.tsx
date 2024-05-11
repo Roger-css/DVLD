@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import DataTable from "../../components/DataTable.Memory";
 import { ColumnDef } from "@tanstack/react-table";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   Button,
   List,
@@ -14,26 +14,13 @@ import {
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { FaEdit } from "react-icons/fa";
-import usePrivate from "../../hooks/usePrivate";
 import { testType } from "../../Types/Test";
 import TestTypeDetails from "../../components/Modals/TestTypeDetails";
-import { getTestTypes, setTestTypes } from "../../redux/Slices/Tests";
+import { getTestTypes } from "../../redux/Slices/Tests";
 const TestTypes = () => {
-  const axios = usePrivate();
-  const dispatch = useDispatch();
   const testTypesArr = useSelector(getTestTypes) ?? [];
   const [modal, setModal] = useState<boolean>(false);
   const [modalData, setModalData] = useState<testType | null>(null);
-  useEffect(() => {
-    const fetching = async () => {
-      const data = await axios.get("Tests/Types");
-      if (data) {
-        dispatch(setTestTypes(data.data));
-      }
-    };
-    testTypesArr ? fetching() : false;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [axios, dispatch, modal]);
   const COLUMNS = useMemo(
     (): ColumnDef<testType, unknown>[] => [
       {
