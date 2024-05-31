@@ -32,6 +32,7 @@ public class UnitOfWork : IUnitOfWork
         ApplicationRepository = new ApplicationRepository(logger, context);
         TestRepository = new TestRepository(logger, context);
         LicenseRepository = new LicenseRepository(logger, context);
+        DriverRepository = new DriverRepository(logger, context);
     }
 
     public async Task CompleteAsync()

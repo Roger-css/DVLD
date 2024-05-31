@@ -9,5 +9,4 @@ namespace DVLD.DataService.Repositories.Interfaces;
 
 public interface IDriverRepository : IGenericRepository<Driver>
 {
-
 }

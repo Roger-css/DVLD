@@ -15,10 +15,10 @@ public class License
     public LicenseClass LicenseClass { get; set; }
     public DateTime IssueDate { get; set; }
     public DateTime ExpirationDate { get; set; }
-    public string Notes { get; set; }
+    public string? Notes { get; set; }
     public float PaidFees { get; set; }
     public bool IsActive { get; set; }
-    public string IssueReason { get; set; }
+    public EnIssueReason IssueReason { get; set; }
     public int CreatedByUserId { get; set; }
     public User User { get; set; }
     public ICollection<DetainedLicense>? DetainedLicense { get; set; }

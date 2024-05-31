@@ -16,6 +16,9 @@ public interface IApplicationRepository: IGenericRepository<Application>
     public IQueryable<LDLAView> LdlaPagination(GetAllLDLARequest Params, IQueryable<LDLAView> Query);
     public IQueryable<LDLAView> GetLdlaQueryable();
     public Task<bool> CancelLDLA(int LdlaId);
+    public Task<bool> CompleteApplication(int Id);
     public Task<SingleLDLAResponse?> GetLDLAInfo(int LdlaId);
     public Task CreateApplication(Application application);
+    public Task<Person?> GetPerson(int ApplicationId);
+    public Task UpdateLdlaLicenseClass(UpdateLdlaLicenseClassRequest details);
 }

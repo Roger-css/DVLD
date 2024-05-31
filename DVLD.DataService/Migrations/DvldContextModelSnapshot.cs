@@ -1250,15 +1250,13 @@ namespace DVLD.DataService.Migrations
                     b.Property<DateTime>("IssueDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("IssueReason")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("IssueReason")
+                        .HasColumnType("TinyInt");
 
                     b.Property<int>("LicenseClassId")
                         .HasColumnType("int");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("PaidFees")

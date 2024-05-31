@@ -2,12 +2,12 @@
 using DVLD.Entities.DbSets;
 using DVLD.Entities.Dtos.Request;
 using DVLD.Entities.Dtos.Response;
+using DVLD.Server.Commands;
 using DVLD.Server.Config;
 using DVLD.Server.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -181,7 +181,7 @@ public class UserController : BaseController<UserController>
     {
         try
         {
-            var query = new AddNewUserQuery(infoRequest);
+            var query = new AddNewUserCommand(infoRequest);
             var result = await _mediator.Send(query);
             if (result)
                 return Ok(result);
@@ -199,7 +199,7 @@ public class UserController : BaseController<UserController>
     {
         try
         {
-            var query = new UpdateUserQuery(infoRequest);
+            var query = new UpdateUserCommand(infoRequest);
             var result = await _mediator.Send(query);
             if (result)
                 return Ok(result);
@@ -217,7 +217,7 @@ public class UserController : BaseController<UserController>
     {
         try
         {
-            var query = new DeleteUserQuery(id);
+            var query = new DeleteUserCommand(id);
             var result = await _mediator.Send(query);
             if (result)
                 return NoContent();

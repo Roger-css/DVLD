@@ -29,6 +29,7 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import TestAppointment from "../../components/Modals/TestAppointment";
+import IssueDrivingLicense from "../../components/Modals/IssueDrivingLicense";
 interface Filters {
   [key: string]: string;
   none: string;
@@ -54,6 +55,8 @@ const allFilters = () => {
 const LocalDrivingLicenseApplication = () => {
   const [filter, setFilter] = useState<keyof Filters>(FilterMode.none);
   const [openModal, setOpenModal] = useState<boolean>(false);
+  const [openIssueDrivingLicenseModal, setOpenIssueDrivingLicenseModal] =
+    useState<boolean>(false);
   const [openTestsModal, setOpenTestsModal] = useState<boolean>(false);
   const [modalData, setModalData] = useState<number | null>(null);
   const [testsModalData, setTestsModalData] = useState<{
@@ -82,6 +85,14 @@ const LocalDrivingLicenseApplication = () => {
   const cancelApplication = async (id: number) => {
     try {
       const Success = await axios.delete(`Applications/LDLA/cancel/${id}`);
+      if (Success) setRefreshData(!refreshData);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const deleteApplication = async (id: number) => {
+    try {
+      const Success = await axios.delete(`Applications/LDLA/delete/${id}`);
       if (Success) setRefreshData(!refreshData);
     } catch (error) {
       console.log(error);
@@ -246,7 +257,12 @@ const LocalDrivingLicenseApplication = () => {
                         setOpenModal(true);
                         setAnchorEl(null);
                       }}
-                      disabled={row.original.status != "NEW"}
+                      disabled={
+                        !(
+                          row.original.status == "NEW" &&
+                          row.original.passedTests == 0
+                        )
+                      }
                     >
                       <ListItemIcon>
                         <SettingsIcon />
@@ -257,8 +273,13 @@ const LocalDrivingLicenseApplication = () => {
                   <ListItem disablePadding>
                     <ListItemButton
                       onClick={() => {
+                        setDialogDescription(
+                          `Are you sure you want to delete the application with id = ${id}`
+                        );
+                        setDialogButton("Delete");
                         setAnchorEl(null);
                       }}
+                      disabled={row.original.passedTests != 0}
                     >
                       <ListItemIcon>
                         <DeleteForeverIcon />
@@ -305,9 +326,14 @@ const LocalDrivingLicenseApplication = () => {
                   <ListItem disablePadding>
                     <ListItemButton
                       onClick={() => {
+                        setOpenIssueDrivingLicenseModal(true);
+                        setModalData(id);
                         setAnchorEl(null);
                       }}
-                      disabled={row.original.passedTests != 3}
+                      disabled={
+                        row.original.passedTests != 3 ||
+                        row.original.status == "COMPLETED"
+                      }
                     >
                       <ListItemIcon>
                         <img
@@ -325,7 +351,7 @@ const LocalDrivingLicenseApplication = () => {
                       onClick={() => {
                         setAnchorEl(null);
                       }}
-                      disabled
+                      disabled={row.original.status != "COMPLETED"}
                     >
                       <ListItemIcon>
                         <img
@@ -343,6 +369,7 @@ const LocalDrivingLicenseApplication = () => {
                       onClick={() => {
                         setAnchorEl(null);
                       }}
+                      disabled={row.original.status != "COMPLETED"}
                     >
                       <ListItemIcon>
                         <img
@@ -456,7 +483,11 @@ const LocalDrivingLicenseApplication = () => {
                   </Button>
                   <Button
                     onClick={() => {
-                      cancelApplication(id);
+                      if (dialogButton == "Delete") {
+                        deleteApplication(id);
+                      } else {
+                        cancelApplication(id);
+                      }
                       handleCloseDialog();
                     }}
                     autoFocus
@@ -543,6 +574,20 @@ const LocalDrivingLicenseApplication = () => {
             title={modalTitle}
             passedTests={testsModalData?.passedTests as number}
             testTypeId={testsModalData?.testTypeId as number}
+          />
+        </div>
+      </Modal>
+      <Modal
+        open={openIssueDrivingLicenseModal}
+        onClose={() => setOpenIssueDrivingLicenseModal(false)}
+      >
+        <div>
+          <IssueDrivingLicense
+            id={modalData as number}
+            onClose={() => {
+              setOpenIssueDrivingLicenseModal(false);
+              setRefreshData(!refreshData);
+            }}
           />
         </div>
       </Modal>

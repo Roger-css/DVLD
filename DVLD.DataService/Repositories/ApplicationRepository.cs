@@ -133,9 +133,31 @@ internal class ApplicationRepository : GenericRepository<Application>, IApplicat
             return null;
         return result;
     }
-
     public async Task CreateApplication(Application application)
     {
         await _dbSet.AddAsync(application);
+    }
+    public async Task<bool> CompleteApplication(int Id)
+    {
+        var app = await _dbSet.FirstOrDefaultAsync(e => e.Id == Id);
+        if (app == null)
+            return false;
+        app.LastStatusDate = DateTime.UtcNow;
+        app.ApplicationStatus = EnApplicationStatus.Completed;
+        return true;
+    }
+
+    public async Task<Person?> GetPerson(int ApplicationId)
+    {
+        return await _dbSet.Include(e => e.Person)
+            .ThenInclude(e => e.Driver)
+            .Select(e => e.Person)
+            .FirstOrDefaultAsync(e => e.Id == ApplicationId);
+    }
+
+    public async Task UpdateLdlaLicenseClass(UpdateLdlaLicenseClassRequest details)
+    {
+        await _context.LocalDrivingLicenseApplications.Where(e => e.Id == details.Id)
+            .ExecuteUpdateAsync(e => e.SetProperty(e => e.LicenseClassId, details.ClassId));
     }
 }

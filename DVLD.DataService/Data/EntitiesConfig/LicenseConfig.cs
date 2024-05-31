@@ -1,7 +1,9 @@
 ﻿using DVLD.Entities.DbSets;
+using DVLD.Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
+using Microsoft.SqlServer.Server;
+using System.Data;
 namespace DVLD.DataService.Data.EntitiesConfig;
 
 internal class LicenseConfig : IEntityTypeConfiguration<License>
@@ -15,7 +17,9 @@ internal class LicenseConfig : IEntityTypeConfiguration<License>
             .OnDelete(DeleteBehavior.NoAction);
         builder.HasOne(x => x.Application).WithOne(x => x.License)
             .HasForeignKey<License>(x => x.ApplicationId).OnDelete(DeleteBehavior.NoAction);
-
+        builder.Property(e => e.IssueReason)
+            .HasColumnType(SqlDbType.TinyInt.ToString())
+            .HasConversion(e => (int)e, e => (EnIssueReason)Enum.Parse(typeof(EnIssueReason), e.ToString()));
         builder.HasOne(x => x.Driver).WithOne(x => x.License).HasForeignKey<License>(x => x.DriverId);
     }
 }

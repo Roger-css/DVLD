@@ -26,7 +26,7 @@ internal class UserRepository : GenericRepository<User>, IUserRepository
             e.IsActive == true)
                 .Select(e => new User { Person = e.Person, Id = e.Id, UserName = e.UserName, IsActive = e.IsActive })
                 .FirstOrDefaultAsync();
-            if (result == default(User))
+            if (result is null)
                 return null;
             return result;
         }

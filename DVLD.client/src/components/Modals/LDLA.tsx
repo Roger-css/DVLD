@@ -34,6 +34,7 @@ const Ldla = ({ readonly, personId, handleClose, dataSet }: Props) => {
     fees: 0,
     creatorId: currentUser?.id as number,
   });
+  const [submitted, setSubmitted] = useState<boolean>(false);
   const classes = useSelector(getLicenseClasses);
   const axios = usePrivate();
   const handleChange = async (
@@ -41,14 +42,26 @@ const Ldla = ({ readonly, personId, handleClose, dataSet }: Props) => {
     formik: FormikProps<localDrivingLA>
   ) => {
     try {
+      if (submitted) handleClose();
       const body = {
         ...e,
         PersonId: personId,
         date: e.date.toDate().toLocaleDateString(),
         fees: 15,
       };
-      const data = await axios.post(`Applications/LDLA`, body);
-      setInitialValues({ ...(e as localDrivingLA), id: data?.data });
+      if (!readonly && initialValues.id == 0) {
+        const data = await axios.post(`Applications/LDLA`, body);
+        setInitialValues({ ...(e as localDrivingLA), id: data?.data });
+      } else {
+        const body = {
+          id: initialValues.id,
+          classId: e.classId,
+        };
+        console.log(body);
+        const data = await axios.put(`Applications/LDLA`, body);
+        setInitialValues({ ...(e as localDrivingLA), id: data?.data });
+      }
+      setSubmitted(true);
     } catch (error) {
       if (error instanceof AxiosError && error.response?.status == 404) {
         formik.setFieldError(
@@ -116,13 +129,11 @@ const Ldla = ({ readonly, personId, handleClose, dataSet }: Props) => {
                   size="large"
                   variant="contained"
                   type="button"
-                  onClick={() =>
-                    formik.values.id > 0
-                      ? handleClose()
-                      : handleChange(formik.values, formik)
-                  }
+                  onClick={() => handleChange(formik.values, formik)}
                 >
-                  {formik.values.id > 0 ? "Close" : "Submit"}
+                  {(formik.values.id > 0 && readonly) || submitted
+                    ? "Close"
+                    : "Submit"}
                 </Button>
               </div>
             </Paper>

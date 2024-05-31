@@ -95,7 +95,7 @@ const People = () => {
     };
     if (!openModal) FetchingData();
     return () => controller.abort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterOptions, Debounced, openModal]);
   const COLUMNS = useMemo(
     (): ColumnDef<person, unknown>[] => [
@@ -358,18 +358,16 @@ const People = () => {
           <PersonAddIcon />
         </Button>
       </section>
-      {openModal && (
-        <Modal open={true} onClose={() => setOpenModal(false)}>
-          <div>
-            <PersonDetails
-              title={modalTitle}
-              handleClose={setOpenModal}
-              readOnly={readOnly}
-              personId={modalData}
-            />
-          </div>
-        </Modal>
-      )}
+      <Modal open={openModal} onClose={() => setOpenModal(false)}>
+        <div>
+          <PersonDetails
+            title={modalTitle}
+            handleClose={setOpenModal}
+            readOnly={readOnly}
+            personId={modalData}
+          />
+        </div>
+      </Modal>
       <div>
         <DataTable
           // @ts-expect-error react.Memo problem

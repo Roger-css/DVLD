@@ -1,6 +1,7 @@
 ﻿using DVLD.DataService.Repositories.Interfaces;
 using DVLD.Entities.Dtos.Request;
 using DVLD.Entities.Enums;
+using DVLD.Server.Commands;
 using DVLD.Server.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -44,7 +45,7 @@ public class PersonController : BaseController<PersonController>
     [Route("Add")]
     public async Task<IActionResult> AddNewPerson([FromForm] PersonRequest testEntity)
     {
-        var query = new AddNewPersonQuery(testEntity);
+        AddNewPersonCommand query = new(testEntity);
         var result = await _mediator.Send(query);
         return result ? NoContent() : UnprocessableEntity();
     }
@@ -52,7 +53,7 @@ public class PersonController : BaseController<PersonController>
     [Route("{id}")]
     public async Task<IActionResult> DeletePerson([FromRoute] int id)
     {
-        var query = new DeletePersonQuery(id);
+        var query = new DeletePersonCommand(id);
         var result = await _mediator.Send(query);
         return result ? Ok() : NotFound();
     }
@@ -60,7 +61,7 @@ public class PersonController : BaseController<PersonController>
     [Route("Update")]
     public async Task<IActionResult> UpdatePerson([FromForm] PersonRequest person)
     {
-        var query = new UpdatePersonQuery(person);
+        var query = new UpdatePersonCommand(person);
         var result = await _mediator.Send(query);
         return result ? NoContent() : UnprocessableEntity();
     }

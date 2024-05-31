@@ -1,5 +1,7 @@
+import { useCallback } from "react";
+
 function useLocalStorage(key: string) {
-  const getItem = () => {
+  const getItem = useCallback(() => {
     try {
       const item = localStorage.getItem(key);
       if (item) {
@@ -8,21 +10,24 @@ function useLocalStorage(key: string) {
     } catch (error) {
       console.log(error);
     }
-  };
-  const setItem = <T>(value: T) => {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const deleteItem = () => {
+  }, [key]);
+  const setItem = useCallback(
+    <T>(value: T) => {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [key]
+  );
+  const deleteItem = useCallback(() => {
     try {
       localStorage.removeItem(key);
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [key]);
   return { getItem, setItem, deleteItem };
 }
 
