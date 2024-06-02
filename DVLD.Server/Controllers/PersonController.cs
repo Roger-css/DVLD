@@ -20,8 +20,8 @@ public class PersonController : BaseController<PersonController>
     {
         var query = new GetPersonQuery(@params);
         var result = await _mediator.Send(query);
-        if(result != null)
-            return Ok(result);
+        if(result.IsSuccess)
+            return Ok(result.Value);
         return NotFound();
     }
     [HttpGet()]
@@ -30,8 +30,8 @@ public class PersonController : BaseController<PersonController>
     {
         var query = new IsNationalNoExistsQuery(NationalNo);
         var result = await _mediator.Send(query);
-        if (!result) _logger.LogInformation("National Number {No} was not found in database", NationalNo);
-        return result ? NotFound() : Ok();
+        if(result.IsSuccess) return Ok();
+        return NotFound();
     }
     [HttpPost()]
     [Route("")]
@@ -47,7 +47,9 @@ public class PersonController : BaseController<PersonController>
     {
         AddNewPersonCommand query = new(testEntity);
         var result = await _mediator.Send(query);
-        return result ? NoContent() : UnprocessableEntity();
+        if(result.IsSuccess)
+            return Ok();
+        return StatusCode(500);
     }
     [HttpDelete()]
     [Route("{id}")]
@@ -55,7 +57,9 @@ public class PersonController : BaseController<PersonController>
     {
         var query = new DeletePersonCommand(id);
         var result = await _mediator.Send(query);
-        return result ? Ok() : NotFound();
+        if (result.IsSuccess)
+            return Ok();
+        return NotFound(result.Errors[0].Message);
     }
     [HttpPut()]
     [Route("Update")]

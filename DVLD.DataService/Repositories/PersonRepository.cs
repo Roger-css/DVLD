@@ -87,22 +87,19 @@ internal class PersonRepository : GenericRepository<Person>, IPersonRepository
 
     public async Task<bool> UpdatePerson(Person person)
     {
-        var entity = await _dbSet.FindAsync(person.Id);
-        if (entity == null)
-            return false;
-        entity.Email = person.Email;
-        entity.FirstName = person.FirstName;
-        entity.LastName = person.LastName;
-        entity.BirthDate = person.BirthDate;
-        entity.Gender = person.Gender;
-        entity.NationalityCountryId = person.NationalityCountryId;
-        entity.NationalNo = person.NationalNo;
-        entity.Phone = person.Phone;
-        entity.ThirdName = person.ThirdName;
-        entity.Address = person.Address;
-        entity.SecondName = person.SecondName;
-        entity.Image = person.Image;
-        _dbSet.Update(entity);
+        await _dbSet.ExecuteUpdateAsync(e => e
+        .SetProperty(e => e.FirstName,person.FirstName)
+        .SetProperty(e => e.SecondName,person.SecondName)
+        .SetProperty(e => e.ThirdName,person.ThirdName)
+        .SetProperty(e => e.LastName,person.LastName)
+        .SetProperty(e => e.BirthDate,person.BirthDate)
+        .SetProperty(e => e.Gender, person.Gender)
+        .SetProperty(e => e.NationalityCountryId, person.NationalityCountryId)
+        .SetProperty(e => e.NationalNo, person.NationalNo)
+        .SetProperty(e => e.Phone, person.Phone)
+        .SetProperty(e => e.Email,e => person.Email)
+        .SetProperty(e => e.Address, person.Address)
+        .SetProperty(e => e.Image, person.Image));
         return true;
     }
 

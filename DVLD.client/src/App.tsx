@@ -8,8 +8,10 @@ import Users from "./Pages/Users";
 import ApplicationTypes from "./Pages/Applications/ApplicationTypes";
 import TestTypes from "./Pages/Tests/TestTypes";
 import LocalDrivingLicenseApplication from "./Pages/Applications/LocalDrivingLicenseApplication";
+import ErrorPage from "./Pages/ErrorPage";
 function App() {
   const router = createBrowserRouter([
+    { path: "*", element: <ErrorPage /> },
     {
       path: "/",
       element: <SignIn />,

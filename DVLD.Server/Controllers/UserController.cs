@@ -30,47 +30,18 @@ public class UserController : BaseController<UserController>
     [Route("Login")]
     public async Task<IActionResult> Login([FromBody] UserLoginRequest SigningCredentials)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(new AuthResult()
-            {
-                Result = false,
-                Error = new List<string>()
-                {
-                    "Invalid credentials"
-                }
-            });
-        }
-            
-        try
-        {
-            var query = new LoginQuery(SigningCredentials);
-            var User = await _mediator.Send(query);
-            if (User != null)
-            {
-                return Ok(await GenerateJwtToken(User));
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("Unknow error in {Name} error message is {error}", nameof(Login), ex.Message);
-            return BadRequest(new AuthResult()
-            {
-                Result = false,
-                Error = new List<string>()
-                    {
-                        "Server error",
-                        ex.Message
-                    }
-            });
-        }
-        return BadRequest(new AuthResult()
+        var query = new LoginQuery(SigningCredentials);
+        var User = await _mediator.Send(query);
+        if (User.IsSuccess)
+            return Ok(await GenerateJwtToken(User.Value!));
+        
+        return StatusCode(500, new AuthResult()
         {
             Result = false,
             Error = new List<string>()
-                {
-                    "Invalid credentials"
-                }
+            {
+                "Contact Developer"
+            }
         });
     }
     [AllowAnonymous]
@@ -122,112 +93,65 @@ public class UserController : BaseController<UserController>
     [Route("password")]
     public async Task<IActionResult> IsPasswordCurrect([FromQuery] string password, int id)
     {
-        try
-        {
-            var query = new CheckPasswordQuery(password,id);
-            var result = await _mediator.Send(query);
-            if (result)
-            {
-                return Ok();
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("error message = {ms}, whole error = {er}", ex.Message, ex);
-            BadRequest("Server Error");
-            throw;
-        }
-        return BadRequest("wrong");
+        var query = new CheckPasswordQuery(password, id);
+        var result = await _mediator.Send(query);
+        if (result.IsSuccess)
+            return Ok();
+
+        return BadRequest(result.Errors[0].Message);
     }
     [HttpPost]
     [Route("Get")]
     public async Task<IActionResult> GetAllUsers([FromBody] SearchRequest infoRequest)
     {
-        try
-        {
-            var query = new GetAllUsersQuery(infoRequest);
-            var result = await _mediator.Send(query);
-            if (result != null)
-                return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("error message = {ms}, whole error = {er}", ex.Message, ex);
-            BadRequest("Server Error");
-        }
-        return NotFound();
+        var query = new GetAllUsersQuery(infoRequest);
+        var result = await _mediator.Send(query);
+        if (result.IsSuccess)
+            return Ok(result.Value);
+        
+        return NotFound(result.Errors[0]?.Message);
     }
     [HttpPost]
     [Route("Get/single")]
     public async Task<IActionResult> GetUserInfo([FromBody] SearchRequest infoRequest)
     {
-        try
-        {
-            var query = new GetUserInfoQuery(infoRequest);
-            var result = await _mediator.Send(query);
-            if (result != null)
-                return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("error message = {ms}, whole error = {er}", ex.Message, ex);
-            BadRequest("Server Error");
-        }
-        return NotFound();
+        
+        var query = new GetUserInfoQuery(infoRequest);
+        var result = await _mediator.Send(query);
+        if (result.IsSuccess)
+            return Ok(result.Value);
+        
+        return StatusCode(500);
     }
     [HttpPost]
     [Route("Add")]
     public async Task<IActionResult> AddNewUser([FromBody] CreateUserRequest infoRequest)
     {
-        try
-        {
-            var query = new AddNewUserCommand(infoRequest);
-            var result = await _mediator.Send(query);
-            if (result)
-                return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("error message = {ms}, whole error = {er}", ex.Message, ex);
-            BadRequest("Server Error");
-        }
-        return BadRequest();
+        var query = new AddNewUserCommand(infoRequest);
+        var result = await _mediator.Send(query);
+        if (result.IsSuccess)
+            return Ok();
+        return StatusCode(500);
     }
     [HttpPut]
     [Route("Update")]
     public async Task<IActionResult> UpdateUser([FromBody] CreateUserRequest infoRequest)
     {
-        try
-        {
-            var query = new UpdateUserCommand(infoRequest);
-            var result = await _mediator.Send(query);
-            if (result)
-                return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("error message = {ms}, whole error = {er}", ex.Message, ex);
-            BadRequest("Server Error");
-        }
-        return BadRequest();
+        var query = new UpdateUserCommand(infoRequest);
+        var result = await _mediator.Send(query);
+        if (result.IsSuccess)
+            return Ok();
+        return StatusCode(500);
     }
     [HttpDelete]
     [Route("{id}")]
     public async Task<IActionResult> DeleteUser([FromRoute] int id)
     {
-        try
-        {
-            var query = new DeleteUserCommand(id);
-            var result = await _mediator.Send(query);
-            if (result)
-                return NoContent();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("error message = {ms}, whole error = {er}", ex.Message, ex);
-            return StatusCode(500, "Server Error");
-        }
-        return BadRequest();
+        var query = new DeleteUserCommand(id);
+        var result = await _mediator.Send(query);
+        if (result.IsSuccess)
+            return NoContent();
+        return StatusCode(500, "Server Error");
     }
     private async Task<AuthResult> GenerateJwtToken(User user)
     {
@@ -244,7 +168,7 @@ public class UserController : BaseController<UserController>
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new(JwtRegisteredClaimNames.Iat, DateTime.Now.ToUniversalTime().ToString()),
             }),
-            Expires = DateTime.Now.AddHours(1), //FOR dev only
+            Expires = DateTime.Now.AddHours(1), // FOR dev only
             TokenType = JwtConstants.TokenType,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(SecurityKey),
             SecurityAlgorithms.HmacSha256)

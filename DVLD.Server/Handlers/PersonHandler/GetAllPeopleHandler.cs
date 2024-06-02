@@ -4,18 +4,19 @@ using DVLD.DataService.Repositories.Interfaces;
 using DVLD.Entities.DbSets;
 using DVLD.Entities.Dtos.Response;
 using DVLD.Server.Queries;
+using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace DVLD.Server.Handlers.PersonHandler;
 
-public class GetAllPeopleHandler : BaseHandler<GetAllPeopleHandler>, IRequestHandler<GetAllPeopleQuery, PaginatedPeople>
+public class GetAllPeopleHandler : BaseHandler<GetAllPeopleHandler>, IRequestHandler<GetAllPeopleQuery, Result<PaginatedPeople>>
 {
     public GetAllPeopleHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<GetAllPeopleHandler> logger) : base(unitOfWork, mapper, logger)
     {
     }
 
-    public async Task<PaginatedPeople> Handle(GetAllPeopleQuery request, CancellationToken cancellationToken)
+    public async Task<Result<PaginatedPeople>> Handle(GetAllPeopleQuery request, CancellationToken cancellationToken)
     {
         var query = _unitOfWork.PersonRepository.GetQueryable();
         PaginatedPeople PaginatedPeople = new();
@@ -30,7 +31,7 @@ public class GetAllPeopleHandler : BaseHandler<GetAllPeopleHandler>, IRequestHan
         PaginatedPeople.Page = await HandlePages(query, request.Params.Page, request.Params.PageSize, cancellationToken);
         query = _unitOfWork.PersonRepository.Pagination(request.Params, query);
         PaginatedPeople.AllPeople = _mapper.Map<IEnumerable<AllPeopleResponse>>(await query.AsNoTracking().ToListAsync(cancellationToken));
-        return PaginatedPeople;
+        return Result.Ok(PaginatedPeople);
     }
 
     public async Task<Pages> HandlePages(IQueryable<Person> Query, int Page, int PageSize, CancellationToken cancellationToken)

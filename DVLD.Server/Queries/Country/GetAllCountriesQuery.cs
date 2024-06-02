@@ -1,9 +1,8 @@
 ﻿using DVLD.Entities.DbSets;
 using DVLD.Entities.Dtos.Response;
+using FluentResults;
 using MediatR;
 
 namespace DVLD.Server.Queries;
 
-public class GetAllCountriesQuery : IRequest<IEnumerable<AllCountriesResponse>?>
-{
-}
+public record GetAllCountriesQuery : IRequest<Result<IEnumerable<AllCountriesResponse>?>>;

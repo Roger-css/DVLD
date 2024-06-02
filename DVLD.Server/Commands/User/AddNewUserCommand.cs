@@ -1,6 +1,6 @@
-﻿using DVLD.Entities.DbSets;
-using DVLD.Entities.Dtos.Request;
+﻿using DVLD.Entities.Dtos.Request;
+using FluentResults;
 using MediatR;
 
 namespace DVLD.Server.Commands;
-public record AddNewUserCommand(CreateUserRequest Params) : IRequest<bool>;
+public record AddNewUserCommand(CreateUserRequest Params) : IRequest<Result>;

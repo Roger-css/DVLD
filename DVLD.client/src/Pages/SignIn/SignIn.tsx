@@ -17,21 +17,25 @@ import {
   Button,
 } from "@mui/material";
 import isObjectEmpty from "../../Utils/IsObjEmpty";
+import { useLoaderData } from "react-router-dom";
 type UserInfo = { UserName: string; Password: string };
 function SignIn() {
-  const [showPassword, setShowPassword] = useState(false);
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const loader = useLoaderData();
+  console.log(loader);
+  const Login = useLogin();
   const {
     getItem: getUserInfo,
     setItem: setUserInfo,
     deleteItem: deleteUserInfo,
   } = useLocalStorage("user");
-  const UserInfo: UserInfo = getUserInfo();
-  const [userName, setUserName] = useState(UserInfo.UserName);
-  const [password, setPassword] = useState(UserInfo.Password);
+  const UserInfo: UserInfo | undefined = getUserInfo();
+  const [userName, setUserName] = useState(UserInfo?.UserName ?? "");
+  const [password, setPassword] = useState(UserInfo?.Password ?? "");
+  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(
     isObjectEmpty(UserInfo) ? false : true
   );
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
   const HandleSubmit = () => {
     if (rememberMe) {
       setUserInfo({
@@ -41,7 +45,7 @@ function SignIn() {
     } else {
       deleteUserInfo();
     }
-    useLogin({ userName, password });
+    Login({ userName, password });
   };
   const rememberMeHandler = (): void => setRememberMe((prev) => !prev);
   return (

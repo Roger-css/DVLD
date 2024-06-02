@@ -1,4 +1,5 @@
-const isObjectEmpty = (e: object) => {
+const isObjectEmpty = (e: object | undefined) => {
+  if (typeof e !== "object") return true;
   return Object.keys(e).length === 0;
 };
 

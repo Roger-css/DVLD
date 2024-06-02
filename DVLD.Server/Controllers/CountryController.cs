@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using DVLD.DataService.Repositories.Interfaces;
+﻿using DVLD.DataService.Repositories.Interfaces;
 using DVLD.Server.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +15,8 @@ public class CountryController : BaseController<CountryController>
     {
         var query = new GetAllCountriesQuery();
         var countries = await _mediator.Send(query);
-        return Ok(countries);
+        if(countries.IsSuccess)
+            return Ok(countries.Value);
+        return StatusCode(500, countries.Errors);
     }
 }
