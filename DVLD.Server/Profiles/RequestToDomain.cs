@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using DVLD.Entities.DbSets;
 using DVLD.Entities.Dtos.Request;
-using DVLD.Entities.Enums;
 using DVLD.Server.Controllers;
-using System.Globalization;
 
 namespace DVLD.Server.Profiles;
 
@@ -16,20 +14,19 @@ public class RequestToDomain : Profile
         CreateMap<CreateAppointmentRequest, TestAppointment>();
         CreateMap<CreateTestRequest, Test>();
         CreateMap<PersonRequest, Person>()
-            .ForMember(dest => dest.Id, (opt) => opt.MapFrom(src => src.id))
-            .ForMember(dest => dest.FirstName, (opt) => opt.MapFrom(src => src.firstName))
-            .ForMember(dest => dest.SecondName, (opt) => opt.MapFrom(src => src.secondName))
-            .ForMember(dest => dest.ThirdName, (opt) => opt.MapFrom(src => src.thirdName))
-            .ForMember(dest => dest.LastName, (opt) => opt.MapFrom(src => src.lastName))
-            .ForMember(dest => dest.NationalNo, (opt) => opt.MapFrom(src => src.nationalNo))
-            .ForMember(dest => dest.Email, (opt) => opt.MapFrom(src => src.email))
-            .ForMember(dest => dest.Phone, (opt) => opt.MapFrom(src => src.phone))
-            .ForMember(dest => dest.Address, (opt) => opt.MapFrom(src => src.address))
-            .ForMember(dest => dest.NationalityCountryId, opt => opt.MapFrom(src => src.country))
-            .ForMember(dest => dest.Gender, (opt) => opt.MapFrom(src => src.gender))
-            .ForMember(dest => dest.BirthDate, (opt) => opt.MapFrom(src => src.dateOfBirth))
-            .ForMember(dest => dest.Image, (opt) => opt.MapFrom(src => ConvertFormFileToByteArray(src.image)))
-            .ForMember(dest => dest.Country, opt => opt.Ignore());
+            .ForMember(dest => dest.Id, (opt) => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.FirstName, (opt) => opt.MapFrom(src => src.FirstName))
+            .ForMember(dest => dest.SecondName, (opt) => opt.MapFrom(src => src.SecondName))
+            .ForMember(dest => dest.ThirdName, (opt) => opt.MapFrom(src => src.ThirdName))
+            .ForMember(dest => dest.LastName, (opt) => opt.MapFrom(src => src.LastName))
+            .ForMember(dest => dest.NationalNo, (opt) => opt.MapFrom(src => src.NationalNo))
+            .ForMember(dest => dest.Email, (opt) => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.Phone, (opt) => opt.MapFrom(src => src.Phone))
+            .ForMember(dest => dest.Address, (opt) => opt.MapFrom(src => src.Address))
+            .ForMember(dest => dest.NationalityCountryId, opt => opt.MapFrom(src => src.Country))
+            .ForMember(dest => dest.Gender, (opt) => opt.MapFrom(src => src.Gender))
+            .ForMember(dest => dest.BirthDate, (opt) => opt.MapFrom(src => src.DateOfBirth))
+            .ForMember(dest => dest.Image, (opt) => opt.MapFrom(src => ConvertFormFileToByteArray(src.Image)));
     }
     private static byte[]? ConvertFormFileToByteArray(IFormFile? file)
     {

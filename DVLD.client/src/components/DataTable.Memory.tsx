@@ -20,7 +20,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React, { ReactNode, useState } from "react";
+import { ReactNode, memo, useState } from "react";
 type Props<TColumn, TData> = {
   column: ColumnDef<TData, TColumn>[];
   Data: TData[];
@@ -47,12 +47,12 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
-const DataTableMemory = <TColumn, TData>({
+let DataTableMemory = <TColumn, TData>({
   Data,
   column,
   children,
   pageSize,
-  color = "#1976d2",
+  color = "#1565c0",
 }: Props<TColumn, TData>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const table = useReactTable({
@@ -142,5 +142,11 @@ const DataTableMemory = <TColumn, TData>({
     </div>
   );
 };
-const memoized = React.memo(DataTableMemory);
-export default memoized;
+DataTableMemory = memo(DataTableMemory) as <TColumn, TData>({
+  Data,
+  column,
+  children,
+  pageSize,
+  color,
+}: Props<TColumn, TData>) => JSX.Element;
+export default DataTableMemory;

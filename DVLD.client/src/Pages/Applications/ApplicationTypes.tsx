@@ -33,7 +33,7 @@ const ApplicationTypes = () => {
             }
             sx={{ color: "white", minWidth: "auto" }}
           >
-            Id{" "}
+            Id
             {header.column.getIsSorted() == "desc" ? (
               <ExpandLess />
             ) : (
@@ -130,8 +130,7 @@ const ApplicationTypes = () => {
       </Modal>
       <DataTable
         Data={applicationTypesArr}
-        // @ts-expect-error react.Memo problem
-        column={COLUMNS}
+        column={COLUMNS as unknown as ColumnDef<unknown, unknown>[]}
       />
     </div>
   );

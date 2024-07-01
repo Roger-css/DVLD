@@ -2,6 +2,7 @@
 using DVLD.Entities.Dtos.Request;
 using DVLD.Entities.Enums;
 using DVLD.Server.Commands;
+using DVLD.Server.Common.Extensions;
 using DVLD.Server.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -20,7 +21,7 @@ public class PersonController : BaseController<PersonController>
     {
         var query = new GetPersonQuery(@params);
         var result = await _mediator.Send(query);
-        if(result.IsSuccess)
+        if (result.IsSuccess)
             return Ok(result.Value);
         return NotFound();
     }
@@ -30,7 +31,7 @@ public class PersonController : BaseController<PersonController>
     {
         var query = new IsNationalNoExistsQuery(NationalNo);
         var result = await _mediator.Send(query);
-        if(result.IsSuccess) return Ok();
+        if (result.IsSuccess) return Ok();
         return NotFound();
     }
     [HttpPost()]
@@ -39,15 +40,19 @@ public class PersonController : BaseController<PersonController>
     {
         var query = new GetAllPeopleQuery(Params);
         var result = await _mediator.Send(query);
-        return result != null ? Ok(result) : NotFound();
+        if (result.IsSuccess)
+            return Ok(result?.Value);
+        if (result.IsFailed)
+            return BadRequest(result.ToErrorMessages());
+        return StatusCode(500);
     }
     [HttpPost()]
     [Route("Add")]
-    public async Task<IActionResult> AddNewPerson([FromForm] PersonRequest testEntity)
+    public async Task<IActionResult> AddNewPerson([FromForm] PersonRequest person)
     {
-        AddNewPersonCommand query = new(testEntity);
+        AddNewPersonCommand query = new(person);
         var result = await _mediator.Send(query);
-        if(result.IsSuccess)
+        if (result.IsSuccess)
             return Ok();
         return StatusCode(500);
     }
@@ -67,15 +72,18 @@ public class PersonController : BaseController<PersonController>
     {
         var query = new UpdatePersonCommand(person);
         var result = await _mediator.Send(query);
-        return result ? NoContent() : UnprocessableEntity();
+        if (result.IsSuccess)
+            return NoContent();
+        return BadRequest(result.ToErrorMessages());
     }
 }
-public record PersonRequest(int id, string nationalNo, string firstName, string secondName, string thirdName, string lastName,
-    EnGender gender,
-    DateTime dateOfBirth,
-    string phone,
-    string? email,
-    int country,
-    string address,
-    IFormFile? image
+public record PersonRequest(int? Id, string NationalNo, string FirstName, string SecondName, string ThirdName,
+    string LastName,
+    EnGender Gender,
+    DateTime DateOfBirth,
+    string Phone,
+    string? Email,
+    int Country,
+    string Address,
+    IFormFile? Image
     );

@@ -15,7 +15,8 @@ namespace DVLD.Server.Handlers.PersonHandler
         public async Task<Result<bool>> Handle(IsNationalNoExistsQuery request, CancellationToken cancellationToken)
         {
             var exists = await _unitOfWork.PersonRepository.IsNationalNoExist(request.NationalNo);
-            if (exists) 
+            if (exists)
+
                 return Result.Ok(exists);
             return Result.Fail("Doesn't Exists");
         }

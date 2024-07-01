@@ -54,7 +54,7 @@ const LdlaWithPersonDetails = ({
       <h1 className="text-2xl text-center">{title}</h1>
       <TabContext value={tab}>
         <div className="flex justify-between">
-          <TabList onChange={(_, v) => (id != -1 ? setTab(v) : false)}>
+          <TabList onChange={(_, v) => (id && id != -1 ? setTab(v) : false)}>
             <Tab label="Step One" />
             <Tab label="Step Two" />
           </TabList>

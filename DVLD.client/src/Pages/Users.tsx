@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import CheckBox from "@mui/material/Checkbox";
 import { ColumnDef } from "@tanstack/react-table";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import useDebounce from "../hooks/useDebounce";
 import PsychologyAltIcon from "@mui/icons-material/PsychologyAlt";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
@@ -55,7 +55,7 @@ const allFilters = () => {
   }
   return arrOfFilters;
 };
-const Index = () => {
+const Users = () => {
   const [filter, setFilter] = useState<keyof Filters>(FilterMode.none);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [modalData, setModalData] = useState<number | null>(null);
@@ -68,14 +68,17 @@ const Index = () => {
   const [modalTitle, setModalTitle] = useState<string>("");
   const [DataSet, setDataSet] = useState<user[]>([]);
   const axios = usePrivate();
-  const deleteUser = async (id: number) => {
-    try {
-      const Success = await axios.delete(`User/${id}`);
-      if (Success) setRefreshData(!refreshData);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const deleteUser = useCallback(
+    async (id: number) => {
+      try {
+        const Success = await axios.delete(`User/${id}`);
+        if (Success) setRefreshData(!refreshData);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [axios, refreshData]
+  );
   useEffect(() => {
     const controller = new AbortController();
     const RequestingData = async () => {
@@ -288,8 +291,7 @@ const Index = () => {
         },
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [deleteUser]
   );
   return (
     <div className="w-10/12 mx-auto">
@@ -369,12 +371,11 @@ const Index = () => {
       <main>
         <DataTable
           Data={DataSet}
-          // @ts-expect-error react.Memo problem
-          column={COLUMNS}
+          column={COLUMNS as unknown as ColumnDef<unknown, unknown>[]}
         />
       </main>
     </div>
   );
 };
 
-export default Index;
+export default Users;

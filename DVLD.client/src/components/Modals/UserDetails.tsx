@@ -161,7 +161,6 @@ const UserDetails = ({
   return (
     <div className="ModalBox">
       <h1 className="text-2xl text-center">{title}</h1>
-      <div></div>
       <TabContext value={tab}>
         <div className="flex justify-between">
           <TabList onChange={(_, v) => (dataSet ? setTab(v) : false)}>

@@ -3,6 +3,7 @@ using DVLD.DataService.Helpers;
 using DVLD.DataService.Repositories.Interfaces;
 using DVLD.Entities.DbSets;
 using DVLD.Entities.Dtos.Request;
+using DVLD.Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -15,41 +16,18 @@ internal class PersonRepository : GenericRepository<Person>, IPersonRepository
     }
     public async Task<bool> IsNationalNoExist(string nationalNo)
     {
-		try
-		{
-			var result = await _dbSet.Select((e)=> e.NationalNo).SingleOrDefaultAsync((e) => e == nationalNo);
-			if(result == null)
-			{
-				return true;
-			}
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, $"error occoured in {nameof(IsNationalNoExist)}");
-			throw;
-		}
-		return false;
-    }
-    public override async Task<bool> Add(Person entity)
-    {
-		if (entity == null) return false;
-        try
+        var result = await _dbSet.Select((e) => e.NationalNo).SingleOrDefaultAsync((e) => e == nationalNo);
+        if (result is null)
         {
-            var result = await _dbSet.AddAsync(entity);
-            return true;
+            return false;
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"error occoured in {nameof(Add)}");
-            throw;
-        }
+        return true;
     }
-
     public IQueryable<Person> Pagination(GetAllPeopleRequest Params, IQueryable<Person> Query)
     {
-        if (Params.OrderBy?.ToLower() == "asc")
+        if (Params.OrderBy == EnOrderBy.asc)
             Query = Query.OrderBy(e => e.Id);
-        else if (Params.OrderBy?.ToLower() == "desc")
+        else if (Params.OrderBy == EnOrderBy.desc)
             Query = Query.OrderByDescending(e => e.Id);
 
         Query = Query.Skip((Params.Page - 1) * Params.PageSize).Take(Params.PageSize)
@@ -76,7 +54,7 @@ internal class PersonRepository : GenericRepository<Person>, IPersonRepository
 
     public async Task<bool> DeletePerson(int id)
     {
-        var entity = await _dbSet.Include(e=> e.User).FirstAsync((e)=> e.Id == id);
+        var entity = await _dbSet.Include(e => e.User).FirstAsync((e) => e.Id == id);
         if (entity == null)
             return false;
         if (entity.User != null)
@@ -87,17 +65,17 @@ internal class PersonRepository : GenericRepository<Person>, IPersonRepository
 
     public async Task<bool> UpdatePerson(Person person)
     {
-        await _dbSet.ExecuteUpdateAsync(e => e
-        .SetProperty(e => e.FirstName,person.FirstName)
-        .SetProperty(e => e.SecondName,person.SecondName)
-        .SetProperty(e => e.ThirdName,person.ThirdName)
-        .SetProperty(e => e.LastName,person.LastName)
-        .SetProperty(e => e.BirthDate,person.BirthDate)
+        await _dbSet.Where(e => e.Id == person.Id).ExecuteUpdateAsync(e => e
+        .SetProperty(e => e.FirstName, person.FirstName)
+        .SetProperty(e => e.SecondName, person.SecondName)
+        .SetProperty(e => e.ThirdName, person.ThirdName)
+        .SetProperty(e => e.LastName, person.LastName)
+        .SetProperty(e => e.BirthDate, person.BirthDate)
         .SetProperty(e => e.Gender, person.Gender)
         .SetProperty(e => e.NationalityCountryId, person.NationalityCountryId)
         .SetProperty(e => e.NationalNo, person.NationalNo)
         .SetProperty(e => e.Phone, person.Phone)
-        .SetProperty(e => e.Email,e => person.Email)
+        .SetProperty(e => e.Email, e => person.Email)
         .SetProperty(e => e.Address, person.Address)
         .SetProperty(e => e.Image, person.Image));
         return true;
@@ -108,5 +86,10 @@ internal class PersonRepository : GenericRepository<Person>, IPersonRepository
         var entity = await _dbSet.HandlePersonSearch(Params.SearchTermKey!, Params.SearchTermValue!)
             .FirstOrDefaultAsync();
         return entity;
+    }
+
+    public async Task<bool> IsPersonExist(int Id)
+    {
+        return await _dbSet.AnyAsync(e => e.Id == Id);
     }
 }

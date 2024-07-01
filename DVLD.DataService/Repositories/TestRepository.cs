@@ -15,39 +15,40 @@ internal class TestRepository : GenericRepository<TestAppointment>, ITestReposit
     {
     }
 
-    public async Task<IEnumerable<TestType>> GetAllTestTypes()
+    public async Task<IEnumerable<TestType>?> GetAllTestTypes()
     {
-        return await _context.TestTypes.ToListAsync();
+        var result = await _context.TestTypes.ToListAsync();
+        if (result.Count > 0)
+            return result;
+        return null;
     }
-    public async Task<bool> UpdateTestType(TestType test)
+    public async Task UpdateTestType(TestType test)
     {
-        var entity = await _context.TestTypes.FirstOrDefaultAsync(e => e.Id == test.Id);
-        if (entity == null)
-            return false;
-        entity.TestTypeTitle = test.TestTypeTitle;
-        entity.TestTypeDescription = test.TestTypeDescription;
-        entity.TestTypeFees = test.TestTypeFees;
-        return true;
+        await _context.TestTypes.Where(e => e.Id == test.Id).ExecuteUpdateAsync(e => e
+        .SetProperty(entity => entity.TestTypeTitle, test.TestTypeTitle)
+        .SetProperty(entity => entity.TestTypeDescription, test.TestTypeDescription)
+        .SetProperty(entity => entity.TestTypeFees, test.TestTypeFees));
     }
     public async Task<LdlaDetailsWithAppointments?> LdlaDetailsWithAppointments(int id, int typeId)
     {
-        var result = await _context.LocalDrivingLicenseApplications.Select(e => new LdlaDetailsWithAppointments()
-        {
-            Id = id,
-            ApplicationId = e.ApplicationId,
-            ApplicationType = e.Application.ApplicationType.ApplicationTypeTitle,
-            CreatedBy = e.Application.User.UserName,
-            Date = e.Application.CreatedAt,
-            LicenseClass = e.LicenseClass.ClassName,
-            Name = $"{e.Application.Person.FirstName} {e.Application.Person.SecondName}" +
+        var result = await _context.LocalDrivingLicenseApplications
+            .Select(e => new LdlaDetailsWithAppointments()
+            {
+                Id = id,
+                ApplicationId = e.ApplicationId,
+                ApplicationType = e.Application.ApplicationType.ApplicationTypeTitle,
+                CreatedBy = e.Application.User.UserName,
+                Date = e.Application.CreatedAt,
+                LicenseClass = e.LicenseClass.ClassName,
+                Name = $"{e.Application.Person.FirstName} {e.Application.Person.SecondName}" +
             $" {e.Application.Person.ThirdName} {e.Application.Person.LastName}",
-            PaidFees = e.Application.PaidFees,
-            Status = e.Application.ApplicationStatus,
-            StatusDate = e.Application.LastStatusDate,
-            TestAppointments = _context.TestAppointments
+                PaidFees = e.Application.PaidFees,
+                Status = e.Application.ApplicationStatus,
+                StatusDate = e.Application.LastStatusDate,
+                TestAppointments = _context.TestAppointments
             .Where(test => test.LocalDrivingLicenseApplicationId == id && test.TestTypeId == typeId)
             .ToList()
-        }).FirstOrDefaultAsync();
+            }).FirstOrDefaultAsync();
         return result;
     }
 
@@ -65,21 +66,19 @@ internal class TestRepository : GenericRepository<TestAppointment>, ITestReposit
 
     public async Task LockAppointment(int entityId)
     {
-        var entity = await _dbSet.Where(e => e.Id == entityId).FirstOrDefaultAsync();
-        if(entity == null)
-            return;
-        entity.IsLocked = true;
+        await _dbSet.Where(e => e.Id == entityId)
+            .ExecuteUpdateAsync(e => e.SetProperty(e => e.IsLocked, true));
     }
 
     public async Task<bool> IsFirstTest(int Id, int testTypeId)
     {
         var entity = await _dbSet
             .FirstOrDefaultAsync(e => e.LocalDrivingLicenseApplicationId == Id && e.TestTypeId == testTypeId);
-        if(entity == null) return true;
+        if (entity == null) return true;
         return false;
     }
 
-    public async Task<Application> Create2ndTest(TestAppointment entity)
+    public async Task<Application> CreateRetakeTest(TestAppointment entity)
     {
         var Application = await _context.LocalDrivingLicenseApplications
             .Include(e => e.Application)

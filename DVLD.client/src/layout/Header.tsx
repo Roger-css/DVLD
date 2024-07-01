@@ -112,7 +112,7 @@ const Header = () => {
       ],
       focused: false,
       className: "Applications",
-      focusedClassName: "ShowingHeaderCellUlApplications",
+      focusedClassName: "ShowingHeaderCellSubList",
       onClick: () => {
         handleClick("Application");
       },
@@ -204,7 +204,6 @@ const Header = () => {
       ],
       className: "AccSettings",
       focused: false,
-      focusedClassName: "ShowingHeaderCellUlAccSettings",
       onClick: () => {
         handleClick("Account Settings");
       },
@@ -212,13 +211,9 @@ const Header = () => {
   ]);
   const logout = async () => {
     try {
-      const result = await axios.get("User/Logout");
-      if (result) {
-        deleteItem();
-        navigate("/");
-      } else {
-        throw new Error();
-      }
+      await axios.get("User/Logout");
+      deleteItem();
+      navigate("/");
     } catch (error) {
       console.log(error);
     }
@@ -248,7 +243,6 @@ const Header = () => {
         const toGo = queryParam[0].toUpperCase() + queryParam.slice(1);
         handleClick(toGo);
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
 
   return (
@@ -276,7 +270,6 @@ const Header = () => {
               SubList={v.SubList}
               key={v.Title}
               className={v.className}
-              focusedClassName={v.focusedClassName}
             />
           );
         })}

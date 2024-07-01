@@ -13,9 +13,9 @@ type Props = {
   onClose: () => void;
   trails: number;
   testTypeId: number;
-  testDetails?: testDetails;
+  testDetails?: TestDetails;
 };
-type testDetails = { id: number; date: Date; isLocked: boolean };
+type TestDetails = { id: number; date: Date; isLocked: boolean };
 function getTodaysDate(date?: Date) {
   const today = date ? date : new Date();
   return `${today.getFullYear()}-${

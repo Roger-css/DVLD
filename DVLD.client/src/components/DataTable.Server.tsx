@@ -1,29 +1,23 @@
-/* eslint-disable react-refresh/only-export-components */
 import {
   Pagination,
   Paper,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  tableCellClasses,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React, { ReactNode } from "react";
-type FilterOptions = {
-  gender: number;
-  page: number;
-  pageSize: number;
-  orderBy: string;
-};
+import { Dispatch, ReactNode, SetStateAction, memo } from "react";
+import { StyledTableRow } from "./UI/StyledTableRow";
+import { StyledTableCell } from "./UI/StyledTableCell";
+import { FilterOptions } from "../Types/Shared";
+
 type tyPages = {
   totalCount: number;
   hasPrev: boolean;
@@ -33,37 +27,16 @@ type Props<TColumn, TData> = {
   column: ColumnDef<TData, TColumn>[];
   Data: TData[];
   children?: ReactNode;
-  handleFiltersChange: React.Dispatch<React.SetStateAction<FilterOptions>>;
+  handleFiltersChange: Dispatch<SetStateAction<FilterOptions>>;
   pages: tyPages;
 };
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.primary.dark,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
-const DataTable = <TColumn, TData>({
+let DataTable = <TColumn, TData>({
   Data,
   column,
   children,
   handleFiltersChange,
   pages,
-}: // filteringOptions,
-// handleFiltersChange,
-Props<TColumn, TData>) => {
+}: Props<TColumn, TData>) => {
   const table = useReactTable({
     columns: column,
     data: Data || [],
@@ -142,5 +115,11 @@ Props<TColumn, TData>) => {
     </div>
   );
 };
-const memoized = React.memo(DataTable);
-export default memoized;
+DataTable = memo(DataTable) as <TColumn, TData>({
+  Data,
+  column,
+  children,
+  handleFiltersChange,
+  pages,
+}: Props<TColumn, TData>) => JSX.Element;
+export default DataTable;

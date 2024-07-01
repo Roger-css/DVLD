@@ -116,7 +116,6 @@ const TestTypes = () => {
         },
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
   return (
@@ -132,8 +131,7 @@ const TestTypes = () => {
       </Modal>
       <DataTable
         Data={testTypesArr}
-        // @ts-expect-error react.Memo problem
-        column={COLUMNS}
+        column={COLUMNS as unknown as ColumnDef<unknown, unknown>[]}
       />
     </div>
   );

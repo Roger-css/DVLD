@@ -18,6 +18,43 @@ internal class LicenseRepository : GenericRepository<License>, ILicenseRepositor
         return await _context.LicenseClasses.ToListAsync();
     }
 
+    public async Task<License?> GetLocalLicenseInfo(int applicationId)
+    {
+        var entity = await _dbSet.AsNoTracking()
+            .Where(e => e.Application.LocalDrivingLicenseApplication!.Id == applicationId)
+            .Select(e => new License
+            {
+                Id = e.Id,
+                DriverId = e.DriverId,
+                ExpirationDate = e.ExpirationDate,
+                IssueDate = e.IssueDate,
+                IsActive = e.IsActive,
+                IssueReason = e.IssueReason,
+                Notes = e.Notes,
+                LicenseClass = new LicenseClass
+                {
+                    ClassName = e.LicenseClass.ClassName,
+                },
+                Driver = new Driver
+                {
+                    Person = new Person
+                    {
+                        FirstName = e.Driver.Person!.FirstName,
+                        SecondName = e.Driver.Person.SecondName,
+                        ThirdName = e.Driver.Person.ThirdName,
+                        LastName = e.Driver.Person.LastName,
+                        Gender = e.Driver.Person.Gender,
+                        BirthDate = e.Driver.Person.BirthDate,
+                        NationalNo = e.Driver.Person.NationalNo,
+                        Image = e.Driver.Person.Image,
+                    }
+                },
+                DetainedLicense = e.DetainedLicense!.Where(e => !e.IsReleased).ToList(),
+            })
+            .FirstOrDefaultAsync();
+        return entity;
+    }
+
     public async Task<License> IssueLicenceFirstTime(IssueDrivingLicenseFirstTimeRequest request, int driverId)
     {
         var licenseClass = await _context.Applications.Include(e => e.LocalDrivingLicenseApplication)
@@ -39,5 +76,21 @@ internal class LicenseRepository : GenericRepository<License>, ILicenseRepositor
         };
         await _dbSet.AddAsync(license);
         return license;
+    }
+    public async Task<IEnumerable<License>> GetLocalLicensesAsync(int id)
+    {
+        return await _dbSet.Where(e => e.Driver.Person!.Id == id)
+            .Select(e => new License
+            {
+                Id = e.Id,
+                ApplicationId = e.ApplicationId,
+                LicenseClass = new LicenseClass
+                {
+                    ClassName = e.LicenseClass.ClassName
+                },
+                IssueDate = e.IssueDate,
+                ExpirationDate = e.ExpirationDate,
+                IsActive = e.IsActive,
+            }).ToListAsync();
     }
 }

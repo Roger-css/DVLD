@@ -2,17 +2,18 @@
 using DVLD.DataService.Repositories.Interfaces;
 using DVLD.Entities.DbSets;
 using DVLD.Server.Commands;
+using FluentResults;
 using MediatR;
 
 namespace DVLD.Server.Handlers.TestHandler;
 
-public class CreateNewTestHandler : BaseHandler<CreateNewTestHandler>, IRequestHandler<CreateNewTestCommand, int>
+public class CreateNewTestHandler : BaseHandler<CreateNewTestHandler>, IRequestHandler<CreateNewTestCommand, Result<int>>
 {
     public CreateNewTestHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<CreateNewTestHandler> logger) : base(unitOfWork, mapper, logger)
     {
     }
 
-    public async Task<int> Handle(CreateNewTestCommand request, CancellationToken cancellationToken)
+    public async Task<Result<int>> Handle(CreateNewTestCommand request, CancellationToken cancellationToken)
     {
         try
         {

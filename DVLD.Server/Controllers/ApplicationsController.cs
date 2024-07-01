@@ -2,6 +2,7 @@
 using DVLD.Entities.DbSets;
 using DVLD.Entities.Dtos.Request;
 using DVLD.Server.Commands;
+using DVLD.Server.Common.Extensions;
 using DVLD.Server.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -20,8 +21,8 @@ public class ApplicationsController : BaseController<ApplicationsController>
     {
         var query = new GetApplicationTypesQuery();
         var result = await _mediator.Send(query);
-        if (result != null) 
-            return Ok(result);
+        if (result != null)
+            return Ok(result.Value);
         return StatusCode(500, new { Error = "Idk man ur server crashed look logs" });
     }
     [HttpPut]
@@ -30,7 +31,7 @@ public class ApplicationsController : BaseController<ApplicationsController>
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(new { message = "Invalid credentials"});
+            return BadRequest(new { message = "Invalid credentials" });
         }
         var query = new UpdateApplicationTypeCommand(entity);
         var result = await _mediator.Send(query);
@@ -54,11 +55,11 @@ public class ApplicationsController : BaseController<ApplicationsController>
         {
             return Ok(result);
         }
-        else if(result == 0)
+        else if (result == 0)
             return NotFound();
 
-        else 
-            return StatusCode(500,"server error look logs");
+        else
+            return StatusCode(500, "server error look logs");
     }
     [HttpPut]
     [Route("LDLA")]
@@ -78,11 +79,11 @@ public class ApplicationsController : BaseController<ApplicationsController>
         {
             return BadRequest($"Failed to update {ex.Message}");
         }
-        
+
     }
     [HttpPost]
     [Route("LDLA/get")]
-    public async Task<IActionResult> GetAllLDLA([FromBody] GetAllLDLARequest entity)
+    public async Task<IActionResult> GetAllLDLA([FromBody] GetPaginatedDataRequest entity)
     {
         if (!ModelState.IsValid)
         {
@@ -112,7 +113,7 @@ public class ApplicationsController : BaseController<ApplicationsController>
         {
             var query = new CancelLDLACommand(entity);
             var result = await _mediator.Send(query);
-            if(result)
+            if (result)
                 return Ok(result);
             return NotFound();
         }
@@ -143,5 +144,15 @@ public class ApplicationsController : BaseController<ApplicationsController>
             _logger.LogError("{ex}", ex.Message);
             return StatusCode(500, ex.Message);
         }
+    }
+    [HttpDelete]
+    [Route("Ldla/delete/{Id}")]
+    public async Task<IActionResult> DeleteLdla(int Id)
+    {
+        var query = new DeleteLdlaCommand(Id);
+        var result = await _mediator.Send(query);
+        if (result.IsSuccess)
+            return Ok();
+        return BadRequest(result.ToErrorMessages());
     }
 }

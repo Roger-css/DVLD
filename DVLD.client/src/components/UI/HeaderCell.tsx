@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef } from "react";
+import { ReactNode, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 type props = {
   title: string;
@@ -6,7 +6,6 @@ type props = {
   focused: boolean;
   handleClick: () => void;
   className?: string;
-  focusedClassName?: string;
   activeLi: string | undefined;
 };
 
@@ -16,11 +15,8 @@ const HeaderCell = ({
   focused,
   className,
   handleClick,
-  focusedClassName,
   activeLi,
 }: props) => {
-  const CellRef = useRef<HTMLLIElement>(null);
-  const SubListRef = useRef<HTMLUListElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
@@ -31,11 +27,9 @@ const HeaderCell = ({
     ) {
       handleClick();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [handleClick, location.pathname, title]);
   return (
     <li
-      ref={CellRef}
       onClick={() => {
         if (title === "People") {
           navigate("people");
@@ -58,9 +52,8 @@ const HeaderCell = ({
       {SubList && (
         <ul
           className={`-mt-2 bg-white HeaderCellUl ${className} ${
-            focused ? "ShowingHeaderCellUl " + focusedClassName : null
+            focused ? "ShowingHeaderCellUl" : null
           }`}
-          ref={SubListRef}
         >
           {SubList.map((v, i) => {
             return <li key={i}>{v.title}</li>;

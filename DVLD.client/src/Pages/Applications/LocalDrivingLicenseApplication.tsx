@@ -1,20 +1,5 @@
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import {
-  Button,
-  Popover,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Modal,
-  TextField,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from "@mui/material";
+import { Button, Modal, TextField } from "@mui/material";
 import { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
 import useDebounce from "../../hooks/useDebounce";
@@ -23,13 +8,13 @@ import usePrivate from "../../hooks/usePrivate";
 import { localDrivingLA_view } from "../../Types/Applications";
 import DataTable from "../../components/DataTable.Server";
 import LdlaWithPersonDetails from "../../components/Modals/LdlaWithPersonDetails";
-import InfoIcon from "@mui/icons-material/Info";
-import SettingsIcon from "@mui/icons-material/Settings";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
-import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import TestAppointment from "../../components/Modals/TestAppointment";
 import IssueDrivingLicense from "../../components/Modals/IssueDrivingLicense";
+import Actions from "./Actions";
+import LocalLicenseInfo from "../../components/Modals/Licences/LicenseInfo";
+import LicenseHistory from "../../components/Modals/Licences/LicenseHistory";
+import ShortDateString from "../../Utils/ShortDateString";
+import { PageOptions, FilterOptions } from "../../Types/Shared";
 interface Filters {
   [key: string]: string;
   none: string;
@@ -45,6 +30,10 @@ const FilterMode: Filters = {
   NationalNo: "National No",
   Status: "Status",
 };
+const OrderBy = {
+  asc: 1,
+  desc: 2,
+};
 const allFilters = () => {
   const arrOfFilters = [];
   for (const key in FilterMode) {
@@ -53,11 +42,15 @@ const allFilters = () => {
   return arrOfFilters;
 };
 const LocalDrivingLicenseApplication = () => {
+  const { asc, desc } = OrderBy;
   const [filter, setFilter] = useState<keyof Filters>(FilterMode.none);
-  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [openLdlaModal, setOpenLdlaModal] = useState<boolean>(false);
   const [openIssueDrivingLicenseModal, setOpenIssueDrivingLicenseModal] =
     useState<boolean>(false);
   const [openTestsModal, setOpenTestsModal] = useState<boolean>(false);
+  const [openLicenseInfoModal, setOpenLicenseInfoModal] =
+    useState<boolean>(false);
+  const [licenseHistoryModal, setLicenseHistoryModal] = useState(false);
   const [modalData, setModalData] = useState<number | null>(null);
   const [testsModalData, setTestsModalData] = useState<{
     passedTests: number;
@@ -70,13 +63,13 @@ const LocalDrivingLicenseApplication = () => {
   const [refreshData, setRefreshData] = useState<boolean>(false);
   const [modalTitle, setModalTitle] = useState<string>("");
   const [DataSet, setDataSet] = useState<localDrivingLA_view[]>([]);
-  const [filterOptions, setFilterOptions] = useState({
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     gender: 0,
     page: 1,
     pageSize: 10,
-    orderBy: "asc",
+    orderBy: asc,
   });
-  const [pages, setPages] = useState({
+  const [pages, setPages] = useState<PageOptions>({
     totalCount: 0,
     hasPrev: false,
     hasNext: false,
@@ -92,7 +85,7 @@ const LocalDrivingLicenseApplication = () => {
   };
   const deleteApplication = async (id: number) => {
     try {
-      const Success = await axios.delete(`Applications/LDLA/delete/${id}`);
+      const Success = await axios.delete(`Applications/Ldla/delete/${id}`);
       if (Success) setRefreshData(!refreshData);
     } catch (error) {
       console.log(error);
@@ -116,7 +109,7 @@ const LocalDrivingLicenseApplication = () => {
         const response = await axios.post("Applications/LDLA/get", body, {
           signal: controller.signal,
         });
-        setDataSet(response.data.allLDLAs);
+        setDataSet(response.data.collection);
         setPages(response.data.page);
       } catch (error) {
         console.log(error);
@@ -127,7 +120,14 @@ const LocalDrivingLicenseApplication = () => {
       controller.abort();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [Debounced, axios, openModal, refreshData, filterOptions, openTestsModal]);
+  }, [
+    Debounced,
+    axios,
+    openLdlaModal,
+    refreshData,
+    filterOptions,
+    openTestsModal,
+  ]);
   const COLUMNS = useMemo(
     (): ColumnDef<localDrivingLA_view, unknown>[] => [
       {
@@ -138,17 +138,13 @@ const LocalDrivingLicenseApplication = () => {
               onClick={() =>
                 setFilterOptions((p) => ({
                   ...p,
-                  orderBy: p.orderBy == "desc" ? "asc" : "desc",
+                  orderBy: p.orderBy == desc ? asc : desc,
                 }))
               }
               sx={{ color: "white", minWidth: "auto" }}
             >
               Id{" "}
-              {filterOptions.orderBy === "desc" ? (
-                <ExpandLess />
-              ) : (
-                <ExpandMore />
-              )}
+              {filterOptions.orderBy === desc ? <ExpandLess /> : <ExpandMore />}
             </Button>
           );
         },
@@ -173,8 +169,7 @@ const LocalDrivingLicenseApplication = () => {
       {
         accessorKey: "applicationDate",
         header: "Application Date",
-        cell: ({ getValue }) =>
-          new Date(getValue() as string).toLocaleDateString(),
+        cell: ({ getValue }) => ShortDateString(new Date(getValue() as string)),
       },
       {
         accessorKey: "passedTests",
@@ -188,319 +183,22 @@ const LocalDrivingLicenseApplication = () => {
       },
       {
         header: "Actions",
-        cell: ({ row }) => {
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(
-            null
-          );
-          const [inlineAnchorEl, setInlineAnchorEl] =
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            useState<HTMLButtonElement | null>(null);
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const [dialog, setDialog] = useState<boolean>(false);
-
-          const [dialogDescription, setDialogDescription] =
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            useState<string>("");
-          const [dialogButton, setDialogButton] =
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            useState<string>("");
-          const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-            setAnchorEl(event.currentTarget);
-          };
-          const handleClose = () => {
-            setAnchorEl(null);
-          };
-          const handleCloseDialog = () => setDialog(false);
-          const open = Boolean(anchorEl);
-          const id = row.original.id;
-          return (
-            <div>
-              <Button
-                onClick={handleClick}
-                sx={{ color: "black", fontSize: "20px", pt: "0" }}
-              >
-                ...
-              </Button>
-              <Popover
-                open={open}
-                anchorEl={anchorEl}
-                onClose={handleClose}
-                anchorOrigin={{
-                  vertical: "center",
-                  horizontal: "left",
-                }}
-              >
-                <List sx={{ width: "250px", height: "300px" }}>
-                  <ListItem disablePadding>
-                    <ListItemButton
-                      onClick={() => {
-                        setModalData(id);
-                        setReadOnly(true);
-                        setOpenModal(true);
-                        setModalTitle("Application Details");
-                        setAnchorEl(null);
-                      }}
-                    >
-                      <ListItemIcon>
-                        <InfoIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Show Application Details" />
-                    </ListItemButton>
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemButton
-                      onClick={() => {
-                        setModalData(id);
-                        setReadOnly(false);
-                        setModalTitle("Edit Application");
-                        setOpenModal(true);
-                        setAnchorEl(null);
-                      }}
-                      disabled={
-                        !(
-                          row.original.status == "NEW" &&
-                          row.original.passedTests == 0
-                        )
-                      }
-                    >
-                      <ListItemIcon>
-                        <SettingsIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Edit Application" />
-                    </ListItemButton>
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemButton
-                      onClick={() => {
-                        setDialogDescription(
-                          `Are you sure you want to delete the application with id = ${id}`
-                        );
-                        setDialogButton("Delete");
-                        setAnchorEl(null);
-                      }}
-                      disabled={row.original.passedTests != 0}
-                    >
-                      <ListItemIcon>
-                        <DeleteForeverIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Delete Application" />
-                    </ListItemButton>
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemButton
-                      disabled={row.original.status !== "NEW"}
-                      onClick={() => {
-                        setAnchorEl(null);
-                        setDialog(true);
-                        setDialogDescription(
-                          `Are you sure you want to cancel the application with id = ${id}`
-                        );
-                        setDialogButton("Ok");
-                      }}
-                    >
-                      <ListItemIcon>
-                        <DoDisturbAltIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Cancel Application" />
-                    </ListItemButton>
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemButton
-                      onClick={(e) => {
-                        setInlineAnchorEl(
-                          e.currentTarget as unknown as HTMLButtonElement
-                        );
-                      }}
-                      disabled={
-                        row.original.passedTests == 3 ||
-                        row.original.status != "NEW"
-                      }
-                    >
-                      <ListItemIcon>
-                        <PendingActionsIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Schedule Tests" />
-                    </ListItemButton>
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemButton
-                      onClick={() => {
-                        setOpenIssueDrivingLicenseModal(true);
-                        setModalData(id);
-                        setAnchorEl(null);
-                      }}
-                      disabled={
-                        row.original.passedTests != 3 ||
-                        row.original.status == "COMPLETED"
-                      }
-                    >
-                      <ListItemIcon>
-                        <img
-                          style={{ marginLeft: "4px" }}
-                          src="../../../public/resume_942748.png"
-                          width="22px"
-                          alt=""
-                        />
-                      </ListItemIcon>
-                      <ListItemText primary="Issue Driving License (first time)" />
-                    </ListItemButton>
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemButton
-                      onClick={() => {
-                        setAnchorEl(null);
-                      }}
-                      disabled={row.original.status != "COMPLETED"}
-                    >
-                      <ListItemIcon>
-                        <img
-                          style={{ marginLeft: "4px" }}
-                          src="../../../public/resume_3683248.png"
-                          width="22px"
-                          alt=""
-                        />
-                      </ListItemIcon>
-                      <ListItemText primary="License Details" />
-                    </ListItemButton>
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemButton
-                      onClick={() => {
-                        setAnchorEl(null);
-                      }}
-                      disabled={row.original.status != "COMPLETED"}
-                    >
-                      <ListItemIcon>
-                        <img
-                          style={{ marginLeft: "4px" }}
-                          src="../../../public/time-management_1572225.png"
-                          width="22px"
-                          alt=""
-                        />
-                      </ListItemIcon>
-                      <ListItemText primary="Show License History" />
-                    </ListItemButton>
-                  </ListItem>
-                </List>
-                <Popover
-                  open={Boolean(inlineAnchorEl)}
-                  anchorEl={inlineAnchorEl}
-                  onClose={() => setInlineAnchorEl(null)}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "left",
-                  }}
-                >
-                  <List>
-                    <ListItem disablePadding>
-                      <ListItemButton
-                        onClick={() => {
-                          setOpenTestsModal(true);
-                          setTestsModalData({
-                            passedTests: row.original.passedTests,
-                            id: row.original.id,
-                            testTypeId: 1,
-                          });
-                          setModalTitle("Vision Test");
-                        }}
-                        sx={{ display: "flex", justifyContent: "flex-end" }}
-                        disabled={row.original.passedTests != 0}
-                      >
-                        <ListItemIcon>
-                          <img
-                            src="../../../public/visionTest.png"
-                            alt=""
-                            width={"30px"}
-                          />
-                        </ListItemIcon>
-                        <ListItemText primary="Vision Test" />
-                      </ListItemButton>
-                    </ListItem>
-                    <ListItem disablePadding>
-                      <ListItemButton
-                        onClick={() => {
-                          setOpenTestsModal(true);
-                          setTestsModalData({
-                            passedTests: row.original.passedTests,
-                            id: row.original.id,
-                            testTypeId: 2,
-                          });
-                          setModalTitle("Theory Test");
-                        }}
-                        disabled={row.original.passedTests != 1}
-                      >
-                        <ListItemIcon>
-                          <img
-                            src="../../../public/theoryTest.png"
-                            alt=""
-                            width={"30px"}
-                          />
-                        </ListItemIcon>
-                        <ListItemText primary="Theory Test" />
-                      </ListItemButton>
-                    </ListItem>
-                    <ListItem disablePadding>
-                      <ListItemButton
-                        onClick={() => {
-                          setOpenTestsModal(true);
-                          setTestsModalData({
-                            passedTests: row.original.passedTests,
-                            id: row.original.id,
-                            testTypeId: 3,
-                          });
-                          setModalTitle("Practical Test");
-                        }}
-                        disabled={row.original.passedTests != 2}
-                      >
-                        <ListItemIcon>
-                          <img
-                            src="../../../public/practicalTest.png"
-                            alt=""
-                            width={"30px"}
-                          />
-                        </ListItemIcon>
-                        <ListItemText primary="Practical Test" />
-                      </ListItemButton>
-                    </ListItem>
-                  </List>
-                </Popover>
-              </Popover>
-              <Dialog open={dialog}>
-                <DialogTitle id="alert-dialog-title">Are you sure?</DialogTitle>
-                <DialogContent>
-                  <DialogContentText id="alert-dialog-description">
-                    {dialogDescription}
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button
-                    onClick={handleCloseDialog}
-                    autoFocus
-                    variant="outlined"
-                  >
-                    Close
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      if (dialogButton == "Delete") {
-                        deleteApplication(id);
-                      } else {
-                        cancelApplication(id);
-                      }
-                      handleCloseDialog();
-                    }}
-                    autoFocus
-                    variant="outlined"
-                    color="error"
-                  >
-                    {dialogButton}
-                  </Button>
-                </DialogActions>
-              </Dialog>
-            </div>
-          );
-        },
+        cell: ({ row }) => (
+          <Actions
+            row={row}
+            handleModelData={(id) => setModalData(id)}
+            handleReadOnly={(val) => setReadOnly(val)}
+            handleOpenModal={(v) => setOpenLdlaModal(v)}
+            cancelApplication={(id) => cancelApplication(id)}
+            deleteApplication={(id) => deleteApplication(id)}
+            handleTestsModal={(v) => setOpenTestsModal(v)}
+            handleTestModalData={(v) => setTestsModalData(v)}
+            handleModalTitle={(title) => setModalTitle(title)}
+            handleIssueDLModal={(v) => setOpenIssueDrivingLicenseModal(v)}
+            handleLicenseInfoModal={() => setOpenLicenseInfoModal(true)}
+            handleLicenseHistoryModal={() => setLicenseHistoryModal(true)}
+          />
+        ),
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -551,18 +249,18 @@ const LocalDrivingLicenseApplication = () => {
             setModalData(null);
             setReadOnly(false);
             setModalTitle("Add New Local driving license Application");
-            setOpenModal(true);
+            setOpenLdlaModal(true);
           }}
         >
           <PersonAddIcon />
         </Button>
       </section>
-      <Modal open={openModal} onClose={() => setOpenModal(false)}>
+      <Modal open={openLdlaModal} onClose={() => setOpenLdlaModal(false)}>
         <div>
           <LdlaWithPersonDetails
             ldlaId={modalData}
             title={modalTitle}
-            handleClose={() => setOpenModal(false)}
+            handleClose={() => setOpenLdlaModal(false)}
             readonly={readOnly}
           />
         </div>
@@ -591,10 +289,26 @@ const LocalDrivingLicenseApplication = () => {
           />
         </div>
       </Modal>
+      <Modal
+        open={openLicenseInfoModal}
+        onClose={() => setOpenLicenseInfoModal(false)}
+      >
+        <div>
+          <LocalLicenseInfo applicationId={modalData as number} />
+        </div>
+      </Modal>
+      <Modal
+        open={licenseHistoryModal}
+        onClose={() => setLicenseHistoryModal(false)}
+      >
+        <div>
+          <LicenseHistory id={modalData as number} />
+        </div>
+      </Modal>
+
       <main>
         <DataTable
           Data={DataSet}
-          // @ts-expect-error react.Memo problem
           column={COLUMNS}
           handleFiltersChange={setFilterOptions}
           pages={pages}

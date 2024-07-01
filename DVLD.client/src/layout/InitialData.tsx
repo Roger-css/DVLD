@@ -18,6 +18,7 @@ import {
 
 const InitialData = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
   const { getItem } = useLocalStorage("token");
   const dispatch = useDispatch();
   const countries = useSelector(getAllCountries);
@@ -25,14 +26,15 @@ const InitialData = () => {
   const appClasses = useSelector(getLicenseClasses);
   const testTypesArr = useSelector(getTestTypes);
   const applicationTypesArr = useSelector(getApplicationTypes);
-
-  const navigate = useNavigate();
   const axios = usePrivate();
   useEffect(() => {
     const countryController = new AbortController();
+    if (!getItem()) {
+      navigate("/", { replace: true });
+    }
     const fetchData = async () => {
       try {
-        // Getting all countries
+        // * Getting all countries
         const allCountries = await axios.get("/Country", {
           signal: countryController.signal,
         });
@@ -45,12 +47,12 @@ const InitialData = () => {
     };
     countries ? setIsLoading(false) : fetchData();
     return () => countryController.abort();
-  }, [axios, countries, dispatch, navigate]);
+  }, [axios, countries, dispatch, getItem, navigate]);
   useEffect(() => {
     const userController = new AbortController();
     const fetchUserInfo = async () => {
       try {
-        // Getting User information
+        // * Getting User information
         const { sub } = jwtDecode(getItem());
         const body = {
           SearchTermKey: "Id",
@@ -73,7 +75,7 @@ const InitialData = () => {
     const userController = new AbortController();
     const fetchUserInfo = async () => {
       try {
-        // Getting Application classes
+        // * Getting Application classes
         const AppClasses = await axios.get("License/classes", {
           signal: userController.signal,
         });
@@ -90,6 +92,7 @@ const InitialData = () => {
   useEffect(() => {
     const fetching = async () => {
       try {
+        // * Getting Test Types
         const data = await axios.get("Tests/Types");
         dispatch(setTestTypes(data.data));
       } catch (error) {
@@ -99,13 +102,12 @@ const InitialData = () => {
       }
     };
     testTypesArr ? setIsLoading(false) : fetching();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [axios, dispatch, testTypesArr]);
   useEffect(() => {
     const fetching = async () => {
       try {
+        // * getting application types
         const data = await axios.get("Applications/types");
-
         dispatch(setApplicationTypes(data.data));
       } catch (error) {
         console.log(error);
@@ -114,7 +116,6 @@ const InitialData = () => {
       }
     };
     applicationTypesArr ? setIsLoading(false) : fetching();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [axios, dispatch, applicationTypesArr]);
   return (
     <React.Fragment>

@@ -2,12 +2,9 @@
 
 namespace DVLD.Entities.Dtos.Request;
 
-public class GetAllPeopleRequest
-{
-    public string? SearchTermKey { get; set; }
-    public string? SearchTermValue { get; set; }
-    public EnGender? Gender { get; set; }
-    public int Page { get; set; }
-    public int PageSize { get; set; }
-    public string? OrderBy { get; set; }
-}
+public record GetAllPeopleRequest(string? SearchTermKey,
+    string? SearchTermValue,
+    EnGender? Gender,
+    int Page,
+    int PageSize,
+    EnOrderBy OrderBy);

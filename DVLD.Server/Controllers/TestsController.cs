@@ -2,6 +2,7 @@
 using DVLD.Entities.DbSets;
 using DVLD.Entities.Dtos.Request;
 using DVLD.Server.Commands;
+using DVLD.Server.Common.Extensions;
 using DVLD.Server.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -20,11 +21,11 @@ public class TestsController : BaseController<TestsController>
     {
         var query = new GetTestTypesQuery();
         var result = await _mediator.Send(query);
-        if (result != null)
+        if (result.IsSuccess)
         {
-            return Ok(result);
+            return Ok(result.Value);
         }
-        return StatusCode(500, "Idk man");
+        return StatusCode(500, result.ToErrorMessages());
     }
     [Route("Types")]
     [HttpPut()]
@@ -32,81 +33,52 @@ public class TestsController : BaseController<TestsController>
     {
         var query = new UpdateTestTypeCommand(test);
         var result = await _mediator.Send(query);
-        if (result)
+        if (result.IsSuccess)
         {
-            return Ok(result);
+            return Ok();
         }
-        return StatusCode(500, "Idk man");
+        return BadRequest(result.ToErrorMessages());
     }
     [Route("Appointments/{typeId}/{id}")]
     [HttpGet()]
-    public async Task<IActionResult> GetLdlaWithAppointments([FromRoute] int typeId,[FromRoute] int id)
+    public async Task<IActionResult> GetLdlaWithAppointments([FromRoute] int typeId, [FromRoute] int id)
     {
-        try
+        var query = new GetLdlaWithAppointmentsQuery(id, typeId);
+        var result = await _mediator.Send(query);
+        if (result.IsSuccess)
         {
-            var query = new GetLdlaWithAppointmentsQuery(id, typeId);
-            var result = await _mediator.Send(query);
-            if (result != null)
-            {
-                return Ok(result);
-            }
-            return NotFound();
+            return Ok(result.Value);
         }
-        catch (Exception)
-        {
-            return StatusCode(500);
-        }
+        return NotFound(result.ToErrorMessages());
     }
     [Route("Appointments")]
     [HttpPost()]
     public async Task<IActionResult> CreateNewAppointmentForLdla([FromBody] CreateAppointmentRequest entity)
     {
-        try
-        {
-            var query = new CreateNewAppointmentCommand(entity);
-            var result = await _mediator.Send(query);
-            if(result != -1)
-                return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("{ex}", ex);
-        }
-        return StatusCode(500);
+        var query = new CreateNewAppointmentCommand(entity);
+        var result = await _mediator.Send(query);
+        if (result.IsSuccess)
+            return Ok(result.Value);
+        return BadRequest(result.ToErrorMessages());
     }
     [Route("")]
     [HttpPost()]
     public async Task<IActionResult> CreateNewTest([FromBody] CreateTestRequest entity)
     {
-        try
-        {
-            var query = new CreateNewTestCommand(entity);
-            var result = await _mediator.Send(query);
-            if (result != -1)
-                return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("{ex}", ex);
-        }
-        return StatusCode(500);
+        var query = new CreateNewTestCommand(entity);
+        var result = await _mediator.Send(query);
+        if (result.IsSuccess)
+            return Ok(result.Value);
+        return BadRequest(result.ToErrorMessages());
     }
     [Route("Appointments")]
     [HttpPut()]
     public async Task<IActionResult> UpdateTestAppointment([FromBody] UpdateAppointmentRequest entity)
     {
-        try
-        {
-            var query = new UpdateTestAppointmentCommand(entity);
-            var result = await _mediator.Send(query);
-            if (result)
-                return Ok();
-            return BadRequest();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("{ex}", ex);
-            return StatusCode(500);
-        }
+        var query = new UpdateTestAppointmentCommand(entity);
+        var result = await _mediator.Send(query);
+        if (result.IsSuccess)
+            return Ok();
+        return BadRequest(result.ToErrorMessages());
     }
 }

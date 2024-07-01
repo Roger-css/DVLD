@@ -30,6 +30,7 @@ import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import DisplaySettingsIcon from "@mui/icons-material/DisplaySettings";
 import { person, personFilters as Filters } from "../Types/Person";
 import allFilters from "../Utils/allFilters";
+import { FilterOptions } from "../Types/Shared";
 const FilterMode: Filters = {
   none: "None",
   id: "Id",
@@ -38,18 +39,21 @@ const FilterMode: Filters = {
   phone: "Phone",
   email: "Email",
 };
-
+const OrderBy = {
+  asc: 1,
+  desc: 2,
+};
 const People = () => {
   const [filter, setFilter] = useState<keyof Filters>(FilterMode.none);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [modalData, setModalData] = useState<number | null>(null);
   const [filterText, setFilterText] = useState("");
   const Debounced = useDebounce(filterText);
-  const [filterOptions, setFilterOptions] = useState({
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     gender: 0,
     page: 1,
     pageSize: 10,
-    orderBy: "asc",
+    orderBy: 1,
   });
   const [readOnly, setReadOnly] = useState<boolean>(false);
   const [modalTitle, setModalTitle] = useState<string>("");
@@ -87,7 +91,7 @@ const People = () => {
         const response = await axios.post("Person", body, {
           signal: controller.signal,
         });
-        setDataSet(response.data.allPeople);
+        setDataSet(response.data.collection);
         setPages(response.data.page);
       } catch (error) {
         console.log(error);
@@ -95,29 +99,26 @@ const People = () => {
     };
     if (!openModal) FetchingData();
     return () => controller.abort();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterOptions, Debounced, openModal]);
   const COLUMNS = useMemo(
     (): ColumnDef<person, unknown>[] => [
       {
         accessorKey: "id",
         header: () => {
+          const { asc, desc } = OrderBy;
           return (
             <Button
               onClick={() =>
                 setFilterOptions((p) => ({
                   ...p,
-                  orderBy: p.orderBy == "desc" ? "asc" : "desc",
+                  orderBy: p.orderBy == desc ? asc : desc,
                 }))
               }
               sx={{ color: "white", minWidth: "auto" }}
             >
               Id{" "}
-              {filterOptions.orderBy == "desc" ? (
-                <ExpandLess />
-              ) : (
-                <ExpandMore />
-              )}
+              {filterOptions.orderBy == desc ? <ExpandLess /> : <ExpandMore />}
             </Button>
           );
         },
@@ -370,9 +371,8 @@ const People = () => {
       </Modal>
       <div>
         <DataTable
-          // @ts-expect-error react.Memo problem
           column={COLUMNS}
-          Data={DataSet} // MockData
+          Data={DataSet}
           handleFiltersChange={setFilterOptions}
           pages={pages}
         />

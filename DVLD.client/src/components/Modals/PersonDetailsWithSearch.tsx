@@ -9,7 +9,7 @@ type TyProps = {
   title?: string;
   children?: ReactNode;
   setTab?: React.Dispatch<React.SetStateAction<number>>;
-  setId: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setId?: React.Dispatch<React.SetStateAction<number | undefined>>;
   id?: number;
   readonly?: boolean;
   Details?: personInfo;
@@ -67,7 +67,7 @@ const PersonDetailsWithSearch = ({
         signal: controller.signal,
       });
       setDataSet(data);
-      setId(data.id);
+      if (setId) setId(data.id);
     } catch (error) {
       setDataSet(null);
     }
@@ -100,7 +100,7 @@ const PersonDetailsWithSearch = ({
     <div>
       {title && <h1 className="text-2xl text-center">{title}</h1>}
       <div className="flex justify-between px-5 my-4">
-        <div className="w-3/6">
+        <div className="w-3/5">
           <select
             disabled={readonly}
             className="h-10 mr-4 text-center text-white rounded-lg outline-none people mainColorBg"
@@ -120,6 +120,7 @@ const PersonDetailsWithSearch = ({
           </select>
           {filter !== FilterMode.none && (
             <TextField
+              disabled={readonly}
               size="small"
               placeholder={`Search by ${filter}`}
               value={filterText}

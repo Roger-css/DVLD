@@ -42,14 +42,17 @@ const Ldla = ({ readonly, personId, handleClose, dataSet }: Props) => {
     formik: FormikProps<localDrivingLA>
   ) => {
     try {
-      if (submitted) handleClose();
+      if (submitted || readonly) {
+        handleClose();
+        return;
+      }
       const body = {
         ...e,
         PersonId: personId,
         date: e.date.toDate().toLocaleDateString(),
         fees: 15,
       };
-      if (!readonly && initialValues.id == 0) {
+      if (initialValues.id == 0) {
         const data = await axios.post(`Applications/LDLA`, body);
         setInitialValues({ ...(e as localDrivingLA), id: data?.data });
       } else {
@@ -57,7 +60,6 @@ const Ldla = ({ readonly, personId, handleClose, dataSet }: Props) => {
           id: initialValues.id,
           classId: e.classId,
         };
-        console.log(body);
         const data = await axios.put(`Applications/LDLA`, body);
         setInitialValues({ ...(e as localDrivingLA), id: data?.data });
       }

@@ -17,11 +17,10 @@ import {
   Button,
 } from "@mui/material";
 import isObjectEmpty from "../../Utils/IsObjEmpty";
-import { useLoaderData } from "react-router-dom";
+
 type UserInfo = { UserName: string; Password: string };
+
 function SignIn() {
-  const loader = useLoaderData();
-  console.log(loader);
   const Login = useLogin();
   const {
     getItem: getUserInfo,
@@ -35,6 +34,7 @@ function SignIn() {
   const [rememberMe, setRememberMe] = useState(
     isObjectEmpty(UserInfo) ? false : true
   );
+
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const HandleSubmit = () => {
     if (rememberMe) {

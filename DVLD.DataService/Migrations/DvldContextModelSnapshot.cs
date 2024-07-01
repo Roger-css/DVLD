@@ -1688,6 +1688,36 @@ namespace DVLD.DataService.Migrations
                         });
                 });
 
+            modelBuilder.Entity("DVLD.Entities.Views.DriversView", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ActiveLicense")
+                        .HasColumnType("int")
+                        .HasColumnName("Active Licenses");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NationalNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PersonId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("Drivers_View", (string)null);
+                });
+
             modelBuilder.Entity("DVLD.Entities.Views.LDLAView", b =>
                 {
                     b.Property<DateTime>("ApplicationDate")

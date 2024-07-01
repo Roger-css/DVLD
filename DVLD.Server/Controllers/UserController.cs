@@ -3,6 +3,7 @@ using DVLD.Entities.DbSets;
 using DVLD.Entities.Dtos.Request;
 using DVLD.Entities.Dtos.Response;
 using DVLD.Server.Commands;
+using DVLD.Server.Common.Extensions;
 using DVLD.Server.Config;
 using DVLD.Server.Queries;
 using MediatR;
@@ -19,9 +20,9 @@ namespace DVLD.Server.Controllers;
 public class UserController : BaseController<UserController>
 {
     private readonly IOptions<JwtConfig> _Config;
-    public UserController(IUnitOfWork unitOfWork,IMediator mediator,
+    public UserController(IUnitOfWork unitOfWork, IMediator mediator,
         ILogger<UserController> logger, IOptions<JwtConfig> Config
-        ) : base(unitOfWork,mediator, logger)
+        ) : base(unitOfWork, mediator, logger)
     {
         _Config = Config;
     }
@@ -34,14 +35,11 @@ public class UserController : BaseController<UserController>
         var User = await _mediator.Send(query);
         if (User.IsSuccess)
             return Ok(await GenerateJwtToken(User.Value!));
-        
-        return StatusCode(500, new AuthResult()
+
+        return BadRequest(new AuthResult()
         {
             Result = false,
-            Error = new List<string>()
-            {
-                "Contact Developer"
-            }
+            Error = User.ToErrorMessages()
         });
     }
     [AllowAnonymous]
@@ -49,7 +47,7 @@ public class UserController : BaseController<UserController>
     [Route("Refresh")]
     public async Task<IActionResult> Refresh([FromBody] TokenRequest tokenRequest)
     {
-        if (!ModelState.IsValid) 
+        if (!ModelState.IsValid)
             return BadRequest(new AuthResult()
             {
                 Result = false,
@@ -108,19 +106,19 @@ public class UserController : BaseController<UserController>
         var result = await _mediator.Send(query);
         if (result.IsSuccess)
             return Ok(result.Value);
-        
+
         return NotFound(result.Errors[0]?.Message);
     }
     [HttpPost]
     [Route("Get/single")]
     public async Task<IActionResult> GetUserInfo([FromBody] SearchRequest infoRequest)
     {
-        
+
         var query = new GetUserInfoQuery(infoRequest);
         var result = await _mediator.Send(query);
         if (result.IsSuccess)
             return Ok(result.Value);
-        
+
         return StatusCode(500);
     }
     [HttpPost]
@@ -166,9 +164,9 @@ public class UserController : BaseController<UserController>
                 new(JwtRegisteredClaimNames.Name, user.UserName),
                 new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new(JwtRegisteredClaimNames.Iat, DateTime.Now.ToUniversalTime().ToString()),
+                new(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToUniversalTime().ToString()),
             }),
-            Expires = DateTime.Now.AddHours(1), // FOR dev only
+            Expires = DateTime.UtcNow.AddMinutes(15), // FOR dev only
             TokenType = JwtConstants.TokenType,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(SecurityKey),
             SecurityAlgorithms.HmacSha256)
@@ -180,8 +178,8 @@ public class UserController : BaseController<UserController>
         {
             Token = RefreshTokenString,
             UserId = user.Id,
-            AddedDate = DateTime.Now,
-            ExpiryDate = DateTime.Now.AddMonths(6),
+            AddedDate = DateTime.UtcNow,
+            ExpiryDate = DateTime.UtcNow.Add(TimeSpan.Parse(_Config.Value.ExpirationTime)),
             JwtId = AccessToken.Id,
             IsUsed = false,
             IsRevoked = false,
@@ -190,9 +188,10 @@ public class UserController : BaseController<UserController>
         await _unitOfWork.CompleteAsync();
         Response.Cookies.Append("RefreshToken", RefreshTokenString, new CookieOptions()
         {
-            SameSite = SameSiteMode.Strict,
-            Expires = DateTime.Now.Add(TimeSpan.Parse(_Config.Value.ExpirationTime)),
+            SameSite = SameSiteMode.None,
+            Expires = DateTime.UtcNow.Add(TimeSpan.Parse(_Config.Value.ExpirationTime)),
             HttpOnly = true,
+            Secure = true
         });
         return new AuthResult()
         {
@@ -233,7 +232,7 @@ public class UserController : BaseController<UserController>
                 long expirySecond = long.Parse(securityToken.Claims
                     .FirstOrDefault(e => e.Type == JwtRegisteredClaimNames.Exp)!.Value);
                 var expiryDate = DateTimeOffset.FromUnixTimeSeconds(expirySecond);
-                if (expiryDate.DateTime > DateTime.UtcNow)
+                if (expiryDate.UtcDateTime > DateTime.UtcNow)
                 {
                     return new AuthResult()
                     {
@@ -258,7 +257,7 @@ public class UserController : BaseController<UserController>
                     };
                 var jti = securityToken.Claims
                     .FirstOrDefault(e => e.Type == JwtRegisteredClaimNames.Jti)!.Value;
-                if(jti != StoredToken.JwtId)
+                if (jti != StoredToken.JwtId)
                     return new AuthResult()
                     {
                         Error = new List<string>()
@@ -267,7 +266,7 @@ public class UserController : BaseController<UserController>
                         },
                         Result = false
                     };
-                if(StoredToken.ExpiryDate < DateTime.UtcNow)
+                if (StoredToken.ExpiryDate < DateTime.UtcNow)
                     return new AuthResult()
                     {
                         Error = new List<string>()
@@ -279,13 +278,13 @@ public class UserController : BaseController<UserController>
                 StoredToken.IsUsed = true;
                 _unitOfWork.RefreshTokenRepository.UpdateToken(StoredToken);
                 await _unitOfWork.CompleteAsync();
-                var User = await _unitOfWork.UserRepository.GetUserInfo("ID",StoredToken.UserId.ToString());
+                var User = await _unitOfWork.UserRepository.GetUserInfo("ID", StoredToken.UserId.ToString());
                 return await GenerateJwtToken(User!);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError("Message = {message} error = {ex}",ex.Message, ex);
+            _logger.LogError("Message = {message} error = {ex}", ex.Message, ex);
             return new AuthResult()
             {
                 Result = false,

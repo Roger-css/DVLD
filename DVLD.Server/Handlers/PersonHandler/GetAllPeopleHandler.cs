@@ -10,16 +10,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DVLD.Server.Handlers.PersonHandler;
 
-public class GetAllPeopleHandler : BaseHandler<GetAllPeopleHandler>, IRequestHandler<GetAllPeopleQuery, Result<PaginatedPeople>>
+public class GetAllPeopleHandler : BaseHandler<GetAllPeopleHandler>, IRequestHandler<GetAllPeopleQuery, Result<PaginatedEntity<AllPeopleResponse>>>
 {
     public GetAllPeopleHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<GetAllPeopleHandler> logger) : base(unitOfWork, mapper, logger)
     {
     }
 
-    public async Task<Result<PaginatedPeople>> Handle(GetAllPeopleQuery request, CancellationToken cancellationToken)
+    public async Task<Result<PaginatedEntity<AllPeopleResponse>>> Handle(GetAllPeopleQuery request, CancellationToken cancellationToken)
     {
         var query = _unitOfWork.PersonRepository.GetQueryable();
-        PaginatedPeople PaginatedPeople = new();
+        PaginatedEntity<AllPeopleResponse> PaginatedPeople = new();
         if (!string.IsNullOrEmpty(request.Params.SearchTermKey))
         {
             query = query.HandlePersonSearch(request.Params.SearchTermKey!, request.Params.SearchTermValue!);
@@ -30,7 +30,7 @@ public class GetAllPeopleHandler : BaseHandler<GetAllPeopleHandler>, IRequestHan
         }
         PaginatedPeople.Page = await HandlePages(query, request.Params.Page, request.Params.PageSize, cancellationToken);
         query = _unitOfWork.PersonRepository.Pagination(request.Params, query);
-        PaginatedPeople.AllPeople = _mapper.Map<IEnumerable<AllPeopleResponse>>(await query.AsNoTracking().ToListAsync(cancellationToken));
+        PaginatedPeople.Collection = _mapper.Map<IEnumerable<AllPeopleResponse>>(await query.AsNoTracking().ToListAsync(cancellationToken));
         return Result.Ok(PaginatedPeople);
     }
 

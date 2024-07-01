@@ -22,6 +22,7 @@ public partial class DvldContext : DbContext
     public DbSet<TestAppointment> TestAppointments { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<LDLAView> LDLAView { get; set; }
+    public DbSet<DriversView> DriversView { get; set; }
     public DvldContext(DbContextOptions<DvldContext> options)
         : base(options)
     {
@@ -30,5 +31,10 @@ public partial class DvldContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DvldContext).Assembly);
+    }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+        optionsBuilder.EnableSensitiveDataLogging();
     }
 }
