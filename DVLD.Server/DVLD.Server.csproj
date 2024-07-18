@@ -40,4 +40,8 @@
     <ProjectReference Include="..\Entities\DVLD.Entities.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>

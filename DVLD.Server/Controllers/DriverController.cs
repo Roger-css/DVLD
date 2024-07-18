@@ -3,9 +3,11 @@ using DVLD.Entities.Dtos.Request;
 using DVLD.Server.Common.Extensions;
 using DVLD.Server.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DVLD.Server.Controllers;
+[Authorize]
 public class DriverController : BaseController<DriverController>
 {
     public DriverController(IUnitOfWork unitOfWork, IMediator mediator, ILogger<DriverController> logger) : base(unitOfWork, mediator, logger)

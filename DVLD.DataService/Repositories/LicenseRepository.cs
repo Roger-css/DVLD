@@ -77,7 +77,7 @@ internal class LicenseRepository : GenericRepository<License>, ILicenseRepositor
         await _dbSet.AddAsync(license);
         return license;
     }
-    public async Task<IEnumerable<License>> GetLocalLicensesAsync(int id)
+    public async Task<IEnumerable<License>?> GetLocalLicensesAsync(int id)
     {
         return await _dbSet.Where(e => e.Driver.Person!.Id == id)
             .Select(e => new License
@@ -92,5 +92,46 @@ internal class LicenseRepository : GenericRepository<License>, ILicenseRepositor
                 ExpirationDate = e.ExpirationDate,
                 IsActive = e.IsActive,
             }).ToListAsync();
+    }
+
+    public async Task<int> CreateInternationalLicense(int localLicenseId, int applicationId, int createdByUserId, int driverId)
+    {
+        var License = new InternationalDrivingLicense
+        {
+            ApplicationId = applicationId,
+            CreatedByUserId = createdByUserId,
+            DriverId = driverId,
+            ExpirationDate = DateTime.UtcNow.AddYears(1),
+            IsActive = true,
+            IssueDate = DateTime.UtcNow,
+            IssueUsingLocalDrivingLicenseId = localLicenseId,
+        };
+
+        _context.InternationalDrivingLicenses.Add(License);
+        await _context.SaveChangesAsync();
+        return License.Id;
+    }
+
+    public async Task<Driver?> GetDriverByLocalLicenseId(int licenseId)
+    {
+        return await _dbSet.Where(e => e.Id == licenseId).Select(e => new Driver
+        {
+            Id = e.DriverId,
+            Person = new Person
+            {
+                Id = e.Driver.PersonId
+            }
+        }).FirstOrDefaultAsync();
+    }
+
+    public async Task<bool> DoesLocalLicenseIdAlreadyInternational(int licenseId)
+    {
+        return await _context.InternationalDrivingLicenses.Where(e => e.Id != licenseId).FirstOrDefaultAsync() is not null;
+    }
+
+    public async Task<int?> GetApplicationId(int licenseId)
+    {
+        var result = await _dbSet.Where(e => e.Id == licenseId).FirstOrDefaultAsync();
+        return result?.ApplicationId;
     }
 }

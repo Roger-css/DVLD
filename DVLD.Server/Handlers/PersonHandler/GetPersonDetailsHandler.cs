@@ -15,9 +15,9 @@ public class GetPersonDetailsHandler : BaseHandler<GetPersonDetailsHandler>, IRe
 
     public async Task<Result<Person?>> Handle(GetPersonQuery request, CancellationToken cancellationToken)
     {
-        var Entity = await _unitOfWork.PersonRepository.GetPersonBySearchParams(request.Params);
-        if (Entity is null)
+        var entity = await _unitOfWork.PersonRepository.GetPersonBySearchParams(request.Params);
+        if (entity is null)
             return Result.Fail("DB returned Null");
-        return Entity;
+        return entity;
     }
 }

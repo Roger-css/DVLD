@@ -15,12 +15,12 @@ public class GetLicenseInfoHandler : BaseHandler<GetLicenseInfoHandler>, IReques
 
     public async Task<Result<LocalLicenseInfoResponse>> Handle(GetLocalLicenseInfoQuery request, CancellationToken cancellationToken)
     {
-        var Entity = await _unitOfWork.LicenseRepository.GetLocalLicenseInfo(request.Id);
-        if (Entity == null)
+        var entity = await _unitOfWork.LicenseRepository.GetLocalLicenseInfo(request.Id);
+        if (entity == null)
         {
             return Result.Fail("Application ID does not exist");
         }
-        var MappedEntity = _mapper.Map<LocalLicenseInfoResponse>(Entity);
-        return MappedEntity;
+        var mappedEntity = _mapper.Map<LocalLicenseInfoResponse>(entity);
+        return mappedEntity;
     }
 }

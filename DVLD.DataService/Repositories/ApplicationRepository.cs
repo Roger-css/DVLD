@@ -126,21 +126,13 @@ internal class ApplicationRepository : GenericRepository<Application>, IApplicat
 
     public async Task<bool> CancelLDLA(int LdlaId)
     {
-        try
-        {
-            var entity = await _context.LocalDrivingLicenseApplications.Include(e => e.Application)
-                .FirstOrDefaultAsync(e => e.Id == LdlaId);
-            if (entity == null)
-                return false;
-            entity.Application.ApplicationStatus = EnApplicationStatus.Cancelled;
-            entity.Application.LastStatusDate = DateTime.Now;
-            return true;
-        }
-        catch (Exception)
-        {
+        var entity = await _context.LocalDrivingLicenseApplications.Include(e => e.Application)
+            .FirstOrDefaultAsync(e => e.Id == LdlaId);
+        if (entity == null)
             return false;
-            throw;
-        }
+        entity.Application.ApplicationStatus = EnApplicationStatus.Cancelled;
+        entity.Application.LastStatusDate = DateTime.Now;
+        return true;
     }
 
     public async Task<SingleLDLAResponse?> GetLDLAInfo(int LdlaId)
@@ -192,5 +184,23 @@ internal class ApplicationRepository : GenericRepository<Application>, IApplicat
         var exists = await _dbSet.FirstOrDefaultAsync(e => e.Id == LdlaId);
         if (exists is null) return false;
         return true;
+    }
+
+    public async Task<int> CreateInternationLicenseApplication(int PersonId, int CreatedByUserId)
+    {
+        var AppType = await _context.ApplicationTypes.FirstAsync(e => e.ApplicationTypeId == 6);
+        var Application = new Application
+        {
+            ApplicationTypeId = AppType.ApplicationTypeId,
+            PaidFees = AppType.ApplicationTypeFees,
+            ApplicationPersonId = PersonId,
+            ApplicationStatus = EnApplicationStatus.New,
+            CreatedAt = DateTime.Now,
+            CreatedByUserId = CreatedByUserId,
+            LastStatusDate = DateTime.Now,
+        };
+        _dbSet.Add(Application);
+        await _context.SaveChangesAsync();
+        return Application.Id;
     }
 }

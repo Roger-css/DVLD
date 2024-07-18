@@ -14,8 +14,8 @@ public class DeletePersonHandler : BaseHandler<DeletePersonHandler>, IRequestHan
 
     public async Task<Result> Handle(DeletePersonCommand request, CancellationToken cancellationToken)
     {
-        var Deleted = await _unitOfWork.PersonRepository.DeletePerson(request.Id);
-        if (!Deleted)
+        var deleted = await _unitOfWork.PersonRepository.DeletePerson(request.Id);
+        if (!deleted)
             return Result.Fail("Not Found");
         await _unitOfWork.CompleteAsync();
         return Result.Ok();

@@ -1,40 +1,31 @@
+import { RenewLicenseApplicationInfo } from "../../../Types/Applications";
 import ConvertBinaryToImage from "../../../Utils/ConvertBinaryToImage";
-import { useGetLocalDrivingLicenseInfo } from "./License.hooks";
 
 type Props = {
-  applicationId: number;
+  data: RenewLicenseApplicationInfo;
+  noTitle?: boolean;
 };
 
-const LocalLicenseInfo = ({ applicationId }: Props) => {
+const LocalLicenseInfo = ({ data, noTitle = false }: Props) => {
   const {
-    expireDate,
-    licenseId,
-    dateOfBirth,
-    driverId,
-    fullName,
-    gender,
-    isActive,
-    isDetained,
+    expirationDate,
+    oldLicenseId,
+    applicationDate,
+    applicationFees,
+    applicationId,
+    createdBy,
+    id,
+    licenseFees,
+    statusDate,
     issueDate,
-    issueReason,
-    licenseClass,
-    nationalNo,
+
     notes,
-    image,
-  } = useGetLocalDrivingLicenseInfo(applicationId);
+  } = data;
   return (
-    <main className="ModalBox">
+    <main>
       <section className="p-2 mb-3">
-        <img
-          src="/driving-license_7831414.png"
-          alt=""
-          className="object-contain w-32 mx-auto"
-        />
-        <h3 className="mb-3 text-3xl font-bold text-center">
-          Driver License Info
-        </h3>
         <div className="flex justify-between p-4 overflow-auto border border-black rounded-xl max-h-80">
-          <div className="flex-grow licenseInfoContainers ">
+          <div className="flex-grow licenseInfoContainers">
             <div className="mr-2">
               <span className="inline-block mr-2 text-lg font-semibold">
                 class:{" "}

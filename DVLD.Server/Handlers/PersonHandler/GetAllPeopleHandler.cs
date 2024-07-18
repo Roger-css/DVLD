@@ -19,7 +19,7 @@ public class GetAllPeopleHandler : BaseHandler<GetAllPeopleHandler>, IRequestHan
     public async Task<Result<PaginatedEntity<AllPeopleResponse>>> Handle(GetAllPeopleQuery request, CancellationToken cancellationToken)
     {
         var query = _unitOfWork.PersonRepository.GetQueryable();
-        PaginatedEntity<AllPeopleResponse> PaginatedPeople = new();
+        PaginatedEntity<AllPeopleResponse> paginatedPeople = new();
         if (!string.IsNullOrEmpty(request.Params.SearchTermKey))
         {
             query = query.HandlePersonSearch(request.Params.SearchTermKey!, request.Params.SearchTermValue!);
@@ -28,15 +28,15 @@ public class GetAllPeopleHandler : BaseHandler<GetAllPeopleHandler>, IRequestHan
         {
             query = query.Where(e => e.Gender == request.Params.Gender);
         }
-        PaginatedPeople.Page = await HandlePages(query, request.Params.Page, request.Params.PageSize, cancellationToken);
+        paginatedPeople.Page = await HandlePages(query, request.Params.Page, request.Params.PageSize, cancellationToken);
         query = _unitOfWork.PersonRepository.Pagination(request.Params, query);
-        PaginatedPeople.Collection = _mapper.Map<IEnumerable<AllPeopleResponse>>(await query.AsNoTracking().ToListAsync(cancellationToken));
-        return Result.Ok(PaginatedPeople);
+        paginatedPeople.Collection = _mapper.Map<IEnumerable<AllPeopleResponse>>(await query.AsNoTracking().ToListAsync(cancellationToken));
+        return Result.Ok(paginatedPeople);
     }
 
-    public async Task<Pages> HandlePages(IQueryable<Person> Query, int Page, int PageSize, CancellationToken cancellationToken)
+    public async Task<Pages> HandlePages(IQueryable<Person> query, int page, int pageSize, CancellationToken cancellationToken)
     {
-        var total = await Query.CountAsync(cancellationToken);
-        return new Pages(total, Page, PageSize);
+        var total = await query.CountAsync(cancellationToken);
+        return new Pages(total, page, pageSize);
     }
 }

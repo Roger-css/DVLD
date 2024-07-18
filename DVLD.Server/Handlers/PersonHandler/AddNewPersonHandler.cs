@@ -16,8 +16,8 @@ public class AddNewPersonHandler : BaseHandler<AddNewPersonHandler>, IRequestHan
     public async Task<Result<bool>> Handle(AddNewPersonCommand request, CancellationToken cancellationToken)
     {
 
-        Person MappedEntity = _mapper.Map<Person>(request.Person);
-        await _unitOfWork.PersonRepository.Add(MappedEntity);
+        Person mappedEntity = _mapper.Map<Person>(request.Person);
+        await _unitOfWork.PersonRepository.Add(mappedEntity);
         await _unitOfWork.CompleteAsync();
         return Result.Ok();
     }

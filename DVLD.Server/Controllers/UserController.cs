@@ -66,24 +66,15 @@ public class UserController : BaseController<UserController>
     [Route("Logout")]
     public async Task<IActionResult> Logout()
     {
-        try
+        var token = Request.Cookies.FirstOrDefault(c => c.Key == "RefreshToken").Value;
+        var storedToken = await _unitOfWork.RefreshTokenRepository.GetByRefreshTokenAsync(token);
+        if (storedToken != null)
         {
-            var token = Request.Cookies.FirstOrDefault(c => c.Key == "RefreshToken").Value;
-            var storedToken = await _unitOfWork.RefreshTokenRepository.GetByRefreshTokenAsync(token);
-            if (storedToken != null)
-            {
-                storedToken.IsRevoked = true;
-                _unitOfWork.RefreshTokenRepository.UpdateToken(storedToken);
-                await _unitOfWork.CompleteAsync();
-                Response.Cookies.Delete("RefreshToken");
-                return NoContent();
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("error message = {ms}, whole error = {er}", ex.Message, ex);
-            BadRequest("Server Error");
-            throw;
+            storedToken.IsRevoked = true;
+            _unitOfWork.RefreshTokenRepository.UpdateToken(storedToken);
+            await _unitOfWork.CompleteAsync();
+            Response.Cookies.Delete("RefreshToken");
+            return NoContent();
         }
         return BadRequest("Invalid credentials");
     }

@@ -6,9 +6,11 @@ using DVLD.Server.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static DVLD.DataService.Helpers.ErrorMessages;
 
 namespace DVLD.Server.Controllers;
 [Authorize]
+
 public class LicenseController : BaseController<LicenseController>
 {
     public LicenseController(IUnitOfWork unitOfWork, IMediator mediator, ILogger<LicenseController> logger) : base(unitOfWork, mediator, logger)
@@ -46,7 +48,7 @@ public class LicenseController : BaseController<LicenseController>
         var result = await _mediator.Send(query);
         if (result.IsSuccess)
             return Ok(result.Value);
-        return BadRequest(result.ToErrorMessages());
+        return NotFound(result.ToErrorMessages());
     }
     [HttpGet]
     [Route("Local/All/{id}")]
@@ -57,5 +59,29 @@ public class LicenseController : BaseController<LicenseController>
         if (result.IsSuccess)
             return Ok(result.Value);
         return BadRequest(result.ToErrorMessages());
+    }
+    [HttpPost]
+    [Route("international")]
+    public async Task<IActionResult> CreateInternationalLicense(NewInternationalLicenseCommand command)
+    {
+        var result = await _mediator.Send(command);
+        if (result.IsSuccess)
+            return Ok(new
+            {
+                LicenseId = result.Value.Item1,
+                ApplicationId = result.Value.Item2
+            });
+        else if (result.Reasons.Any(e => e.Message == LicenseAlreadyInternational))
+            return Conflict(result.ToErrorMessages());
+        return StatusCode(StatusCodes.Status500InternalServerError, result.ToErrorMessages());
+    }
+    [HttpGet]
+    [Route("international/application/{Id}")]
+    public async Task<IActionResult> GetApplicationId([FromRoute] int Id)
+    {
+        var result = await _unitOfWork.LicenseRepository.GetApplicationId(Id);
+        if (result is null)
+            return NotFound();
+        return Ok(result.Value);
     }
 }

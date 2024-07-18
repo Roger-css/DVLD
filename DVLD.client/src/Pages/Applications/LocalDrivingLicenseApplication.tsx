@@ -11,8 +11,8 @@ import LdlaWithPersonDetails from "../../components/Modals/LdlaWithPersonDetails
 import TestAppointment from "../../components/Modals/TestAppointment";
 import IssueDrivingLicense from "../../components/Modals/IssueDrivingLicense";
 import Actions from "./Actions";
-import LocalLicenseInfo from "../../components/Modals/Licences/LicenseInfo";
-import LicenseHistory from "../../components/Modals/Licences/LicenseHistory";
+import LocalLicenseInfo from "../../components/Modals/Licenses/LocalLicenseInfo";
+import LicenseHistory from "../../components/Modals/Licenses/LicenseHistory";
 import ShortDateString from "../../Utils/ShortDateString";
 import { PageOptions, FilterOptions } from "../../Types/Shared";
 interface Filters {
@@ -293,7 +293,7 @@ const LocalDrivingLicenseApplication = () => {
         open={openLicenseInfoModal}
         onClose={() => setOpenLicenseInfoModal(false)}
       >
-        <div>
+        <div className="ModalBox">
           <LocalLicenseInfo applicationId={modalData as number} />
         </div>
       </Modal>

@@ -16,11 +16,11 @@ namespace DVLD.Server.Handlers.LicenseHandler
         public async Task<Result<IEnumerable<AllLocalLicensesView>>>
             Handle(GetLocalLicensesQuery request, CancellationToken cancellationToken)
         {
-            var Entities = await _unitOfWork.LicenseRepository.GetLocalLicensesAsync(request.id);
-            if (Entities == null)
+            var entities = await _unitOfWork.LicenseRepository.GetLocalLicensesAsync(request.id);
+            if (entities == null)
                 return Result.Fail("No licenses were found");
-            var MappedEntites = _mapper.Map<IEnumerable<AllLocalLicensesView>>(Entities);
-            return Result.Ok(MappedEntites);
+            var mappedEntites = _mapper.Map<IEnumerable<AllLocalLicensesView>>(entities);
+            return Result.Ok(mappedEntites);
         }
     }
 }

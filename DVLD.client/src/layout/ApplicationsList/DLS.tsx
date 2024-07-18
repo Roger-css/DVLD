@@ -14,15 +14,28 @@ import { useState } from "react";
 import { TbLicense } from "react-icons/tb";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import LdlaWithPersonDetails from "../../components/Modals/LdlaWithPersonDetails";
+import AddInternationalDrivingApplication from "../../components/Modals/Licenses/International/AddInternationalDrivingApplication";
 type Props = {
   handleClick: () => void;
 };
 const DlServices = ({ handleClick }: Props) => {
   const [openList, setOpenList] = useState<boolean>(false);
-  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [localDrivingLicenseModal, setLocalDrivingLicenseModal] =
+    useState<boolean>(false);
+  const [
+    internationalDrivingLicenseModal,
+    setInternationalDrivingLicenseModal,
+  ] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const ExpandList = () => {
     setOpenList(!openList);
+  };
+  const handleCloseModals = () => {
+    setAnchorEl(null);
+    setLocalDrivingLicenseModal(false);
+    setInternationalDrivingLicenseModal(false);
+    setOpenList(false);
+    handleClick();
   };
   return (
     <div>
@@ -74,7 +87,7 @@ const DlServices = ({ handleClick }: Props) => {
               <ListItem disablePadding>
                 <ListItemButton
                   onClick={() => {
-                    setOpenModal(true);
+                    setLocalDrivingLicenseModal(true);
                   }}
                   sx={{ display: "flex", justifyContent: "flex-end" }}
                 >
@@ -91,7 +104,7 @@ const DlServices = ({ handleClick }: Props) => {
               <ListItem disablePadding>
                 <ListItemButton
                   onClick={() => {
-                    setOpenModal(true);
+                    setInternationalDrivingLicenseModal(true);
                   }}
                 >
                   <ListItemIcon>
@@ -140,17 +153,23 @@ const DlServices = ({ handleClick }: Props) => {
           </ListItemButton>
         </List>
       </Collapse>
-      <Modal open={openModal} onClose={() => setOpenModal(false)}>
+      <Modal
+        open={localDrivingLicenseModal}
+        onClose={() => setLocalDrivingLicenseModal(false)}
+      >
         <div>
           <LdlaWithPersonDetails
-            handleClose={() => {
-              setAnchorEl(null);
-              setOpenModal(false);
-              setOpenList(false);
-              handleClick();
-            }}
+            handleClose={handleCloseModals}
             title="Create new Local Driving Application"
           />
+        </div>
+      </Modal>
+      <Modal
+        open={internationalDrivingLicenseModal}
+        onClose={() => setInternationalDrivingLicenseModal(false)}
+      >
+        <div>
+          <AddInternationalDrivingApplication handleClose={handleCloseModals} />
         </div>
       </Modal>
     </div>

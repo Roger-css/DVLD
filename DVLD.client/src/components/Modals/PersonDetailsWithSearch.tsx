@@ -100,7 +100,7 @@ const PersonDetailsWithSearch = ({
     <div>
       {title && <h1 className="text-2xl text-center">{title}</h1>}
       <div className="flex justify-between px-5 my-4">
-        <div className="w-3/5">
+        <div className="flex justify-end w-4/6">
           <select
             disabled={readonly}
             className="h-10 mr-4 text-center text-white rounded-lg outline-none people mainColorBg"
@@ -131,7 +131,7 @@ const PersonDetailsWithSearch = ({
             />
           )}
         </div>
-        <div className="w-3/6 pl-5">
+        <div className="w-2/6 pl-5">
           <IconButton
             onClick={() => fetchData()}
             color="default"
