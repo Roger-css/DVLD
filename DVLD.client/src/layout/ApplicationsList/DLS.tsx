@@ -15,6 +15,8 @@ import { TbLicense } from "react-icons/tb";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import LdlaWithPersonDetails from "../../components/Modals/LdlaWithPersonDetails";
 import AddInternationalDrivingApplication from "../../components/Modals/Licenses/International/AddInternationalDrivingApplication";
+import RenewDrivingLicense from "../../components/Modals/Licenses/Renew/RenewDrivingLicense";
+import ReplaceLicenseModal from "../../components/Modals/Licenses/ReplaceLicense/ReplaceLicenseModal";
 type Props = {
   handleClick: () => void;
 };
@@ -26,6 +28,10 @@ const DlServices = ({ handleClick }: Props) => {
     internationalDrivingLicenseModal,
     setInternationalDrivingLicenseModal,
   ] = useState<boolean>(false);
+  const [renewLicenseApplication, setRenewLicenseApplication] =
+    useState<boolean>(false);
+  const [replaceLicenseApplication, setReplaceLicenseApplication] =
+    useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const ExpandList = () => {
     setOpenList(!openList);
@@ -34,6 +40,8 @@ const DlServices = ({ handleClick }: Props) => {
     setAnchorEl(null);
     setLocalDrivingLicenseModal(false);
     setInternationalDrivingLicenseModal(false);
+    setRenewLicenseApplication(false);
+    setReplaceLicenseApplication(false);
     setOpenList(false);
     handleClick();
   };
@@ -121,6 +129,7 @@ const DlServices = ({ handleClick }: Props) => {
           </Popover>
           <ListItemButton
             sx={{ pl: 4, borderBottom: "1px solid rgba(0,0,0,0.25)" }}
+            onClick={() => setRenewLicenseApplication(true)}
           >
             <ListItemText
               primary="Renew Driving License"
@@ -129,6 +138,7 @@ const DlServices = ({ handleClick }: Props) => {
           </ListItemButton>
           <ListItemButton
             sx={{ pl: 4, borderBottom: "1px solid rgba(0,0,0,0.25)" }}
+            onClick={() => setReplaceLicenseApplication(true)}
           >
             <ListItemText
               primary="Replacement for lost or damaged driving license"
@@ -170,6 +180,22 @@ const DlServices = ({ handleClick }: Props) => {
       >
         <div>
           <AddInternationalDrivingApplication handleClose={handleCloseModals} />
+        </div>
+      </Modal>
+      <Modal
+        open={renewLicenseApplication}
+        onClose={() => setRenewLicenseApplication(false)}
+      >
+        <div>
+          <RenewDrivingLicense handleClose={handleCloseModals} />
+        </div>
+      </Modal>
+      <Modal
+        open={replaceLicenseApplication}
+        onClose={() => setReplaceLicenseApplication(false)}
+      >
+        <div>
+          <ReplaceLicenseModal handleClose={handleCloseModals} />
         </div>
       </Modal>
     </div>

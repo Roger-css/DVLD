@@ -203,4 +203,42 @@ internal class ApplicationRepository : GenericRepository<Application>, IApplicat
         await _context.SaveChangesAsync();
         return Application.Id;
     }
+
+    public async Task<int> CreateRenewLicenseApplicationAsync(int PersonId, int CreatedByUserId)
+    {
+        var applicationType = await _context.ApplicationTypes.FirstOrDefaultAsync(e => e.ApplicationTypeId == 2);
+        var application = new Application
+        {
+            ApplicationPersonId = PersonId,
+            ApplicationStatus = EnApplicationStatus.New,
+            LastStatusDate = DateTime.Now,
+            PaidFees = applicationType!.ApplicationTypeFees,
+            CreatedByUserId = CreatedByUserId,
+            ApplicationTypeId = applicationType.ApplicationTypeId,
+            CreatedAt = DateTime.Now,
+        };
+        await _dbSet.AddAsync(application);
+        await _context.SaveChangesAsync();
+        return application.Id;
+    }
+
+    public async Task<int> CreateReplaceLicenseApplicationAsync(int personId, int createdByUserId, int applicationTypeId)
+    {
+        var applicationType = await _context.ApplicationTypes
+            .Where(e => e.ApplicationTypeId == applicationTypeId)
+            .FirstOrDefaultAsync() ?? throw new ArgumentException("Invalid applicationTypeId");
+        var app = new Application
+        {
+            ApplicationPersonId = personId,
+            ApplicationStatus = EnApplicationStatus.New,
+            LastStatusDate = DateTime.Now,
+            ApplicationTypeId = applicationTypeId,
+            CreatedAt = DateTime.Now,
+            CreatedByUserId = createdByUserId,
+            PaidFees = applicationType!.ApplicationTypeFees,
+        };
+        await _dbSet.AddAsync(app);
+        await _context.SaveChangesAsync();
+        return app.Id;
+    }
 }

@@ -16,7 +16,7 @@ namespace DVLD.Server.Handlers.LicenseHandler
         public async Task<Result<IEnumerable<AllLocalLicensesView>>>
             Handle(GetLocalLicensesQuery request, CancellationToken cancellationToken)
         {
-            var entities = await _unitOfWork.LicenseRepository.GetLocalLicensesAsync(request.id);
+            var entities = await _unitOfWork.LicenseRepository.GetLocalLicensesAsync(request.Id);
             if (entities == null)
                 return Result.Fail("No licenses were found");
             var mappedEntites = _mapper.Map<IEnumerable<AllLocalLicensesView>>(entities);

@@ -1,6 +1,8 @@
 ﻿#pragma warning disable CS8618
 
 
+using System.Text.Json.Serialization;
+
 namespace DVLD.Entities.DbSets;
 
 public class InternationalDrivingLicense
@@ -15,6 +17,7 @@ public class InternationalDrivingLicense
     public DateTime IssueDate { get; set; }
     public DateTime ExpirationDate { get; set; }
     public bool IsActive { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int CreatedByUserId { get; set; }
     public User User { get; set; }
 }

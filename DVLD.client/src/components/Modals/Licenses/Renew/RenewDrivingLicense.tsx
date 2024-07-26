@@ -1,17 +1,23 @@
 import { Button, TextField } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import LocalLicenseInfo from "../Licenses/LocalLicenseInfo";
+import LocalLicenseInfo from "../LocalLicenseInfo";
 
-import { useGetApplicationIdFromLicenseId } from "../Licenses/License.hooks";
+import {
+  useGetApplicationIdFromLicenseId,
+  useRenewLicenseApplication,
+} from "../License.hooks";
 import CloseIcon from "@mui/icons-material/Close";
+import RenewLicenseApplicationInfo from "./RenewLicenseApplicationInfo";
+import TextError from "../../../formik/TextError";
 
 type Props = {
   handleClose: () => void;
 };
-const AddInternationalDrivingApplication = ({ handleClose }: Props) => {
+const RenewDrivingLicense = ({ handleClose }: Props) => {
   // * this is just a placeholder the value will be passed to the LocalLicenseInfo only when the search is clicked therefor we needed 2 states
   const [searchValue, setSearchValue] = useState<number>(0);
   const [licenseId, setLicenseId] = useState<number>();
+  const [notes, setNotes] = useState("");
   const idInputRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -27,6 +33,8 @@ const AddInternationalDrivingApplication = ({ handleClose }: Props) => {
     };
   }, []);
   const applicationId = useGetApplicationIdFromLicenseId(licenseId);
+  const [renewLicense, { LicenseInfo, error, resetError }] =
+    useRenewLicenseApplication();
   return (
     <main className="max-h-[550px] overflow-auto rounded-lg ModalBox">
       <div className="flex flex-row-reverse">
@@ -71,17 +79,26 @@ const AddInternationalDrivingApplication = ({ handleClose }: Props) => {
             variant="contained"
             onClick={() => {
               setLicenseId(searchValue);
+              resetError();
             }}
           >
             Search
           </Button>
         </div>
       </section>
-      {/* <TextError className="my-1 font-bold text-center">{error}</TextError> */}
+      <TextError className="my-1 font-bold text-center">{error}</TextError>
       <section>
         <LocalLicenseInfo applicationId={applicationId} noTitle />
       </section>
-      <section></section>
+      <section>
+        <RenewLicenseApplicationInfo
+          notes={notes}
+          setNotes={setNotes}
+          oldLicenseId={licenseId}
+          newLicense={LicenseInfo ?? {}}
+          oldLicenseApplicationId={applicationId}
+        />
+      </section>
       <footer className="flex justify-end p-4">
         <Button
           color="error"
@@ -96,7 +113,9 @@ const AddInternationalDrivingApplication = ({ handleClose }: Props) => {
           color="primary"
           variant="contained"
           size="large"
-          // onClick={() => null}
+          onClick={() =>
+            renewLicense({ licenseId: licenseId as number, notes })
+          }
           disabled={licenseId == null || licenseId <= 0}
         >
           Issue
@@ -106,4 +125,4 @@ const AddInternationalDrivingApplication = ({ handleClose }: Props) => {
   );
 };
 
-export default AddInternationalDrivingApplication;
+export default RenewDrivingLicense;

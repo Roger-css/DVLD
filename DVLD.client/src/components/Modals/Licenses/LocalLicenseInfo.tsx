@@ -1,4 +1,5 @@
 import ConvertBinaryToImage from "../../../Utils/ConvertBinaryToImage";
+import ShortDateString from "../../../Utils/ShortDateString";
 import { useGetLocalDrivingLicenseInfo } from "./License.hooks";
 
 type Props = {
@@ -76,7 +77,9 @@ const LocalLicenseInfo = ({ applicationId, noTitle = false }: Props) => {
                   <span className="inline-block mr-2 text-lg font-semibold">
                     Issue Date:
                   </span>
-                  {issueDate}
+                  {ShortDateString(new Date(issueDate)).endsWith("NaN")
+                    ? ""
+                    : ShortDateString(new Date(issueDate))}
                 </div>
                 <div>
                   <span className="inline-block mr-2 text-lg font-semibold">
@@ -108,7 +111,9 @@ const LocalLicenseInfo = ({ applicationId, noTitle = false }: Props) => {
                   <span className="inline-block mr-2 text-lg font-semibold">
                     Expiration Date:
                   </span>
-                  {expireDate}
+                  {ShortDateString(new Date(expireDate)).endsWith("NaN")
+                    ? ""
+                    : ShortDateString(new Date(expireDate))}
                 </div>
                 <div>
                   <span className="inline-block mr-2 text-lg font-semibold">

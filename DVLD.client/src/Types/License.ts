@@ -30,4 +30,35 @@ type LicenseView = {
   ExpDate: string;
   isActive: boolean;
 };
-export type { licenseClass, LocalDrivingLicenseInfo, LicenseView };
+type NewLicenseInfo = {
+  id: number;
+  applicationId: number;
+  applicationDate: string;
+  oldLicenseId: number;
+  issueDate: string;
+  expirationDate: string;
+  applicationFees: number;
+  createdBy: string;
+  licenseFees: number;
+  totalFees: string;
+};
+type IntLicense = {
+  id: number;
+  applicationId: number;
+  issueUsingLocalDrivingLicenseId: string;
+  issueDate: string;
+  expirationDate: string;
+  driverId: number;
+  isActive: boolean;
+};
+export enum ReplaceType {
+  lost = 3,
+  damaged,
+}
+export type {
+  licenseClass,
+  LocalDrivingLicenseInfo,
+  LicenseView,
+  NewLicenseInfo,
+  IntLicense,
+};

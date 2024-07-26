@@ -4,7 +4,7 @@ using DVLD.Server.Commands;
 using FluentResults;
 using MediatR;
 using static DVLD.DataService.Helpers.ErrorMessages;
-namespace DVLD.Server.Handlers;
+namespace DVLD.Server.Handlers.LicenseHandler;
 
 public class NewInternationalLicenseHandler : BaseHandler<NewInternationalLicenseHandler>,
     IRequestHandler<NewInternationalLicenseCommand, Result<(int, int)>>

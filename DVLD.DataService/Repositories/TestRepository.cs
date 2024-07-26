@@ -32,6 +32,7 @@ internal class TestRepository : GenericRepository<TestAppointment>, ITestReposit
     public async Task<LdlaDetailsWithAppointments?> LdlaDetailsWithAppointments(int id, int typeId)
     {
         var result = await _context.LocalDrivingLicenseApplications
+            .Where(e => e.Id == id)
             .Select(e => new LdlaDetailsWithAppointments()
             {
                 Id = id,
@@ -46,8 +47,8 @@ internal class TestRepository : GenericRepository<TestAppointment>, ITestReposit
                 Status = e.Application.ApplicationStatus,
                 StatusDate = e.Application.LastStatusDate,
                 TestAppointments = _context.TestAppointments
-            .Where(test => test.LocalDrivingLicenseApplicationId == id && test.TestTypeId == typeId)
-            .ToList()
+                    .Where(test => test.LocalDrivingLicenseApplicationId == id && test.TestTypeId == typeId)
+                    .ToList()
             }).FirstOrDefaultAsync();
         return result;
     }

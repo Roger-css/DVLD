@@ -35,7 +35,7 @@ public class Program
         {
             options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-        }); ;
+        });
         builder.Services.AddDbContext<DvldContext>(x =>
         {
             x.UseSqlServer(connectionString);
@@ -121,7 +121,6 @@ public class Program
         var app = builder.Build();
 
         app.UseDefaultFiles();
-        app.UseStaticFiles();
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {

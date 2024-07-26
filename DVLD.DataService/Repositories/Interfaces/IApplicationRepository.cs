@@ -23,4 +23,7 @@ public interface IApplicationRepository : IGenericRepository<Application>
     public Task UpdateLdlaLicenseClass(UpdateLdlaLicenseClassRequest details);
     public Task<bool> LdlaExists(int LdlaId);
     public Task<int> CreateInternationLicenseApplication(int PersonId, int CreatedByUserId);
+    public Task<int> CreateRenewLicenseApplicationAsync(int PersonId, int CreatedByUserId);
+    public Task<int> CreateReplaceLicenseApplicationAsync(int personId, int createdByUserId, int applicationTypeId);
+
 }

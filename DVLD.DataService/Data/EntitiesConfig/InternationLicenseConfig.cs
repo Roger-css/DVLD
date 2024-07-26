@@ -17,7 +17,7 @@ internal class InternationLicenseConfig : IEntityTypeConfiguration<International
         builder.HasOne(x => x.License).WithOne(x => x.InternationalDLALicense)
             .HasForeignKey<InternationalDrivingLicense>(x => x.IssueUsingLocalDrivingLicenseId)
             .OnDelete(DeleteBehavior.NoAction);
-        builder.HasOne(x => x.Driver).WithOne(x => x.InternationalDrivingLicense)
-            .HasForeignKey<InternationalDrivingLicense>(x => x.DriverId).OnDelete(DeleteBehavior.NoAction);
+        builder.HasOne(x => x.Driver).WithMany(x => x.InternationalDrivingLicense)
+            .HasForeignKey(x => x.DriverId).OnDelete(DeleteBehavior.NoAction);
     }
 }

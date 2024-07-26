@@ -12,4 +12,16 @@ public class Pages
         HasPrev = Page > 1;
         HasNext = Page < TotalCount;
     }
+    private Pages()
+    {
+    }
+    public static Pages EmptyPages()
+    {
+        return new Pages
+        {
+            TotalCount = 0,
+            HasPrev = false,
+            HasNext = false
+        };
+    }
 }

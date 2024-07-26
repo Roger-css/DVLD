@@ -34,23 +34,10 @@ type BasicApplicationInfo = {
   applicationType: string;
   name: string;
 };
-type RenewLicenseApplicationInfo = {
-  id: number;
-  applicationId: number;
-  applicationDate: string;
-  oldLicenseId: number;
-  issueDate: string;
-  expirationDate: string;
-  statusDate: string;
-  applicationFees: number;
-  licenseFees: number;
-  createdBy: string;
-  notes: string;
-};
+
 export type {
   applicationTypes,
   localDrivingLA,
   localDrivingLA_view,
   BasicApplicationInfo,
-  RenewLicenseApplicationInfo,
 };

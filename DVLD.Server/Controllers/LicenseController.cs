@@ -1,6 +1,7 @@
 ﻿using DVLD.DataService.Repositories.Interfaces;
 using DVLD.Entities.Dtos.Request;
 using DVLD.Server.Commands;
+using DVLD.Server.Commands.License;
 using DVLD.Server.Common.Extensions;
 using DVLD.Server.Queries;
 using MediatR;
@@ -51,10 +52,20 @@ public class LicenseController : BaseController<LicenseController>
         return NotFound(result.ToErrorMessages());
     }
     [HttpGet]
-    [Route("Local/All/{id}")]
+    [Route("Local/All/{Id}")]
     public async Task<IActionResult> GetLocalLicenses(int id)
     {
         var query = new GetLocalLicensesQuery(id);
+        var result = await _mediator.Send(query);
+        if (result.IsSuccess)
+            return Ok(result.Value);
+        return BadRequest(result.ToErrorMessages());
+    }
+    [HttpGet]
+    [Route("International/All/{id}")]
+    public async Task<IActionResult> GetInternationalLicenses([FromRoute] int id)
+    {
+        var query = new GetInternationalLicensesQuery(id);
         var result = await _mediator.Send(query);
         if (result.IsSuccess)
             return Ok(result.Value);
@@ -76,12 +87,40 @@ public class LicenseController : BaseController<LicenseController>
         return StatusCode(StatusCodes.Status500InternalServerError, result.ToErrorMessages());
     }
     [HttpGet]
-    [Route("international/application/{Id}")]
+    [Route("application/{Id}")]
     public async Task<IActionResult> GetApplicationId([FromRoute] int Id)
     {
         var result = await _unitOfWork.LicenseRepository.GetApplicationId(Id);
         if (result is null)
             return NotFound();
         return Ok(result.Value);
+    }
+    [HttpPost]
+    [Route("Renew")]
+    public async Task<IActionResult> RenewLicense([FromBody] RenewLicenseCommand command)
+    {
+        var result = await _mediator.Send(command);
+        if (result.IsSuccess)
+            return Ok(result.Value);
+        return BadRequest(result.ToErrorMessages());
+    }
+    [HttpPost]
+    [Route("Replace")]
+    public async Task<IActionResult> ReplaceLicense([FromBody] ReplaceLicenseCommand command)
+    {
+        var result = await _mediator.Send(command);
+        if (result.IsSuccess)
+            return Ok(result.Value);
+        return BadRequest(result.ToErrorMessages());
+    }
+    [HttpGet]
+    [Route("International/All")]
+    public async Task<IActionResult> GetAllIntLicenses([FromQuery] GetPaginatedDataRequest req)
+    {
+        var query = new GetPaginatedIntLicensesQuery(req);
+        var result = await _mediator.Send(query);
+        if (result.IsSuccess)
+            return Ok(result.Value);
+        return NotFound();
     }
 }

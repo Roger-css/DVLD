@@ -24,7 +24,7 @@ public static class QueryExtensions
     public static IQueryable<T> BasicSorting<T>(this IQueryable<T> source, EnOrderBy? type) where T : class
     {
         if (source == null) throw new ArgumentNullException(nameof(source));
-        if (type == EnOrderBy.asc)
+        if (type is null || type == EnOrderBy.asc)
         {
             return source.OrderBy(e => e);
         }
@@ -85,7 +85,7 @@ public static class QueryExtensions
     }
     public static IQueryable<DriversView>? HandleDriversSearch(this IQueryable<DriversView> query, string searchTermKey, string searchTermValue)
     {
-        if (searchTermKey!.ToLower().Contains("id") && int.TryParse(searchTermKey, out var id))
+        if (searchTermKey!.ToLower().Contains("id") && int.TryParse(searchTermValue, out var id))
             return null;
         switch (searchTermKey!.ToLower())
         {
@@ -97,6 +97,23 @@ public static class QueryExtensions
                 return query.Where(e => e.FullName.Contains(searchTermValue));
             case "nationalno":
                 return query.Where(e => e.NationalNo.Contains(searchTermValue));
+            default:
+                return query;
+        }
+    }
+    public static IQueryable<InternationalDrivingLicense>? HandleIntLicensesSearch(this IQueryable<InternationalDrivingLicense> query, string searchTermKey, string searchTermValue)
+    {
+        var id = -1;
+        if (searchTermKey!.ToLower().Contains("id") && !int.TryParse(searchTermValue, out id))
+            return null;
+        switch (searchTermKey!.ToLower())
+        {
+            case "id":
+                return query.Where(e => e.Id == id);
+            case "locallicenseid":
+                return query.Where(e => e.IssueUsingLocalDrivingLicenseId == id);
+            case "driverid":
+                return query.Where(e => e.DriverId == id);
             default:
                 return query;
         }

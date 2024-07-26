@@ -4,8 +4,14 @@ import PersonDetailsWithSearch from "../PersonDetailsWithSearch";
 import { useState } from "react";
 import TabPanel from "@mui/lab/TabPanel/TabPanel";
 import DataTable from "../../DataTable.Memory";
-import { Columns } from "./licenseColumns";
-import { useGetAllLocalDrivingLicenses } from "./License.hooks";
+import {
+  localLicensesColumns,
+  internationalLicensesColumns,
+} from "./licenseColumns";
+import {
+  useGetAllInternationalDrivingLicenses,
+  useGetAllLocalDrivingLicenses,
+} from "./License.hooks";
 import { ColumnDef } from "@tanstack/react-table";
 import TabContext from "@mui/lab/TabContext";
 
@@ -13,7 +19,8 @@ type Props = {
   id: number;
 };
 const LicenseHistory = ({ id }: Props) => {
-  const allLocalLicense = useGetAllLocalDrivingLicenses(id);
+  const allLocalLicenses = useGetAllLocalDrivingLicenses(id);
+  const allInternationalLicenses = useGetAllInternationalDrivingLicenses(id);
   const [tab, setTab] = useState("0");
   return (
     <main className="overflow-auto ModalBox modalMaxHeight">
@@ -26,15 +33,22 @@ const LicenseHistory = ({ id }: Props) => {
         </TabList>
         <TabPanel value="0">
           <DataTable
-            column={Columns as unknown as ColumnDef<unknown, unknown>[]}
-            Data={allLocalLicense as unknown[]}
+            column={
+              localLicensesColumns as unknown as ColumnDef<unknown, unknown>[]
+            }
+            Data={allLocalLicenses as unknown[]}
           />
         </TabPanel>
         <TabPanel value="1">
-          {/* <DataTable
-          column={Columns as unknown as ColumnDef<unknown, unknown>[]}
-          Data={allLocalLicense as unknown[]}
-        /> */}
+          <DataTable
+            column={
+              internationalLicensesColumns as unknown as ColumnDef<
+                unknown,
+                unknown
+              >[]
+            }
+            Data={allInternationalLicenses as unknown[]}
+          />
         </TabPanel>
       </TabContext>
     </main>

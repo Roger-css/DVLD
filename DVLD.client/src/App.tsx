@@ -80,6 +80,15 @@ function App() {
             return { Component: LocalDrivingLicenseApplicationPage };
           },
         },
+        {
+          path: "InternationalDrivingLicense",
+          lazy: async () => {
+            const { default: InternationalLicensesPage } = await import(
+              "./Pages/InternationalLicense/InternationalLicensesPage"
+            );
+            return { Component: InternationalLicensesPage };
+          },
+        },
       ],
     },
   ]);

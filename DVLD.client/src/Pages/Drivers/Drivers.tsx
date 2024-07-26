@@ -44,7 +44,8 @@ const Drivers = () => {
         filterOptions: paginationOptions,
         handleFilterOptions: setPaginationOptions,
       }),
-    [paginationOptions]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [paginationOptions.orderBy]
   );
 
   const { drivers, pageOptions } = useGetPaginatedDrivers(paginationOptions);

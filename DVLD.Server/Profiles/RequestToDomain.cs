@@ -26,7 +26,8 @@ public class RequestToDomain : Profile
             .ForMember(dest => dest.NationalityCountryId, opt => opt.MapFrom(src => src.Country))
             .ForMember(dest => dest.Gender, (opt) => opt.MapFrom(src => src.Gender))
             .ForMember(dest => dest.BirthDate, (opt) => opt.MapFrom(src => src.DateOfBirth))
-            .ForMember(dest => dest.Image, (opt) => opt.MapFrom(src => ConvertFormFileToByteArray(src.Image)));
+            .ForMember(dest => dest.Image, (opt) => opt.MapFrom(src => ConvertFormFileToByteArray(src.Image)))
+            .ForMember(dest => dest.Country, opt => opt.Ignore());
     }
     private static byte[]? ConvertFormFileToByteArray(IFormFile? file)
     {

@@ -9,7 +9,7 @@ type Props = {
   filters: Filters;
 };
 function GetCurrentFilterKey(allFilters: Filters, filter: string) {
-  allFilters.find((e) => e.value === filter);
+  return allFilters.find((e) => e.value === filter)?.key;
 }
 const SearchWithFilters = ({ filters, options, setOptions }: Props) => {
   return (

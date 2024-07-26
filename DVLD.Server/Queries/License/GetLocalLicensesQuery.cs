@@ -4,6 +4,6 @@ using MediatR;
 
 namespace DVLD.Server.Queries
 {
-    public record GetLocalLicensesQuery(int id)
+    public record GetLocalLicensesQuery(int Id)
         : IRequest<Result<IEnumerable<AllLocalLicensesView>>>;
 }

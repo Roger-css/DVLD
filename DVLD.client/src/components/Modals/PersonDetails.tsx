@@ -143,6 +143,8 @@ const PersonDetails = ({
       image: personalImage,
       dateOfBirth: values.dateOfBirth.toLocaleString(),
     };
+    console.log(values.dateOfBirth);
+
     const formData = new FormData();
     for (const key in Data) {
       formData.append(key, Data[key] as string);

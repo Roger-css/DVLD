@@ -59,7 +59,12 @@ const ManageApplications = ({ handleClick }: Props) => {
               Local Driving License Applications
             </Typography>
           </ListItemButton>
-          <ListItemButton>
+          <ListItemButton
+            onClick={() => {
+              handleClick();
+              navigate("InternationalDrivingLicense");
+            }}
+          >
             <ListItemIcon>
               <img
                 src="../../../public/InternationDL.png"

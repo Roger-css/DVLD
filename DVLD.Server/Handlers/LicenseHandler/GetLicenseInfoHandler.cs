@@ -21,6 +21,16 @@ public class GetLicenseInfoHandler : BaseHandler<GetLicenseInfoHandler>, IReques
             return Result.Fail("Application ID does not exist");
         }
         var mappedEntity = _mapper.Map<LocalLicenseInfoResponse>(entity);
+        mappedEntity.IssueReason = TransformIssueReason(mappedEntity.IssueReason);
         return mappedEntity;
+    }
+    public string TransformIssueReason(string reason)
+    {
+        return reason switch
+        {
+            "ReplacementForDamaged" => "Replacement For Damaged",
+            "ReplacementForLost" => "Replacement For Lost",
+            _ => reason,
+        };
     }
 }

@@ -34,7 +34,8 @@ public class DomainToResponse : Profile
             .ForMember(e => e.Image, e => e.MapFrom(e => e.Driver.Person!.Image))
             .ForMember(e => e.NationalNo, e => e.MapFrom(e => e.Driver.Person!.NationalNo))
             .ForMember(e => e.LicenseClass, e => e.MapFrom(e => e.LicenseClass.ClassName))
-            .ForMember(e => e.LicenseId, e => e.MapFrom(e => e.Id));
+            .ForMember(e => e.LicenseId, e => e.MapFrom(e => e.Id))
+            .ForMember(e => e.ExpireDate, e => e.MapFrom(e => e.ExpirationDate));
         CreateMap<License, AllLocalLicensesView>()
             .ForMember(dest => dest.ClassName, opt => opt.MapFrom(src => src.LicenseClass.ClassName))
             .ForMember(dest => dest.ExpirationDate
