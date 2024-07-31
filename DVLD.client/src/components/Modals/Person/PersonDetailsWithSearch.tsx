@@ -1,9 +1,9 @@
 import { Button, IconButton, TextField } from "@mui/material";
 import PersonDetails from "./PersonDetails";
 import { ReactNode, useEffect, useRef, useState } from "react";
-import usePrivate from "../../hooks/usePrivate";
-import { personFilters as Filters, personInfo } from "../../Types/Person";
-import allFilters from "../../Utils/allFilters";
+import usePrivate from "../../../hooks/usePrivate";
+import { personFilters as Filters, personInfo } from "../../../Types/Person";
+import allFilters from "../../../Utils/allFilters";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 type TyProps = {
   title?: string;

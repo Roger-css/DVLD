@@ -123,4 +123,23 @@ public class LicenseController : BaseController<LicenseController>
             return Ok(result.Value);
         return NotFound();
     }
+    [HttpPost]
+    [Route("Detain")]
+    public async Task<IActionResult> DetainLicense([FromBody] DetainLicenseCommand command)
+    {
+        var result = await _mediator.Send(command);
+        if (result.IsSuccess)
+            return Ok(result.Value);
+        return BadRequest(result.ToErrorMessages());
+    }
+    [HttpGet]
+    [Route("Detain/info/{id}")]
+    public async Task<IActionResult> GetDetainInfo(int id)
+    {
+        var query = new GetDetainInfoQuery(id);
+        var result = await _mediator.Send(query);
+        if (result.IsSuccess)
+            return Ok(result.Value);
+        return BadRequest(result.ToErrorMessages());
+    }
 }

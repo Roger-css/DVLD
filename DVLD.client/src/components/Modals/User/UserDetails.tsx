@@ -1,13 +1,13 @@
 import { Box, Button, IconButton, Tab, TextField } from "@mui/material";
-import PersonDetails from "./PersonDetails";
+import PersonDetails from "../Person/PersonDetails";
 import { useEffect, useRef, useState } from "react";
 import { TabPanelProps } from "@mui/lab/TabPanel/TabPanel";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
-import usePrivate from "../../hooks/usePrivate";
-import { LoginInfo } from "../../Types/User";
-import { personFilters as Filters, personInfo } from "../../Types/Person";
-import allFilters from "../../Utils/allFilters";
+import usePrivate from "../../../hooks/usePrivate";
+import { LoginInfo } from "../../../Types/User";
+import { personFilters as Filters, personInfo } from "../../../Types/Person";
+import allFilters from "../../../Utils/allFilters";
 import LoginUserInfo from "./loginUserInfo";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import CloseIcon from "@mui/icons-material/Close";

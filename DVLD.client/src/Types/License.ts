@@ -55,10 +55,22 @@ export enum ReplaceType {
   lost = 3,
   damaged,
 }
+type DetainLicense = {
+  licenseId: number;
+  fees: number;
+};
+type DetainInfo = {
+  licenseId: number;
+  fees: number;
+  detainDate: string;
+  createdBy: string;
+};
 export type {
   licenseClass,
   LocalDrivingLicenseInfo,
   LicenseView,
   NewLicenseInfo,
   IntLicense,
+  DetainLicense,
+  DetainInfo,
 };

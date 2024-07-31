@@ -3,16 +3,16 @@ import { Form, Formik, FormikValues } from "formik";
 import { ReactNode, useEffect, useState } from "react";
 import * as yup from "yup";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
-import FormikControl from "../formik/FormikControl";
+import FormikControl from "../../formik/FormikControl";
 import dayjs, { Dayjs } from "dayjs";
 import { useSelector } from "react-redux";
-import usePrivate from "../../hooks/usePrivate";
-import { getAllCountries } from "../../redux/Slices/Countries";
-import useDebounce from "../../hooks/useDebounce";
-import TextError from "../formik/TextError";
-import isObjectEmpty from "../../Utils/IsObjEmpty";
-import ConvertBinaryToImage from "../../Utils/ConvertBinaryToImage";
-import { personInfo } from "../../Types/Person";
+import usePrivate from "../../../hooks/usePrivate";
+import { getAllCountries } from "../../../redux/Slices/Countries";
+import useDebounce from "../../../hooks/useDebounce";
+import TextError from "../../formik/TextError";
+import isObjectEmpty from "../../../Utils/IsObjEmpty";
+import ConvertBinaryToImage from "../../../Utils/ConvertBinaryToImage";
+import { personInfo } from "../../../Types/Person";
 
 type TyInitialValues = {
   id: number | null;

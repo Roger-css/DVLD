@@ -42,5 +42,13 @@ public class DomainToResponse : Profile
             , opt => opt.MapFrom(src => src.ExpirationDate.ToString("yyyy/MM/dd")))
             .ForMember(dest => dest.IssueDate
             , opt => opt.MapFrom(src => src.IssueDate.ToString("yyyy/MM/dd")));
+        CreateMap<DetainedLicense, DetainInfo>()
+            .ForMember(dest => dest.Fees, opt => opt.MapFrom(src => src.FineFees))
+            .ForMember(dest => dest.DetainDate,
+            opt => opt.MapFrom(src => src.DetainDate.ToString("yyyy/MM/dd")))
+            .ForMember(dest => dest.CreatedBy,
+            opt => opt.MapFrom(src => src.CreateUser.UserName))
+        .ForMember(dest => dest.DetainId,
+            opt => opt.MapFrom(src => src.Id));
     }
 }

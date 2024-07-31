@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { useEffect, useMemo, useState } from "react";
-import PersonDetails from "../components/Modals/PersonDetails";
+import PersonDetails from "../components/Modals/Person/PersonDetails";
 import DataTable from "../components/DataTable.Server";
 import useDebounce from "../hooks/useDebounce";
 import usePrivate from "../hooks/usePrivate";

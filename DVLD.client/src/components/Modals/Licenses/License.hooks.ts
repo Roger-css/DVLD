@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import usePrivate from "../../../hooks/usePrivate";
 import {
+  DetainInfo,
+  DetainLicense,
   LicenseView,
   LocalDrivingLicenseInfo,
   ReplaceType,
@@ -241,4 +243,48 @@ export const useReplaceLicenseApplication = () => {
       resetError: () => void;
     }
   ];
+};
+export const useAddDetainLicense = (): [
+  (body: DetainLicense) => Promise<void>,
+  { detainId: number; error: string }
+] => {
+  const [detainId, setDetainId] = useState(0);
+  const [error, setError] = useState("");
+  const axios = usePrivate();
+  const currentUserId = useSelector(getCurrentUserInfo)?.id;
+  const sendingData = async (data: DetainLicense) => {
+    try {
+      const body = {
+        ...data,
+        createdByUserId: currentUserId as number,
+      };
+      const response = await axios.post("License/Detain", body);
+      setDetainId(+response.data);
+    } catch (error) {
+      setError((error as AxiosError).response?.data as string);
+    }
+  };
+  return [sendingData, { detainId, error }];
+};
+export const useGetDetainInfo = (licenseId: number) => {
+  const [detainInfo, setDetainInfo] = useState<DetainInfo>({
+    createdBy: "",
+    detainDate: "",
+    fees: 0,
+    licenseId: 0,
+  });
+  const [error, setError] = useState("");
+  const axios = usePrivate();
+  useEffect(() => {
+    const sendingData = async () => {
+      try {
+        const response = await axios.get(`License/Detain/info/${licenseId}`);
+        setDetainInfo(response.data);
+      } catch (error) {
+        setError((error as AxiosError).response?.data as string);
+      }
+    };
+    sendingData();
+  }, [axios, licenseId]);
+  return { detainInfo, error };
 };

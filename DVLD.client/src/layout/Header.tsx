@@ -4,7 +4,7 @@ import { Avatar, Button, Modal } from "@mui/material";
 import { useSelector } from "react-redux";
 import { getCurrentUserImage } from "../redux/Slices/Auth";
 import ConvertBinaryToImage from "../Utils/ConvertBinaryToImage";
-import UserDetails from "../components/Modals/UserDetails";
+import UserDetails from "../components/Modals/User/UserDetails";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate, useLocation } from "react-router-dom";
 import useLocalStorage from "../hooks/useLocalStorage";
@@ -13,10 +13,10 @@ import DisplaySettingsIcon from "@mui/icons-material/DisplaySettings";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { FaRegNewspaper } from "react-icons/fa";
-import { TbLicenseOff } from "react-icons/tb";
 import { GiPapers } from "react-icons/gi";
-import Dls from "./ApplicationsList/DLS";
-import ManageApplications from "./ApplicationsList/ManageApplications";
+import Dls from "./SubHeaderComponents/DLS";
+import ManageApplications from "./SubHeaderComponents/ManageApplications";
+import ManageDetainLicenses from "./SubHeaderComponents/ManageDetainLicenses";
 const Header = () => {
   const Image = useSelector(getCurrentUserImage);
   const { getItem, deleteItem } = useLocalStorage("token");
@@ -45,24 +45,11 @@ const Header = () => {
         },
         {
           title: (
-            <Button
-              startIcon={<TbLicenseOff />}
-              fullWidth
-              onClick={() => {
+            <ManageDetainLicenses
+              handleClick={() => {
                 handleClick("");
-                navigate("");
               }}
-              sx={{
-                fontSize: "12px",
-                fontWeight: "bold",
-                color: "rgba(0, 0, 0, 0.54)",
-                display: "flex",
-                justifyContent: "space-between",
-                pr: "50px",
-              }}
-            >
-              Detain Licenses
-            </Button>
+            />
           ),
         },
         {

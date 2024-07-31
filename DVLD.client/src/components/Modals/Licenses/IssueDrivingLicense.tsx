@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { BasicApplicationInfo } from "../../Types/Applications";
-import usePrivate from "../../hooks/usePrivate";
+import { BasicApplicationInfo } from "../../../Types/Applications";
+import usePrivate from "../../../hooks/usePrivate";
 import { Button, IconButton, Snackbar, Typography } from "@mui/material";
-import ApplicationInfo from "./ApplicationInfo";
+import ApplicationInfo from "../Application/ApplicationInfo";
 import Textarea from "@mui/joy/Textarea";
 import CloseIcon from "@mui/icons-material/Close";
 import { useSelector } from "react-redux";
-import { getCurrentUserInfo } from "../../redux/Slices/Auth";
+import { getCurrentUserInfo } from "../../../redux/Slices/Auth";
 
 type Props = {
   id: number;

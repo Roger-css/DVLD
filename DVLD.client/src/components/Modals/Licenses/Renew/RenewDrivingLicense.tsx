@@ -1,5 +1,5 @@
 import { Button, TextField } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import LocalLicenseInfo from "../LocalLicenseInfo";
 
 import {
@@ -9,6 +9,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import RenewLicenseApplicationInfo from "./RenewLicenseApplicationInfo";
 import TextError from "../../../formik/TextError";
+import { useClickEnterToSearch } from "../../../../hooks/useClickEnterToSearch";
 
 type Props = {
   handleClose: () => void;
@@ -18,20 +19,9 @@ const RenewDrivingLicense = ({ handleClose }: Props) => {
   const [searchValue, setSearchValue] = useState<number>(0);
   const [licenseId, setLicenseId] = useState<number>();
   const [notes, setNotes] = useState("");
-  const idInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    const onEnterEvent = (e: KeyboardEvent) => {
-      if (e.key === "Enter") {
-        buttonRef.current?.click();
-      }
-    };
-    const ref = idInputRef.current;
-    ref?.addEventListener("keypress", onEnterEvent);
-    return () => {
-      ref?.removeEventListener("keypress", onEnterEvent);
-    };
-  }, []);
+  useClickEnterToSearch({ buttonRef, inputRef });
   const applicationId = useGetApplicationIdFromLicenseId(licenseId);
   const [renewLicense, { LicenseInfo, error, resetError }] =
     useRenewLicenseApplication();
@@ -61,7 +51,7 @@ const RenewDrivingLicense = ({ handleClose }: Props) => {
           <label className="flex items-center font-semibold capitalize">
             <span className="inline-block mr-5">License ID:</span>
             <TextField
-              ref={idInputRef}
+              ref={inputRef}
               type="text"
               value={searchValue}
               onChange={(e) => {

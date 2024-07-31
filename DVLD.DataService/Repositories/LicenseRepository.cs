@@ -24,35 +24,35 @@ internal class LicenseRepository : GenericRepository<License>, ILicenseRepositor
     public async Task<License?> GetLocalLicenseInfo(int applicationId)
     {
         var entity = await _dbSet.AsNoTracking()
-            .Where(e => e.ApplicationId == applicationId)
-            .Select(e => new License
+            .Where(l => l.ApplicationId == applicationId)
+            .Select(l => new License
             {
-                Id = e.Id,
-                DriverId = e.DriverId,
-                ExpirationDate = e.ExpirationDate,
-                IssueDate = e.IssueDate,
-                IsActive = e.IsActive,
-                IssueReason = e.IssueReason,
-                Notes = e.Notes,
+                Id = l.Id,
+                DriverId = l.DriverId,
+                ExpirationDate = l.ExpirationDate,
+                IssueDate = l.IssueDate,
+                IsActive = l.IsActive,
+                IssueReason = l.IssueReason,
+                Notes = l.Notes,
                 LicenseClass = new LicenseClass
                 {
-                    ClassName = e.LicenseClass.ClassName,
+                    ClassName = l.LicenseClass.ClassName,
                 },
                 Driver = new Driver
                 {
                     Person = new Person
                     {
-                        FirstName = e.Driver.Person!.FirstName,
-                        SecondName = e.Driver.Person.SecondName,
-                        ThirdName = e.Driver.Person.ThirdName,
-                        LastName = e.Driver.Person.LastName,
-                        Gender = e.Driver.Person.Gender,
-                        BirthDate = e.Driver.Person.BirthDate,
-                        NationalNo = e.Driver.Person.NationalNo,
-                        Image = e.Driver.Person.Image,
+                        FirstName = l.Driver.Person!.FirstName,
+                        SecondName = l.Driver.Person.SecondName,
+                        ThirdName = l.Driver.Person.ThirdName,
+                        LastName = l.Driver.Person.LastName,
+                        Gender = l.Driver.Person.Gender,
+                        BirthDate = l.Driver.Person.BirthDate,
+                        NationalNo = l.Driver.Person.NationalNo,
+                        Image = l.Driver.Person.Image,
                     }
                 },
-                DetainedLicense = e.DetainedLicense!.Where(e => !e.IsReleased).ToList(),
+                DetainedLicense = l.DetainedLicense!.Where(d => d.LicenseId == l.Id).Where(d => !d.IsReleased).ToList(),
             })
             .FirstOrDefaultAsync();
         return entity;
@@ -221,9 +221,11 @@ internal class LicenseRepository : GenericRepository<License>, ILicenseRepositor
     }
     public async Task<bool> IsDetainedLicense(int licenseId)
     {
-        var entity = await _context.DetainedLicenses.Where(e => e.Id == licenseId).FirstOrDefaultAsync();
+        var entity = await _context.DetainedLicenses
+            .Where(e => e.LicenseId == licenseId && !e.IsReleased)
+            .FirstOrDefaultAsync();
         if (entity is not null)
-            return !entity.IsReleased;
+            return true;
         return false;
     }
 
@@ -251,5 +253,38 @@ internal class LicenseRepository : GenericRepository<License>, ILicenseRepositor
         await _dbSet.AddAsync(newLicense);
         await _context.SaveChangesAsync();
         return newLicense.Id;
+    }
+
+    public async Task<int> DetainLicense(int licenseId, int createdBy, float fees)
+    {
+        var detainInfo = new DetainedLicense
+        {
+            CreatedByUserId = createdBy,
+            DetainDate = DateTime.Now,
+            FineFees = fees,
+            LicenseId = licenseId,
+            IsReleased = false,
+        };
+        await _context.DetainedLicenses.AddAsync(detainInfo);
+        await _context.SaveChangesAsync();
+        return detainInfo.Id;
+    }
+
+    public async Task<DetainedLicense> GetDetainInfo(int licenseId)
+    {
+        var entity = await _context.DetainedLicenses.Where(e => e.LicenseId == licenseId)
+            .Select(e => new DetainedLicense
+            {
+                Id = e.Id,
+                LicenseId = e.LicenseId,
+                CreateUser = new User
+                {
+                    UserName = e.CreateUser.UserName,
+                },
+                DetainDate = e.DetainDate,
+                FineFees = e.FineFees,
+            })
+            .FirstOrDefaultAsync();
+        return entity!;
     }
 }

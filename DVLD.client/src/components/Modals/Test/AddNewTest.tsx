@@ -1,13 +1,13 @@
 import { Button, TextField } from "@mui/material";
-import { BasicApplicationInfo } from "../../Types/Applications";
+import { BasicApplicationInfo } from "../../../Types/Applications";
 import { useState } from "react";
-import usePrivate from "../../hooks/usePrivate";
+import usePrivate from "../../../hooks/usePrivate";
 import { useSelector } from "react-redux";
-import { appointmentClass } from "../../Types/Test";
-import { getCurrentUserInfo } from "../../redux/Slices/Auth";
-import { getApplicationTypes } from "../../redux/Slices/Applications";
-import { getTestTypes } from "../../redux/Slices/Tests";
-import TextError from "../formik/TextError";
+import { appointmentClass } from "../../../Types/Test";
+import { getCurrentUserInfo } from "../../../redux/Slices/Auth";
+import { getApplicationTypes } from "../../../redux/Slices/Applications";
+import { getTestTypes } from "../../../redux/Slices/Tests";
+import TextError from "../../formik/TextError";
 type Props = {
   details: BasicApplicationInfo;
   onClose: () => void;

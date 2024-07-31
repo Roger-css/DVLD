@@ -4,11 +4,11 @@ import { TabPanelProps } from "@mui/lab/TabPanel/TabPanel";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import CloseIcon from "@mui/icons-material/Close";
-import PersonDetailsWithSearch from "./PersonDetailsWithSearch";
+import PersonDetailsWithSearch from "../Person/PersonDetailsWithSearch";
 import Ldla from "./LDLA";
-import { localDrivingLA } from "../../Types/Applications";
-import usePrivate from "../../hooks/usePrivate";
-import { personInfo } from "../../Types/Person";
+import { localDrivingLA } from "../../../Types/Applications";
+import usePrivate from "../../../hooks/usePrivate";
+import { personInfo } from "../../../Types/Person";
 type TyProps = {
   handleClose: () => void;
   title: string;

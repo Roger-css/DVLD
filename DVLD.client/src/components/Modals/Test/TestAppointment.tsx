@@ -11,13 +11,13 @@ import {
   Snackbar,
   Typography,
 } from "@mui/material";
-import ApplicationInfo from "./ApplicationInfo";
+import ApplicationInfo from "../Application/ApplicationInfo";
 import { useEffect, useMemo, useState } from "react";
-import { BasicApplicationInfo } from "../../Types/Applications";
-import usePrivate from "../../hooks/usePrivate";
-import { testAppointment } from "../../Types/Test";
+import { BasicApplicationInfo } from "../../../Types/Applications";
+import usePrivate from "../../../hooks/usePrivate";
+import { testAppointment } from "../../../Types/Test";
 import { ColumnDef } from "@tanstack/react-table";
-import DataTable from "../DataTable.Memory";
+import DataTable from "../../DataTable.Memory";
 import LockIcon from "@mui/icons-material/Lock";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
@@ -267,7 +267,6 @@ const TestAppointment = ({ title, id, passedTests, testTypeId }: TyProps) => {
       </Modal>
       <DataTable
         Data={appointments}
-        // @ts-expect-error react.Memo problem
         column={AppointmentsColumns}
         color={isThereAnActiveAppointment ? "#aa2e25" : "#357a38"}
       />

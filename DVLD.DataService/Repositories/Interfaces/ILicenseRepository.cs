@@ -6,7 +6,7 @@ using DVLD.Entities.Enums;
 
 namespace DVLD.DataService.Repositories.Interfaces;
 
-public interface ILicenseRepository
+public interface ILicenseRepository : IGenericRepository<License>
 {
     public Task<IEnumerable<LicenseClass>?> GetLicenseClasses();
     public Task<License> IssueLicenceFirstTime(IssueDrivingLicenseFirstTimeRequest request, int driverId);
@@ -24,4 +24,6 @@ public interface ILicenseRepository
     public Task<PaginatedEntity<InternationalDrivingLicense>> GetPaginatedInternationalLicensesAsync
         (GetPaginatedDataRequest options);
     public Task<int> CreateReplacedLicenseAsync(int oldLicenseId, int applicationId, EnIssueReason reason);
+    public Task<int> DetainLicense(int licenseId, int createdBy, float fees);
+    public Task<DetainedLicense> GetDetainInfo(int licenseId);
 }

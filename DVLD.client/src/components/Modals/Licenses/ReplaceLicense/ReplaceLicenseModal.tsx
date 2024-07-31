@@ -7,7 +7,7 @@ import {
   RadioGroup,
   TextField,
 } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import LocalLicenseInfo from "../LocalLicenseInfo";
 
 import {
@@ -18,6 +18,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import TextError from "../../../formik/TextError";
 import ReplacedLicenseApplicationInfo from "./ReplacementApplicationInfo";
 import { ReplaceType } from "../../../../Types/License";
+import { useClickEnterToSearch } from "../../../../hooks/useClickEnterToSearch";
 
 type Props = {
   handleClose: () => void;
@@ -27,21 +28,11 @@ const ReplaceLicenseModal = ({ handleClose }: Props) => {
   const [searchValue, setSearchValue] = useState<number>(0);
   const [licenseId, setLicenseId] = useState<number>();
   const [replaceType, setReplaceType] = useState<ReplaceType>(ReplaceType.lost);
-  const idInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [submitted, setSubmitted] = useState(false);
-  useEffect(() => {
-    const onEnterEvent = (e: KeyboardEvent) => {
-      if (e.key === "Enter") {
-        buttonRef.current?.click();
-      }
-    };
-    const ref = idInputRef.current;
-    ref?.addEventListener("keypress", onEnterEvent);
-    return () => {
-      ref?.removeEventListener("keypress", onEnterEvent);
-    };
-  }, []);
+  useClickEnterToSearch({ buttonRef, inputRef });
+
   const applicationId = useGetApplicationIdFromLicenseId(licenseId);
   const [replaceLicense, { LicenseInfo, error, resetError }] =
     useReplaceLicenseApplication();
@@ -73,7 +64,7 @@ const ReplaceLicenseModal = ({ handleClose }: Props) => {
               <span className="inline-block mr-5">License ID:</span>
               <TextField
                 disabled={submitted}
-                ref={idInputRef}
+                ref={inputRef}
                 type="text"
                 value={searchValue}
                 onChange={(e) => {

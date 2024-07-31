@@ -1,6 +1,6 @@
 import TabList from "@mui/lab/TabList";
 import { Tab } from "@mui/material";
-import PersonDetailsWithSearch from "../PersonDetailsWithSearch";
+import PersonDetailsWithSearch from "../Person/PersonDetailsWithSearch";
 import { useState } from "react";
 import TabPanel from "@mui/lab/TabPanel/TabPanel";
 import DataTable from "../../DataTable.Memory";

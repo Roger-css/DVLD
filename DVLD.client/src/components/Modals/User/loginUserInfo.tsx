@@ -2,12 +2,12 @@ import { Button, Paper, TextField } from "@mui/material";
 import { Form, Formik } from "formik";
 import { useEffect, useState } from "react";
 import * as yup from "yup";
-import FormikControl from "../formik/FormikControl";
-import { LoginInfo } from "../../Types/User";
-import isObjectEmpty from "../../Utils/IsObjEmpty";
-import useDebounce from "../../hooks/useDebounce";
-import usePrivate from "../../hooks/usePrivate";
-import TextError from "../formik/TextError";
+import FormikControl from "../../formik/FormikControl";
+import { LoginInfo } from "../../../Types/User";
+import isObjectEmpty from "../../../Utils/IsObjEmpty";
+import useDebounce from "../../../hooks/useDebounce";
+import usePrivate from "../../../hooks/usePrivate";
+import TextError from "../../formik/TextError";
 type TyDetails = LoginInfo & { isActive: string };
 type TyProps = {
   details: TyDetails | null;

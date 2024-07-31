@@ -15,7 +15,7 @@ import {
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { FaEdit } from "react-icons/fa";
 import { testType } from "../../Types/Test";
-import TestTypeDetails from "../../components/Modals/TestTypeDetails";
+import TestTypeDetails from "../../components/Modals/Test/TestTypeDetails";
 import { getTestTypes } from "../../redux/Slices/Tests";
 const TestTypes = () => {
   const testTypesArr = useSelector(getTestTypes) ?? [];

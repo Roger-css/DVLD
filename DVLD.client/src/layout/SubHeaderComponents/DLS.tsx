@@ -13,7 +13,7 @@ import {
 import { useState } from "react";
 import { TbLicense } from "react-icons/tb";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import LdlaWithPersonDetails from "../../components/Modals/LdlaWithPersonDetails";
+import LdlaWithPersonDetails from "../../components/Modals/Application/LdlaWithPersonDetails";
 import AddInternationalDrivingApplication from "../../components/Modals/Licenses/International/AddInternationalDrivingApplication";
 import RenewDrivingLicense from "../../components/Modals/Licenses/Renew/RenewDrivingLicense";
 import ReplaceLicenseModal from "../../components/Modals/Licenses/ReplaceLicense/ReplaceLicenseModal";

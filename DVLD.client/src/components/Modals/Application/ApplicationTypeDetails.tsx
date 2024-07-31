@@ -1,28 +1,26 @@
 import { useEffect, useState } from "react";
 import * as yup from "yup";
+import { applicationTypes } from "../../../Types/Applications";
 import { Paper, Button, Typography } from "@mui/material";
 import { Formik, Form, FormikValues } from "formik";
-import isObjectEmpty from "../../Utils/IsObjEmpty";
-import FormikControl from "../formik/FormikControl";
-import usePrivate from "../../hooks/usePrivate";
-import { testType } from "../../Types/Test";
+import isObjectEmpty from "../../../Utils/IsObjEmpty";
+import FormikControl from "../../formik/FormikControl";
+import usePrivate from "../../../hooks/usePrivate";
 
 type TyProps = {
-  initialValues: testType | null;
+  initialValues: applicationTypes | null;
   handleClose: () => void;
 };
 const ValidationSchema = yup.object({
-  testTypeTitle: yup.string().required("Title is required"),
-  testTypeDescription: yup.string().required("Description is required"),
-  testTypeFees: yup.number().required("Fees is required"),
+  applicationTypeTitle: yup.string().required("Title is required"),
+  applicationTypeFees: yup.number().required("Fees is required"),
 });
-const TestTypeDetails = ({ initialValues, handleClose }: TyProps) => {
+const ApplicationTypeDetails = ({ initialValues, handleClose }: TyProps) => {
   const axios = usePrivate();
-  const [formikInitialValues, setInitialValues] = useState<testType>({
-    id: 0,
-    testTypeTitle: "",
-    testTypeDescription: "",
-    testTypeFees: 0,
+  const [formikInitialValues, setInitialValues] = useState<applicationTypes>({
+    applicationTypeId: 0,
+    applicationTypeTitle: "",
+    applicationTypeFees: 0,
   });
   useEffect(() => {
     if (initialValues) setInitialValues(initialValues);
@@ -33,7 +31,7 @@ const TestTypeDetails = ({ initialValues, handleClose }: TyProps) => {
         ...e,
         applicationTypeFees: +e.applicationTypeFees,
       };
-      const sendingData = await axios.put("Tests/types", body);
+      const sendingData = await axios.put("Applications/types/Update", body);
       console.log(sendingData);
     } catch (error) {
       console.log(error);
@@ -59,30 +57,23 @@ const TestTypeDetails = ({ initialValues, handleClose }: TyProps) => {
                   textAlign="center"
                   py="20px"
                 >
-                  Update Test Type
+                  Update Application Type
                 </Typography>
                 <div className="mb-5 ml-3 text-xl uppercase">
-                  ID: {formik.values.id}
+                  ID: {formik.values.applicationTypeId}
                 </div>
                 <FormikControl
                   className="w-80 LoginUserInfoControl"
                   control="input"
                   label="Title"
-                  name="testTypeTitle"
-                  size="large"
-                />
-                <FormikControl
-                  className="w-80 LoginUserInfoControl"
-                  control="textarea"
-                  label="Description"
-                  name="testTypeDescription"
+                  name="applicationTypeTitle"
                   size="large"
                 />
                 <FormikControl
                   className="w-80 LoginUserInfoControl"
                   control="input"
                   label="Fees"
-                  name="testTypeFees"
+                  name="applicationTypeFees"
                   size="large"
                 />
                 <div className="flex justify-end">
@@ -104,4 +95,4 @@ const TestTypeDetails = ({ initialValues, handleClose }: TyProps) => {
   );
 };
 
-export default TestTypeDetails;
+export default ApplicationTypeDetails;

@@ -6,15 +6,15 @@ import {
   Radio,
   RadioGroup,
 } from "@mui/material";
-import { BasicApplicationInfo } from "../../Types/Applications";
+import { BasicApplicationInfo } from "../../../Types/Applications";
 import { useState } from "react";
-import usePrivate from "../../hooks/usePrivate";
+import usePrivate from "../../../hooks/usePrivate";
 import { useSelector } from "react-redux";
-import { test, testAppointment } from "../../Types/Test";
-import { getCurrentUserInfo } from "../../redux/Slices/Auth";
-import TextError from "../formik/TextError";
+import { test, testAppointment } from "../../../Types/Test";
+import { getCurrentUserInfo } from "../../../redux/Slices/Auth";
+import TextError from "../../formik/TextError";
 import Textarea from "@mui/joy/Textarea";
-import { getTestTypes } from "../../redux/Slices/Tests";
+import { getTestTypes } from "../../../redux/Slices/Tests";
 type Props = {
   details: BasicApplicationInfo;
   appointment: testAppointment;
