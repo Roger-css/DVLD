@@ -4,6 +4,7 @@ using DVLD.DataService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DVLD.DataService.Migrations
 {
     [DbContext(typeof(DvldContext))]
-    partial class DvldContextModelSnapshot : ModelSnapshot
+    [Migration("20240731153124_added DetainLicenses view")]
+    partial class addedDetainLicensesview
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1694,8 +1697,8 @@ namespace DVLD.DataService.Migrations
                     b.Property<DateTime>("DetainDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("FineFees")
-                        .HasColumnType("smallmoney");
+                    b.Property<float>("FineFees")
+                        .HasColumnType("real");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -1711,10 +1714,10 @@ namespace DVLD.DataService.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ReleaseApplicationId")
+                    b.Property<int>("ReleaseApplicationId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("ReleaseDate")
+                    b.Property<DateTime>("ReleaseDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");

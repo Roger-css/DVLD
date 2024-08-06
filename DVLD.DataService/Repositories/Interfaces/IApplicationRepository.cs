@@ -19,6 +19,7 @@ public interface IApplicationRepository : IGenericRepository<Application>
     public Task<bool> CompleteApplication(int Id);
     public Task<SingleLDLAResponse?> GetLDLAInfo(int LdlaId);
     public Task CreateApplication(Application application);
+    public Task<int> CreateReleaseDetainLicenseApplication(int licenseId, int createdBy);
     public Task<Person?> GetPerson(int ApplicationId);
     public Task UpdateLdlaLicenseClass(UpdateLdlaLicenseClassRequest details);
     public Task<bool> LdlaExists(int LdlaId);

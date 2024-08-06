@@ -134,9 +134,29 @@ public class LicenseController : BaseController<LicenseController>
     }
     [HttpGet]
     [Route("Detain/info/{id}")]
-    public async Task<IActionResult> GetDetainInfo(int id)
+    public async Task<IActionResult> GetDetainInfo([FromRoute] int id)
     {
         var query = new GetDetainInfoQuery(id);
+        var result = await _mediator.Send(query);
+        if (result.IsSuccess)
+            return Ok(result.Value);
+        return BadRequest(result.ToErrorMessages());
+    }
+    [HttpPost]
+    [Route("Release")]
+    public async Task<IActionResult> ReleaseLicense([FromBody] ReleaseLicenseCommand command)
+    {
+        var result = await _mediator.Send(command);
+        if (result.IsSuccess)
+            return Ok(result.Value);
+        return BadRequest(result.ToErrorMessages());
+    }
+    [HttpGet]
+    [Route("Detain/info")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetDetainedLicensesView([FromQuery] GetPaginatedDataRequest search)
+    {
+        var query = new GetDetainedLicensesQuery(search);
         var result = await _mediator.Send(query);
         if (result.IsSuccess)
             return Ok(result.Value);

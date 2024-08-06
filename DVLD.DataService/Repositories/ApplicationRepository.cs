@@ -194,7 +194,7 @@ internal class ApplicationRepository : GenericRepository<Application>, IApplicat
             ApplicationTypeId = AppType.ApplicationTypeId,
             PaidFees = AppType.ApplicationTypeFees,
             ApplicationPersonId = PersonId,
-            ApplicationStatus = EnApplicationStatus.New,
+            ApplicationStatus = EnApplicationStatus.Completed,
             CreatedAt = DateTime.Now,
             CreatedByUserId = CreatedByUserId,
             LastStatusDate = DateTime.Now,
@@ -210,7 +210,7 @@ internal class ApplicationRepository : GenericRepository<Application>, IApplicat
         var application = new Application
         {
             ApplicationPersonId = PersonId,
-            ApplicationStatus = EnApplicationStatus.New,
+            ApplicationStatus = EnApplicationStatus.Completed,
             LastStatusDate = DateTime.Now,
             PaidFees = applicationType!.ApplicationTypeFees,
             CreatedByUserId = CreatedByUserId,
@@ -230,7 +230,7 @@ internal class ApplicationRepository : GenericRepository<Application>, IApplicat
         var app = new Application
         {
             ApplicationPersonId = personId,
-            ApplicationStatus = EnApplicationStatus.New,
+            ApplicationStatus = EnApplicationStatus.Completed,
             LastStatusDate = DateTime.Now,
             ApplicationTypeId = applicationTypeId,
             CreatedAt = DateTime.Now,
@@ -240,5 +240,31 @@ internal class ApplicationRepository : GenericRepository<Application>, IApplicat
         await _dbSet.AddAsync(app);
         await _context.SaveChangesAsync();
         return app.Id;
+    }
+
+    public async Task<int> CreateReleaseDetainLicenseApplication(int licenseId, int createdBy)
+    {
+        var driver = await _context.Licenses.Where(e => e.Id == licenseId)
+            .Select(e => new License
+            {
+                Driver = new Driver
+                {
+                    PersonId = e.Driver.PersonId,
+                }
+            }).FirstOrDefaultAsync();
+        var applicationType = await _context.ApplicationTypes.FirstOrDefaultAsync(e => e.ApplicationTypeId == 5);
+        var application = new Application
+        {
+            ApplicationPersonId = driver!.Driver.PersonId,
+            ApplicationStatus = EnApplicationStatus.Completed,
+            LastStatusDate = DateTime.Now,
+            PaidFees = applicationType!.ApplicationTypeFees,
+            ApplicationTypeId = 5,
+            CreatedAt = DateTime.Now,
+            CreatedByUserId = createdBy,
+        };
+        await _dbSet.AddAsync(application);
+        await _context.SaveChangesAsync();
+        return application.Id;
     }
 }

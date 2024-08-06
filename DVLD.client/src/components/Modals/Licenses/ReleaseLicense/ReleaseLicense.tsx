@@ -1,27 +1,40 @@
 import { TextField, Button } from "@mui/material";
 import {
-  useAddDetainLicense,
   useGetApplicationIdFromLicenseId,
+  useGetDetainInfo,
+  useReleaseLicense,
 } from "../License.hooks";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useClickEnterToSearch } from "../../../../hooks/useClickEnterToSearch";
 import LocalLicenseInfo from "../LocalLicenseInfo";
-import DetainInfo from "./DetainInfo";
 import TextError from "../../../formik/TextError";
+import ReleaseApplicationInfo from "./ReleaseDetainLicenseApplicationInfo";
 type Props = {
   handleClose: () => void;
+  license?: number;
 };
-const DetainLicense = ({ handleClose }: Props) => {
+const ReleaseLicense = ({ handleClose, license }: Props) => {
   // * this is just a placeholder the value will be passed to the LocalLicenseInfo only when the search is clicked therefor we needed 2 states
-  const [searchValue, setSearchValue] = useState<number>(0);
-  const [licenseId, setLicenseId] = useState<number>();
-  const [fees, setFees] = useState<number>(0);
-  const [submitted, setSubmitted] = useState(false);
+  const [searchValue, setSearchValue] = useState<number | undefined>(
+    license || undefined
+  );
+  const [licenseId, setLicenseId] = useState<number | undefined>(license);
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+  console.log(isSubmitted);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   useClickEnterToSearch({ buttonRef, inputRef });
-  const [detain, { detainId, error }] = useAddDetainLicense();
+  const [getDetainInfo, { detainInfo, error: detainInfoError, resetError }] =
+    useGetDetainInfo();
+  const [
+    release,
+    { error: releaseError, releaseId, resetError: resetReleaseError },
+  ] = useReleaseLicense();
   const applicationId = useGetApplicationIdFromLicenseId(licenseId);
+  useEffect(() => {
+    license ? getDetainInfo(license) : null;
+  }, [getDetainInfo, license]);
   return (
     <div className="ModalBox max-h-[500px]">
       <div>
@@ -30,6 +43,7 @@ const DetainLicense = ({ handleClose }: Props) => {
             <label className="flex items-center font-semibold capitalize">
               <span className="inline-block mr-5">License ID:</span>
               <TextField
+                disabled={license != undefined}
                 ref={inputRef}
                 type="text"
                 value={searchValue}
@@ -44,29 +58,35 @@ const DetainLicense = ({ handleClose }: Props) => {
               />
             </label>
             <Button
+              disabled={license != undefined}
               ref={buttonRef}
               variant="contained"
               onClick={() => {
+                resetError();
+                resetReleaseError();
                 setLicenseId(searchValue);
-                // resetError();
+                getDetainInfo(searchValue as number);
               }}
             >
               Search
             </Button>
           </div>
         </section>
-        <TextError className="my-1 font-bold text-center">{error}</TextError>
+        {!isSubmitted ? (
+          <div>
+            <TextError className="my-1 font-bold text-center">
+              {detainInfoError}
+            </TextError>
+            <TextError className="my-1 font-bold text-center">
+              {releaseError}
+            </TextError>
+          </div>
+        ) : null}
         <section>
           <LocalLicenseInfo applicationId={applicationId} noTitle />
         </section>
         <section>
-          <DetainInfo
-            fees={fees}
-            setFees={setFees}
-            detainId={detainId}
-            submitted={submitted}
-            licenseId={licenseId}
-          />
+          <ReleaseApplicationInfo info={detainInfo} releaseId={releaseId} />
         </section>
         <footer className="flex justify-end p-4">
           <Button
@@ -83,15 +103,12 @@ const DetainLicense = ({ handleClose }: Props) => {
             variant="contained"
             size="large"
             onClick={() => {
-              if (fees <= 0) {
-                setSubmitted(true);
-                return;
-              }
-              detain({ fees: fees as number, licenseId: licenseId as number });
+              setIsSubmitted(true);
+              release(licenseId as number);
             }}
-            disabled={licenseId == null || licenseId <= 0}
+            disabled={licenseId == null || licenseId <= 0 || isSubmitted}
           >
-            Detain
+            Release
           </Button>
         </footer>
       </div>
@@ -99,4 +116,4 @@ const DetainLicense = ({ handleClose }: Props) => {
   );
 };
 
-export default DetainLicense;
+export default ReleaseLicense;

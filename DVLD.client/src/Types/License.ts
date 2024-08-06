@@ -60,10 +60,22 @@ type DetainLicense = {
   fees: number;
 };
 type DetainInfo = {
+  detainId: number;
   licenseId: number;
   fees: number;
   detainDate: string;
   createdBy: string;
+};
+type DetainedLicensesView = {
+  id: number;
+  licenseId: number;
+  detainDate: Date;
+  fineFees: number;
+  isReleased: boolean;
+  releaseDate: Date;
+  releaseApplicationId: number;
+  nationalNo: string;
+  fullName: string;
 };
 export type {
   licenseClass,
@@ -73,4 +85,5 @@ export type {
   IntLicense,
   DetainLicense,
   DetainInfo,
+  DetainedLicensesView,
 };

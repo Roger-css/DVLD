@@ -1,11 +1,7 @@
 ﻿using DVLD.DataService.Data;
 using DVLD.DataService.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DVLD.DataService.Repositories;
 
@@ -15,7 +11,7 @@ public class UnitOfWork : IUnitOfWork
     public IPersonRepository PersonRepository { get; set; }
     public IUserRepository UserRepository { get; set; }
     public IDriverRepository DriverRepository { get; set; }
-    public ICountryRepository CountryRepository { get ; set; }
+    public ICountryRepository CountryRepository { get; set; }
     public IRefreshTokenRepository RefreshTokenRepository { get; set; }
     public IApplicationRepository ApplicationRepository { get; set; }
     public ITestRepository TestRepository { get; set; }
@@ -38,5 +34,9 @@ public class UnitOfWork : IUnitOfWork
     public async Task CompleteAsync()
     {
         await _context.SaveChangesAsync();
+    }
+    public async Task<IDbContextTransaction> BeginTransactionAsync()
+    {
+        return await _context.Database.BeginTransactionAsync();
     }
 }

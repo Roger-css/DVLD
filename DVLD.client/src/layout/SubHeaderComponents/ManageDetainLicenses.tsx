@@ -10,19 +10,24 @@ import {
 import { useState } from "react";
 import DetainLicense from "../../components/Modals/Licenses/Detain/DetainLicense";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import ReleaseLicense from "../../components/Modals/Licenses/ReleaseLicense/ReleaseLicense";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   handleClick: () => void;
 };
 
 const ManageDetainLicenses = ({ handleClick }: Props) => {
+  const navigate = useNavigate();
   const [openList, setOpenList] = useState<boolean>(false);
   const [openDetainLicense, setOpenDetainLicense] = useState<boolean>(false);
+  const [openReleaseLicense, setOpenReleaseLicense] = useState<boolean>(false);
   const ExpandList = () => {
     setOpenList(!openList);
   };
   const handleClose = () => {
     setOpenDetainLicense(false);
+    setOpenReleaseLicense(false);
     handleClick();
   };
   return (
@@ -48,7 +53,10 @@ const ManageDetainLicenses = ({ handleClick }: Props) => {
             sx={{
               borderBottom: "1px solid rgba(0,0,0,0.25)",
             }}
-            onClick={() => {}}
+            onClick={() => {
+              navigate("detainLicenses");
+              handleClick();
+            }}
           >
             <ListItemIcon>
               <img src="/public/Detain.png" width="24px" alt="" />
@@ -72,7 +80,11 @@ const ManageDetainLicenses = ({ handleClick }: Props) => {
               Detain License
             </Typography>
           </ListItemButton>
-          <ListItemButton onClick={() => {}}>
+          <ListItemButton
+            onClick={() => {
+              setOpenReleaseLicense(true);
+            }}
+          >
             <ListItemIcon>
               <img src="/public/ReleaseLicense.png" width="24px" alt="" />
             </ListItemIcon>
@@ -85,6 +97,11 @@ const ManageDetainLicenses = ({ handleClick }: Props) => {
       <Modal open={openDetainLicense} onClose={handleClose}>
         <div>
           <DetainLicense handleClose={handleClose} />
+        </div>
+      </Modal>
+      <Modal open={openReleaseLicense} onClose={handleClose}>
+        <div>
+          <ReleaseLicense handleClose={handleClose} />
         </div>
       </Modal>
     </div>

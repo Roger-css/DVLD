@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { FaEdit } from "react-icons/fa";
-import ApplicationTypeDetails from "../../components/Modals/ApplicationTypeDetails";
+import ApplicationTypeDetails from "../../components/Modals/Application/ApplicationTypeDetails";
 const ApplicationTypes = () => {
   const applicationTypesArr = useSelector(getApplicationTypes) ?? [];
 

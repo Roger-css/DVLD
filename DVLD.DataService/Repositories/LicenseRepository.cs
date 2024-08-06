@@ -5,6 +5,7 @@ using DVLD.Entities.DbSets;
 using DVLD.Entities.Dtos.Request;
 using DVLD.Entities.Dtos.Response;
 using DVLD.Entities.Enums;
+using DVLD.Entities.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -286,5 +287,29 @@ internal class LicenseRepository : GenericRepository<License>, ILicenseRepositor
             })
             .FirstOrDefaultAsync();
         return entity!;
+    }
+
+    public async Task ReleaseLicense(int licenseId, int applicationId, int createdByUserId)
+    {
+        await _context.DetainedLicenses.Where(e => e.LicenseId == licenseId).ExecuteUpdateAsync(e =>
+            e.SetProperty(e => e.IsReleased, true)
+            .SetProperty(e => e.ReleasedByUserId, createdByUserId)
+            .SetProperty(e => e.ReleaseApplicationId, applicationId)
+            .SetProperty(e => e.ReleaseDate, DateTime.Now)
+            );
+        await _context.SaveChangesAsync();
+    }
+    public async Task<PaginatedEntity<DetainedLicensesView>> GetDetainedLicenses(GetPaginatedDataRequest search)
+    {
+        var result = new PaginatedEntity<DetainedLicensesView>();
+        IQueryable<DetainedLicensesView>? query = _context.DetainedLicensesView;
+        if (!(string.IsNullOrEmpty(search.SearchTermKey) || string.IsNullOrEmpty(search.SearchTermValue)))
+            query = query.HandleDetainedLicensesSearch(search.SearchTermKey, search.SearchTermValue);
+        if (query == null)
+            return PaginatedEntity<DetainedLicensesView>.NoEntities();
+        query = query.BasicSorting(search.OrderBy);
+        result.Page = await query.HandlePages(search.Page, search.PageSize);
+        result.Collection = await query.HandlePagination(search.Page, search.PageSize).ToListAsync();
+        return result;
     }
 }

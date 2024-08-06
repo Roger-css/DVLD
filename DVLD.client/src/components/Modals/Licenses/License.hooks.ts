@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import usePrivate from "../../../hooks/usePrivate";
 import {
   DetainInfo,
@@ -266,8 +266,9 @@ export const useAddDetainLicense = (): [
   };
   return [sendingData, { detainId, error }];
 };
-export const useGetDetainInfo = (licenseId: number) => {
+export const useGetDetainInfo = () => {
   const [detainInfo, setDetainInfo] = useState<DetainInfo>({
+    detainId: 0,
     createdBy: "",
     detainDate: "",
     fees: 0,
@@ -275,16 +276,46 @@ export const useGetDetainInfo = (licenseId: number) => {
   });
   const [error, setError] = useState("");
   const axios = usePrivate();
-  useEffect(() => {
-    const sendingData = async () => {
+  const sendingData = useCallback(
+    async (licenseId: number) => {
       try {
         const response = await axios.get(`License/Detain/info/${licenseId}`);
         setDetainInfo(response.data);
       } catch (error) {
         setError((error as AxiosError).response?.data as string);
       }
-    };
-    sendingData();
-  }, [axios, licenseId]);
-  return { detainInfo, error };
+    },
+    [axios]
+  );
+  return [
+    sendingData,
+    { detainInfo, error, resetError: () => setError("") },
+  ] as [
+    (licenseId: number) => Promise<void>,
+    { detainInfo: DetainInfo; error: string; resetError: () => void }
+  ];
+};
+export const useReleaseLicense = () => {
+  const [releaseId, setReleaseId] = useState<number>();
+  const [error, setError] = useState("");
+  const axios = usePrivate();
+  const currentUserId = useSelector(getCurrentUserInfo)?.id;
+  const sendingData = async (licenseId: number) => {
+    try {
+      const response = await axios.post("License/Release", {
+        licenseId,
+        userId: currentUserId,
+      });
+      setReleaseId(response.data);
+    } catch (error) {
+      setError((error as AxiosError).response?.data as string);
+    }
+  };
+  return [
+    sendingData,
+    { releaseId, error, resetError: () => setError("") },
+  ] as [
+    (licenseId: number) => Promise<void>,
+    { releaseId: number; error: string; resetError: () => void }
+  ];
 };

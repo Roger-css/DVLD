@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
-import { useGetPaginatedDrivers } from "./Drivers.hooks";
 import SearchWithFilters, {
   Filters,
 } from "../../components/UI/SearchWithFilters";
 import DataTable from "../../components/DataTable.Server";
 import { FilterOptions } from "../../Types/Shared";
 import { DriverColumns } from "./Columns";
+import { useGetPaginatedEntity } from "../../hooks/FetchPaginatedEntity";
+import { DriversView } from "../../Types/Drivers";
 
 const filters: Filters = [
   {
@@ -48,7 +49,10 @@ const Drivers = () => {
     [paginationOptions.orderBy]
   );
 
-  const { drivers, pageOptions } = useGetPaginatedDrivers(paginationOptions);
+  const { entity: drivers, pageOptions } = useGetPaginatedEntity<DriversView>(
+    paginationOptions,
+    "Driver/All"
+  );
   return (
     <div className="w-10/12 mx-auto">
       <div className="mt-10 mb-5">

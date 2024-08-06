@@ -23,6 +23,7 @@ public partial class DvldContext : DbContext
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<LDLAView> LDLAView { get; set; }
     public DbSet<DriversView> DriversView { get; set; }
+    public DbSet<DetainedLicensesView> DetainedLicensesView { get; set; }
     public DvldContext(DbContextOptions<DvldContext> options)
         : base(options)
     {

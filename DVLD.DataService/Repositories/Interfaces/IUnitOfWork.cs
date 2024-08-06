@@ -1,4 +1,6 @@
-﻿namespace DVLD.DataService.Repositories.Interfaces;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+
+namespace DVLD.DataService.Repositories.Interfaces;
 
 public interface IUnitOfWork
 {
@@ -11,4 +13,5 @@ public interface IUnitOfWork
     ITestRepository TestRepository { get; set; }
     ILicenseRepository LicenseRepository { get; set; }
     Task CompleteAsync();
+    Task<IDbContextTransaction> BeginTransactionAsync();
 }

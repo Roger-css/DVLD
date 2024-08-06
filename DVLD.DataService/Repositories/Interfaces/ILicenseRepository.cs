@@ -3,6 +3,7 @@ using DVLD.Entities.DbSets;
 using DVLD.Entities.Dtos.Request;
 using DVLD.Entities.Dtos.Response;
 using DVLD.Entities.Enums;
+using DVLD.Entities.Views;
 
 namespace DVLD.DataService.Repositories.Interfaces;
 
@@ -26,4 +27,6 @@ public interface ILicenseRepository : IGenericRepository<License>
     public Task<int> CreateReplacedLicenseAsync(int oldLicenseId, int applicationId, EnIssueReason reason);
     public Task<int> DetainLicense(int licenseId, int createdBy, float fees);
     public Task<DetainedLicense> GetDetainInfo(int licenseId);
+    public Task ReleaseLicense(int licenseId, int applicationId, int createdByUserId);
+    public Task<PaginatedEntity<DetainedLicensesView>> GetDetainedLicenses(GetPaginatedDataRequest search);
 }

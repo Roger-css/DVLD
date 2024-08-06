@@ -118,6 +118,21 @@ public static class QueryExtensions
                 return query;
         }
     }
+    public static IQueryable<DetainedLicensesView>? HandleDetainedLicensesSearch(this IQueryable<DetainedLicensesView> query, string searchTermKey, string searchTermValue)
+    {
+        var id = -1;
+        if (searchTermKey!.ToLower().Contains("id") && !int.TryParse(searchTermValue, out id))
+            return null;
+        return searchTermKey!.ToLower() switch
+        {
+            "id" => query.Where(e => e.Id == id),
+            "isreleased" => query.Where(e => e.IsReleased),
+            "nationalno" => query.Where(e => e.NationalNo == searchTermValue),
+            "fullname" => query.Where(e => e.FullName == searchTermValue),
+            "releaseapplicationid" => query.Where(e => e.ReleaseApplicationId == id),
+            _ => query,
+        };
+    }
     public static IQueryable<T> HandlePagination<T>(this IQueryable<T> query, int page, int pageSize)
     {
         return query.Skip((page - 1) * pageSize).Take(pageSize);

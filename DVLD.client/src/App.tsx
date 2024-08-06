@@ -89,6 +89,15 @@ function App() {
             return { Component: InternationalLicensesPage };
           },
         },
+        {
+          path: "DetainLicenses",
+          lazy: async () => {
+            const { default: DetainLicensesPage } = await import(
+              "./Pages/DetainLicenses/DetainLicenses"
+            );
+            return { Component: DetainLicensesPage };
+          },
+        },
       ],
     },
   ]);
