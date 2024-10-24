@@ -177,6 +177,7 @@ public class UserController : BaseController<UserController>
         };
         await _unitOfWork.RefreshTokenRepository.Add(RefreshToken);
         await _unitOfWork.CompleteAsync();
+        Response.Cookies.Delete("RefreshToken");
         Response.Cookies.Append("RefreshToken", RefreshTokenString, new CookieOptions()
         {
             SameSite = SameSiteMode.None,

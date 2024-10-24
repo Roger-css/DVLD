@@ -80,11 +80,10 @@ public class Program
 
         builder.Services.AddCors(opt => opt.AddPolicy("LocalHost", policy =>
                 policy
-                .WithOrigins("https://localhost:5173")
+                .WithOrigins("http://localhost:5173")
                 .AllowAnyHeader()
                 .AllowCredentials()
-                .AllowAnyMethod()
-                )
+                .AllowAnyMethod())
         );
 
         var JwtConfig = builder.Configuration.GetSection("JwtConfig").Get<JwtConfig>();
@@ -143,7 +142,7 @@ public class Program
 
         app.Run();
     }
-    static private bool LifetimeValidator(DateTime? notBefore, DateTime? expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+    private static bool LifetimeValidator(DateTime? notBefore, DateTime? expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
     {
         if (expires.HasValue && expires.Value < DateTime.UtcNow)
         {

@@ -168,10 +168,12 @@ internal class ApplicationRepository : GenericRepository<Application>, IApplicat
 
     public async Task<Person?> GetPerson(int ApplicationId)
     {
-        return await _dbSet.Include(e => e.Person)
+        return await _dbSet
+            .Where(e => e.Id == ApplicationId).Include(e => e.Person)
             .ThenInclude(e => e.Driver)
             .Select(e => e.Person)
-            .FirstOrDefaultAsync(e => e.Id == ApplicationId);
+            .FirstOrDefaultAsync();
+
     }
     public async Task UpdateLdlaLicenseClass(UpdateLdlaLicenseClassRequest details)
     {

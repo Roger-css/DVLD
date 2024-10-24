@@ -17,9 +17,7 @@ namespace DVLD.Server.Handlers.LicenseHandler
             try
             {
                 await _unitOfWork.ApplicationRepository.CompleteApplication(query.request.ApplicationId);
-                var person = await _unitOfWork.ApplicationRepository.GetPerson(query.request.ApplicationId);
-                if (person is null)
-                    throw new NullReferenceException();
+                var person = await _unitOfWork.ApplicationRepository.GetPerson(query.request.ApplicationId) ?? throw new NullReferenceException();
                 if (person.Driver is not null)
                 {
                     var license = await _unitOfWork.LicenseRepository

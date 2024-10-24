@@ -1,9 +1,13 @@
-import { BasicApplicationInfo } from "../../Types/Applications";
+import { BasicApplicationInfo } from "../../../Types/Applications";
 
 type TyProps = {
   Details: BasicApplicationInfo;
 };
-
+enum enStatus {
+  New = 1,
+  Cancelled,
+  Completed,
+}
 const ApplicationInfo = ({ Details }: TyProps) => {
   const {
     id,
@@ -54,7 +58,7 @@ const ApplicationInfo = ({ Details }: TyProps) => {
         <div className="flex justify-between">
           <div>
             <span className="inline-block mr-2 text-lg">Status: </span>
-            {status}
+            {enStatus[+status]}
           </div>
           <div>
             <span className="inline-block mr-2 text-lg">Status Date: </span>
